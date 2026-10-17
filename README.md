@@ -1,4 +1,7 @@
-Portfolio Dinámico: Hugo Fernández - Arte Creativo & Carnaval
+# Portfolio Dinámico: Hugo Fernández - Arte Creativo & Carnaval
+
+Plataforma Full-Stack (Python/Flask, SQLite, JS Vanilla) para la exhibición y coordinación integral de vestuarios del carnaval correntino, con CMS propio, Server-Side Rendering (SSR), Open Graph y diseño Mobile-First inmersivo. Desarrollado por Ramiro Curimá.
+
 ¡Hola! Soy Ramiro Curimá, estudiante de segundo año de la Tecnicatura en Desarrollo de Software en San Roque, Corrientes, Argentina.
 
 Este es uno de mis primeros proyectos integrales (Full-Stack) y tiene un valor inmenso para mí porque une mis habilidades técnicas con una de mis mayores pasiones: la cultura del carnaval correntino.
@@ -23,22 +26,22 @@ Este proyecto representa mi transición hacia el desarrollo de software profesio
 🛠️ Instrucciones de Ejecución Local
 Si necesitas correr este proyecto en otra computadora, sigue estos pasos:
 
-Clonar el repositorio: git clone https://github.com/TuUsuario/portfolio-hugo-fernandez.git
+Clonar el repositorio: `git clone https://github.com/ramirocurima4/portfolio-hugo-fernandez.git`
 
-Entrar a la carpeta: cd portfolio-hugo-fernandez
+Entrar a la carpeta: `cd portfolio-hugo-fernandez`
 
-Crear entorno virtual: python -m venv venv
+Crear entorno virtual: `python -m venv venv`
 
 Activar el entorno:
 
-En Windows: venv\Scripts\activate
+En Windows: `venv\Scripts\activate`
 
-En Mac/Linux: source venv/bin/activate
+En Mac/Linux: `source venv/bin/activate`
 
-Instalar Flask: pip install Flask werkzeug
+Instalar dependencias: `pip install Flask werkzeug`
 
-Encender el servidor: python app.py
+Encender el servidor: `python app.py`
 
-Ver la página: Abre tu navegador y entra a http://127.0.0.1:5000
+Ver la página: Abre tu navegador y entra a `http://127.0.0.1:5000`
 
-Panel de Admin: Entra a http://127.0.0.1:5000/admin para subir nuevos trajes y moderar comentarios.
+Panel de Admin: Entra a `http://127.0.0.1:5000/admin` para subir nuevos trajes y moderar comentarios.
