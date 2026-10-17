@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Directorio y catálogo interactivo de figuras y vestuarios de comparsas coordinados por Hugo Fernández Arte Creativo.">
+  <title>Comparsas | Hugo Fernández Catálogo Interactivo</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+  <script src="../js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="../index.html" class="nav-link">Inicio</a>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a href="trajes.html" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="trajes.html">Galería de Inspiración</a></li>
+              <li><a href="trajes.html#femeninos">Vestuarios Femeninos</a></li>
+              <li><a href="trajes.html#masculinos">Vestuarios Masculinos</a></li>
+              <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a href="arandu-beleza.html" class="nav-link active">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="arandu-beleza.html">Catálogo Arandú Beleza</a></li>
+              <li><a href="../index.html#sapucay">Comparsa Sapucay</a></li>
+              <li><a href="../index.html#ara-bera">Comparsa Ará Berá</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="coordinacion.html" class="nav-link">Obras Maestras</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="materiales.html" class="nav-link">Materiales</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="entrevistas.html" class="nav-link">Entrevistas</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="../index.html#contacto" class="nav-link">Contacto</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logo / Marca en la esquina superior derecha -->
+      <a href="../index.html" class="header-logo" title="Hugo Fernández Arte Creativo">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </a>
+
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <!-- Encabezado de la página -->
+      <header class="page-header slide-up">
+        <span class="hero-badge" style="margin-bottom: 0.8rem;">Directorio & Catálogo de Taller</span>
+        <h1 class="dorado-titulo">Comparsas: Catálogo Interactivo</h1>
+        <div class="section-divider"></div>
+        <p>
+          Explorá las figuras y vestuarios realizados en nuestro taller para Arandú Beleza y las grandes comparsas. 
+          Utilizá el buscador en tiempo real o los filtros para localizar figuras, figuras clave o materiales específicos.
+        </p>
+      </header>
+
+      <!-- ==========================================================================
+           FASE 2: BARRA DE BÚSQUEDA DINÁMICA EN TIEMPO REAL
+           ========================================================================== -->
+      <div class="search-bar-container slide-up">
+        <div class="search-input-wrapper">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Buscar por traje, figura o material (ej: strass, faisanes, acetato, reina)..." 
+            aria-label="Buscar trajes por nombre o materiales"
+            autocomplete="off">
+          <button type="button" class="search-clear-btn" aria-label="Limpiar búsqueda" title="Limpiar">✕</button>
+        </div>
+      </div>
+
+      <!-- Menú de Pestañas de Filtrado (Tabs) -->
+      <nav class="filter-tabs slide-up" aria-label="Filtro por categoría de traje">
+        <button type="button" class="filter-btn active" data-filter="all">
+          <span>✨</span> Todos los Trajes
+        </button>
+        <button type="button" class="filter-btn" data-filter="femenino">
+          <span>👑</span> Femeninos
+        </button>
+        <button type="button" class="filter-btn" data-filter="masculino">
+          <span>🛡️</span> Masculinos
+        </button>
+      </nav>
+
+      <!-- ==========================================================================
+           GRILLA DE MINIATURAS (CARDS DE COMPARSEROS HIDRATADAS DINÁMICAMENTE VÍA API)
+           ========================================================================== -->
+      <section class="comparseros-grid grilla-miniaturas" aria-label="Directorio de trajes de comparsa">
+        <!-- Contenedor dinámico hidratado por cargarTrajes() desde /api/trajes -->
+      </section>
+
+      <!-- Mensaje cuando la búsqueda no arroja resultados -->
+      <div class="search-no-results">
+        <p>No se encontraron trajes ni materiales que coincidan con <span id="search-query-display"></span>.</p>
+        <p style="font-size: 0.88rem; color: var(--texto-gris-oscuro);">Probá buscando por términos como "strass", "faisanes", "acetato", "reina" o "bastonera".</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER PROFESIONAL
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-name">Hugo Fernández</div>
+        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="trajes.html">Inspiración de Trajes</a></li>
+          <li><a href="arandu-beleza.html">Catálogo Comparsas</a></li>
+          <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
+          <li><a href="materiales.html">Catálogo de Materiales</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto & Redes</h4>
+        <ul>
+          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
+          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
+          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
+          <li><span>Corrientes, Argentina</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
+      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hugo Fernández - Arte Creativo, Coordinación y Realización de Vestuarios de Carnaval de Alta Costura.">
+  <title>Hugo Fernández | Arte Creativo - Pasión y Carnaval</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER STICKY CON LOGO EN ESQUINA SUPERIOR DERECHA Y MENÚ DESPLEGABLE
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <!-- Botón móvil para responsive -->
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Navegación a la izquierda / centro -->
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link active">Inicio</a>
+          </li>
+          
+          <!-- Desplegable: Trajes (Inspiración) -->
+          <li class="nav-item dropdown">
+            <a href="pages/trajes.html" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="pages/trajes.html">Galería de Inspiración</a></li>
+              <li><a href="pages/trajes.html#femeninos">Vestuarios Femeninos</a></li>
+              <li><a href="pages/trajes.html#masculinos">Vestuarios Masculinos</a></li>
+              <li><a href="pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
+          </li>
+
+          <!-- Desplegable: Comparsas -->
+          <li class="nav-item dropdown">
+            <a href="pages/arandu-beleza.html" class="nav-link">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="pages/arandu-beleza.html">Arandú Beleza (Corrientes)</a></li>
+              <li><a href="#trayectoria">Samba Total (Corrientes)</a></li>
+              <li><a href="#trayectoria">Panambí (San Roque)</a></li>
+              <li><a href="#trayectoria">Marabú & Amistad (Chaco)</a></li>
+            </ul>
+          </li>
+
+          <!-- Enlace a Obras Maestras -->
+          <li class="nav-item">
+            <a href="pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          </li>
+
+          <!-- Enlace a Materiales -->
+          <li class="nav-item">
+            <a href="pages/materiales.html" class="nav-link">Materiales</a>
+          </li>
+
+          <!-- Requisito Paso 2: Nuevo enlace 'Entrevistas' en menú principal fuera de desplegables -->
+          <li class="nav-item">
+            <a href="pages/entrevistas.html" class="nav-link">Entrevistas</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="#trayectoria" class="nav-link">Trayectoria</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="#contacto" class="nav-link">Contacto</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logo / Marca en la ESQUINA SUPERIOR DERECHA (Flexbox order: 2) -->
+      <a href="index.html" class="header-logo" title="Hugo Fernández Arte Creativo">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </a>
+
+    </div>
+  </header>
+
+  <main>
+    <!-- ==========================================================================
+         HERO SECTION: Historia y Video del Taller (Paso 2)
+         ========================================================================== -->
+    <section class="hero" id="hero">
+      <div class="hero-grid">
+        
+        <!-- Bloque de Texto e Historia (Fase 3: Narrativa Real de Hugo) -->
+        <div class="hero-content slide-up">
+          <span class="hero-badge">Coordinación & Realización General</span>
+          <h1 class="hero-title">Coordinación Integral de Vestuario:<br>De San Roque al Nolo Alías</h1>
+          
+          <p class="hero-description">
+            Nacido en San Roque en el seno de una familia puramente comparsera, para Hugo Fernández el carnaval nunca fue solo un oficio: es su idioma. Sus primeros pasos no fueron detrás de escena, sino transpirando la camiseta en la calzada como bailarín en Panambí, la comparsa de su barrio donde todo empezó.
+          </p>
+
+          <p class="hero-description">
+            Esa experiencia en primera persona es hoy su mayor ventaja técnica: él sabe exactamente lo que pesa un espaldar, cómo se siente un arnés después de una hora de desfile y qué necesita el cuerpo del comparsero para moverse con libertad.
+          </p>
+
+          <p class="hero-description">
+            Su destreza manual y su creatividad se forjaron a pulso. Durante un tiempo, sus manos se dedicaron a la decoración de cumpleaños; una etapa que, aunque no despertaba su verdadera pasión, afiló su perfeccionismo y su capacidad para resolver estructuras contra reloj.
+          </p>
+
+          <p class="hero-description" style="color: var(--dorado-brillo); font-weight: 400;">
+            Hoy, consolidado como Coordinador y Realizador General, Hugo transforma los bocetos más ambiciosos en obras de arte en movimiento.
+          </p>
+
+          <div class="hero-cta">
+            <a href="pages/arandu-beleza.html" class="btn-dorado">Explorar Catálogo</a>
+            <a href="pages/coordinacion.html" class="btn-outline">Obras Maestras</a>
+          </div>
+        </div>
+
+        <!-- Paso 2: Foto del Taller (assets/img/hugo-taller.jpg con marco elegante) -->
+        <div class="hero-media-wrapper fade-in">
+          <div class="hero-image-box">
+            <img src="assets/img/hugo-taller.jpg" 
+                 alt="Hugo Fernández en el taller coordinando la confección y armado de espaldares" 
+                 loading="lazy" 
+                 onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop';">
+
+            <!-- Distintivo interactivo en el taller -->
+            <div class="video-overlay-badge">
+              <div class="badge-pulse"></div>
+              <div>
+                <div class="badge-text-title">En el Taller</div>
+                <div class="badge-text-sub">Hugo Fernández en plena realización</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN TRAYECTORIA (Fase 3: Comparsas Confirmadas)
+         ========================================================================== -->
+    <section class="container section-trayectoria" id="trayectoria">
+      <div class="page-header slide-up">
+        <h2>Trayectoria en el Corsódromo</h2>
+        <div class="section-divider"></div>
+        <p>Un recorrido por las comparsas donde dejamos nuestra impronta de arte, herrería y excelencia escénica.</p>
+      </div>
+
+      <div class="trayectoria-timeline">
+        
+        <!-- 1. Arandú Beleza (Corrientes) -->
+        <div class="trayectoria-card reveal delay-1">
+          <div class="trayectoria-year">Arandú Beleza</div>
+          <div class="trayectoria-title">Corrientes Capital</div>
+          <p>Coordinación integral de vestuarios de alta competencia. Supervisión minuciosa de cada elemento, desde tocados y casquetes hasta estructuras, logrando la armonía visual perfecta.</p>
+        </div>
+
+        <!-- 2. Samba Total (Corrientes) -->
+        <div class="trayectoria-card reveal delay-2">
+          <div class="trayectoria-year">Samba Total</div>
+          <div class="trayectoria-title">Corrientes Capital</div>
+          <p>Realización de trajes completos para la agrupación musical multicampeona, equilibrando estética de alto impacto con la comodidad y movilidad que requiere el ritmo de la calzada.</p>
+        </div>
+
+        <!-- 3. Panambí (San Roque, Corrientes) -->
+        <div class="trayectoria-card reveal delay-3">
+          <div class="trayectoria-year">Comparsa Panambí</div>
+          <div class="trayectoria-title">San Roque, Corrientes</div>
+          <p>La cuna de su pasión comparsera: desde sus inicios como bailarín que conoce el rigor de la pista, hasta la dirección técnica y realización de vestuarios barriales completos.</p>
+        </div>
+
+        <!-- 4. Marabú (Charata, Chaco) -->
+        <div class="trayectoria-card reveal delay-1">
+          <div class="trayectoria-year">Comparsa Marabú</div>
+          <div class="trayectoria-title">Charata, Chaco</div>
+          <p>Confección y logística interprovincial de vestuarios integrales. Supervisión del ensamble y calce perfecto en mallas, caderines y accesorios para el exigente carnaval chaqueño.</p>
+        </div>
+
+        <!-- 5. Amistad (Margarita Belén, Chaco) -->
+        <div class="trayectoria-card reveal delay-2">
+          <div class="trayectoria-year">Comparsa Amistad</div>
+          <div class="trayectoria-title">Margarita Belén, Chaco</div>
+          <p>Asesoramiento técnico y armado de trajes para solistas destacados, cuidando meticulosamente cada detalle, desde la pedrería hasta los zapatos y botas.</p>
+        </div>
+
+        <!-- 6. Coordinación Independiente (Obras a medida) -->
+        <div class="trayectoria-card reveal delay-3">
+          <div class="trayectoria-year">Coordinación Independiente</div>
+          <div class="trayectoria-title">Obras a Medida</div>
+          <p>Creaciones exclusivas a medida. Coordinación precisa de cada pieza del traje para potenciar la presencia y el brillo individual de reinas, bastoneras y solistas de todo el país.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN SERVICIOS
+         ========================================================================== -->
+    <section class="container section-servicios" id="servicios">
+      <div class="page-header slide-up">
+        <h2>Servicios Especializados</h2>
+        <div class="section-divider"></div>
+        <p>Soluciones integrales de diseño y montaje para comparsas, solistas y agrupaciones musicales.</p>
+      </div>
+
+      <div class="grid-servicios">
+        <div class="servicio-card reveal delay-1">
+          <span class="servicio-icon">👑</span>
+          <h3>COORDINACIÓN GENERAL</h3>
+          <p>Dirección absoluta del taller de vestuario de principio a fin. Planificación de cronogramas de entrega, supervisión de pruebas de calce y logística operativa en el corsódromo para asegurar que la comparsa salga a la pista a tiempo y en perfectas condiciones.</p>
+        </div>
+
+        <div class="servicio-card reveal delay-2">
+          <span class="servicio-icon">⚙️</span>
+          <h3>DIRECCIÓN TÉCNICA Y MONTAJE</h3>
+          <p>Interpretación de bocetos de diseño para convertirlos en estructuras viables. Supervisión del equipo de herrería y armado, asegurando el equilibrio ergonómico, la distribución de peso en espaldares gigantes y la seguridad del comparsero.</p>
+        </div>
+
+        <div class="servicio-card reveal delay-3">
+          <span class="servicio-icon">👥</span>
+          <h3>GESTIÓN DE MATERIALES Y EQUIPO</h3>
+          <p>Liderazgo de los equipos de bordado y realización. Optimización de recursos, control de calidad en el engarce de pedrería y tratamiento de plumas, garantizando que el acabado final respete la visión del diseñador original con el máximo nivel de detalle.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN PREGUNTAS FRECUENTES (FAQ)
+         ========================================================================== -->
+    <section class="container" id="faq">
+      <div class="page-header slide-up">
+        <h2>Preguntas Frecuentes</h2>
+        <div class="section-divider"></div>
+        <p>Todo lo que necesitás saber para planificar tu vestuario con nuestro equipo.</p>
+      </div>
+
+      <div class="faq-accordion reveal">
+        <details class="faq-item">
+          <summary>¿Con cuánto tiempo de anticipación hay que encargar los trajes?</summary>
+          <p>Lo ideal es contactarnos con un mínimo de 3 a 5 meses de anticipación para planificar los bocetos, importar los materiales adecuados y garantizar las pruebas de calce necesarias.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Trabajás con comparsas de otras provincias o ciudades?</summary>
+          <p>Sí, coordinamos a distancia en todo el país mediante fichas técnicas detalladas y preparamos embalajes especiales de protección para garantizar que las estructuras lleguen intactas.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Las estructuras de los espaldares son pesadas?</summary>
+          <p>No. Empleamos herrería estructural liviana de aleación acerada combinada con arneses anatómicos acolchados que distribuyen el peso ergonómicamente en la cintura y espalda del comparsero.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN CONTACTO
+         ========================================================================== -->
+    <section class="container" id="contacto">
+      <div class="contacto-banner reveal">
+        <h2>¿Querés que tu comparsa brille en el próximo carnaval?</h2>
+        <p>Hablemos hoy mismo sobre tu proyecto, presupuestos o asesoramiento para la próxima temporada.</p>
+        
+        <div class="contacto-links">
+          <a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer" class="btn-dorado">
+            Contactar por WhatsApp
+          </a>
+          <a href="mailto:hugofernandezcarnaval@gmail.com" class="btn-outline">
+            Enviar Correo Electrónico
+          </a>
+          <a href="pages/entrevistas.html" class="btn-outline">
+            Ver Cobertura de Prensa
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER PROFESIONAL
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-name">Hugo Fernández</div>
+        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="pages/arandu-beleza.html">Arandú Beleza</a></li>
+          <li><a href="pages/materiales.html">Catálogo de Materiales</a></li>
+          <li><a href="pages/entrevistas.html">Notas y Entrevistas</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto & Redes</h4>
+        <ul>
+          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
+          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
+          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
+          <li><span>Corrientes, Argentina</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
+      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
+    </div>
+  </footer>
+
+</body>
+</html>

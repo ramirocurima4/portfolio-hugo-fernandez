@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Gestión & CMS | Hugo Fernández Arte Creativo</title>
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="../css/estilos.css">
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --card-bg: #0a192f;
+      --card-bg-subtle: #0f2240;
+      --dorado: #BF953F;
+      --dorado-light: #FCF6BA;
+      --dorado-border: rgba(191, 149, 63, 0.35);
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --red-btn: #e63946;
+      --red-hover: #c1121f;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Barra Superior del Administrador */
+    .admin-navbar {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--dorado-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .admin-logo-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dorado);
+      letter-spacing: 1px;
+    }
+
+    .admin-role-badge {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      background: rgba(191, 149, 63, 0.15);
+      border: 1px solid var(--dorado-border);
+      border-radius: 4px;
+      color: var(--dorado-light);
+      font-weight: 600;
+    }
+
+    .admin-nav-actions {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .btn-admin-nav {
+      color: var(--dorado-light);
+      border: 1px solid var(--dorado-border);
+      background: rgba(10, 25, 47, 0.6);
+      padding: 0.5rem 1.1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-admin-nav:hover {
+      background: rgba(191, 149, 63, 0.2);
+      border-color: var(--dorado);
+      transform: translateY(-2px);
+      color: #ffffff;
+    }
+
+    /* Contenedor Principal */
+    .admin-main {
+      max-width: 1250px;
+      width: 100%;
+      margin: 2rem auto 4rem;
+      padding: 0 1.5rem;
+      box-sizing: border-box;
+    }
+
+    .admin-title-area {
+      margin-bottom: 2.2rem;
+    }
+
+    .admin-title-area h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      margin: 0 0 0.5rem;
+      background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .admin-title-area p {
+      color: var(--text-muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    /* Notificación Toast */
+    .status-toast {
+      display: none;
+      padding: 1rem 1.4rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .status-toast.success {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(46, 204, 113, 0.15);
+      border: 1px solid #2ecc71;
+      color: #2ecc71;
+    }
+
+    .status-toast.error {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(231, 76, 60, 0.15);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid de Secciones Dashboard */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    /* Tarjetas de Sección */
+    .dashboard-card {
+      background: var(--card-bg);
+      border: 1px solid var(--dorado-border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    .dashboard-card-header {
+      padding: 1.4rem 1.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(90deg, rgba(15, 34, 64, 0.6) 0%, rgba(10, 25, 47, 0.8) 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-card-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .dashboard-card-body {
+      padding: 2rem 1.8rem;
+    }
+
+    /* Formularios */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.4rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--dorado-light);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .form-control {
+      background: rgba(5, 13, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--dorado);
+      box-shadow: 0 0 12px rgba(191, 149, 63, 0.35);
+      background: rgba(5, 13, 26, 1);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 95px;
+    }
+
+    /* Input File estilizado y Preview */
+    .file-upload-box {
+      border: 2px dashed var(--dorado-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      background: rgba(10, 25, 47, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .file-upload-box:hover {
+      border-color: var(--dorado);
+      background: rgba(191, 149, 63, 0.08);
+    }
+
+    .file-upload-box input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .file-upload-label span.upload-icon {
+      font-size: 2.2rem;
+    }
+
+    .file-upload-label strong {
+      color: var(--dorado-light);
+    }
+
+    .preview-container {
+      display: none;
+      margin-top: 1rem;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 0.8rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .preview-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--dorado-border);
+    }
+
+    .preview-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-submit-traje {
+      background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
+      color: #0a0a0a;
+      border: none;
+      border-radius: 6px;
+      padding: 0.95rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    .btn-submit-traje:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(191, 149, 63, 0.4);
+    }
+
+    .btn-submit-traje:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Tabla de Moderación */
+    .admin-table-wrapper {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .admin-table th {
+      background: rgba(15, 34, 64, 0.95);
+      color: var(--dorado-light);
+      font-weight: 600;
+      padding: 1rem 1.2rem;
+      border-bottom: 2px solid var(--dorado-border);
+      white-space: nowrap;
+    }
+
+    .admin-table td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(191, 149, 63, 0.06);
+    }
+
+    .btn-eliminar-rojo {
+      background: var(--red-btn);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .btn-eliminar-rojo:hover {
+      background: var(--red-hover);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+    }
+
+    .admin-loading {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .admin-empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-navbar {
+        padding: 0.8rem 1rem;
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: flex-start;
+      }
+      .admin-nav-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .dashboard-card-body {
+        padding: 1.5rem 1.2rem;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior del Administrador -->
+  <header class="admin-navbar">
+    <div class="admin-brand">
+      <span class="admin-logo-text">Hugo Fernández</span>
+      <span class="admin-role-badge">CMS & Moderación</span>
+    </div>
+    <div class="admin-nav-actions">
+      <a href="/pages/arandu-beleza.html" class="btn-admin-nav" target="_blank">
+        <span>🎭</span> Ver Catálogo
+      </a>
+      <a href="/" class="btn-admin-nav">
+        <span>🏠</span> Volver al Sitio
+      </a>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="admin-main">
+    
+    <div class="admin-title-area">
+      <h1>Panel de Administración (CMS)</h1>
+      <p>Gestión centralizada del catálogo de vestuarios y moderación comunitaria del taller.</p>
+    </div>
+
+    <!-- Notificación Toast Dinámica -->
+    <div id="admin-toast" class="status-toast" role="alert"></div>
+
+    <div class="dashboard-layout">
+
+      <!-- ======================================================================
+           SECCIÓN A: CARGAR NUEVO TRAJE (SUBIDA MULTIPART / FORM-DATA)
+           ====================================================================== -->
+      <section class="dashboard-card" aria-label="Cargar nuevo traje">
+        <div class="dashboard-card-header">
+          <h2><span>✨</span> Sección A: Cargar Nuevo Traje al Catálogo</h2>
+          <span style="font-size: 0.82rem; color: var(--dorado-light);">API REST • POST /api/trajes</span>
+        </div>
+        <div class="dashboard-card-body">
+          <form id="form-nuevo-traje" enctype="multipart/form-data">
+            
+            <div class="form-grid">
+              
+              <!-- Comparsero -->
+              <div class="form-group">
+                <label for="comparsero" class="form-label">
+                  <span>👑</span> Nombre del Comparsero / Figura
+                </label>
+                <input type="text" 
+                       id="comparsero" 
+                       name="comparsero" 
+                       class="form-control" 
+                       placeholder="Ej: Mariana C. (Gran Bastonera)" 
+                       required>
+              </div>
+
+              <!-- Comparsa -->
+              <div class="form-group">
+                <label for="comparsa" class="form-label">
+                  <span>🎭</span> Comparsa o Agrupación
+                </label>
+                <input type="text" 
+                       id="comparsa" 
+                       name="comparsa" 
+                       class="form-control" 
+                       list="lista-comparsas" 
+                       placeholder="Ej: Arandú Beleza, Sapucay, Samba Total..." 
+                       required>
+                <datalist id="lista-comparsas">
+                  <option value="Arandú Beleza">
+                  <option value="Sapucay">
+                  <option value="Ará Berá">
+                  <option value="Samba Total">
+                  <option value="Comparsa Panambí">
+                  <option value="Copacabana">
+                  <option value="Imperio Bahiano">
+                </datalist>
+              </div>
+
+              <!-- Género -->
+              <div class="form-group">
+                <label for="genero" class="form-label">
+                  <span>✦</span> Categoría / Género
+                </label>
+                <select id="genero" name="genero" class="form-control" required>
+                  <option value="Femenino" selected>Femenino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Unisex / Especial">Unisex / Especial</option>
+                </select>
+              </div>
+
+              <!-- Subida Física de Imagen -->
+              <div class="form-group">
+                <label for="foto" class="form-label">
+                  <span>📸</span> Fotografía del Traje (Subida Física)
+                </label>
+                <div class="file-upload-box" id="file-dropzone">
+                  <input type="file" 
+                         id="foto" 
+                         name="foto" 
+                         accept="image/*" 
+                         required>
+                  <div class="file-upload-label" id="file-upload-label">
+                    <span class="upload-icon">📁</span>
+                    <span><strong>Haz clic para seleccionar</strong> o arrastra la foto aquí</span>
+                    <span style="font-size: 0.78rem;">Formatos soportados: JPG, PNG, WEBP</span>
+                  </div>
+                </div>
+
+                <!-- Preview de la imagen seleccionada -->
+                <div class="preview-container" id="preview-container">
+                  <img src="" alt="Vista previa" class="preview-img" id="preview-img">
+                  <div class="preview-info" id="preview-info"></div>
+                </div>
+              </div>
+
+              <!-- Desglose de Materiales -->
+              <div class="form-group full-width">
+                <label for="materiales" class="form-label">
+                  <span>💎</span> Desglose de Materiales Utilizados (Separados por coma)
+                </label>
+                <textarea id="materiales" 
+                          name="materiales" 
+                          class="form-control" 
+                          rows="3" 
+                          placeholder="Ej: Strass checo boreal, plumas amazónicas verde esmeralda, arnés de duraluminio 3.2 kg, corselete y botas bordadas a medida." 
+                          required></textarea>
+                <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  * Estos materiales se separarán automáticamente en tags interactivos en la ficha individual del traje.
+                </span>
+              </div>
+
+            </div>
+
+            <!-- Botón de Envío -->
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem;">
+              <span id="traje-submit-status" style="font-size: 0.9rem;"></span>
+              <button type="submit" id="btn-submit-traje" class="btn-submit-traje">
+                <span>✦</span> Publicar Traje en el Catálogo
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SECCIÓN B: MODERACIÓN DE COMENTARIOS PÚBLICOS
+           ====================================================================== -->
+      <section class="dashboard-card" aria-label="Moderación de comentarios">
+        <div class="dashboard-card-header">
+          <h2>
+            <span>💬</span> Sección B: Moderación de Comentarios
+            <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
+              (<span id="total-comentarios">0</span> registrados)
+            </span>
+          </h2>
+          <button id="btn-recargar" class="btn-admin-nav" style="cursor: pointer;">
+            <span>🔄</span> Actualizar Lista
+          </button>
+        </div>
+
+        <div class="dashboard-card-body" style="padding: 1.2rem;">
+          
+          <div id="admin-loading" class="admin-loading">
+            <p>Cargando comentarios registrados en SQLite...</p>
+          </div>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="tabla-comentarios" style="display: none;">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">ID</th>
+                  <th style="width: 220px;">Traje Asociado</th>
+                  <th style="width: 170px;">Usuario</th>
+                  <th>Comentario</th>
+                  <th style="width: 160px;">Fecha</th>
+                  <th style="width: 110px; text-align: center;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-comentarios">
+                <!-- Inyectado dinámicamente con JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="admin-vacio" class="admin-empty-state" style="display: none;">
+            <p style="font-size: 1.1rem; color: var(--dorado-light);">No hay comentarios registrados en este momento.</p>
+            <span style="font-size: 0.85rem;">Los comentarios enviados en las fichas técnicas aparecerán aquí para su supervisión.</span>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Lógica JavaScript del CMS & Dashboard -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initFormNuevoTraje();
+      cargarTodosLosComentarios();
+
+      const btnRecargar = document.getElementById('btn-recargar');
+      if (btnRecargar) {
+        btnRecargar.addEventListener('click', () => {
+          cargarTodosLosComentarios();
+        });
+      }
+    });
+
+    /**
+     * Muestra notificaciones visuales toast
+     */
+    function mostrarToast(mensaje, tipo = 'success') {
+      const toast = document.getElementById('admin-toast');
+      if (!toast) return;
+      toast.textContent = mensaje;
+      toast.className = `status-toast ${tipo}`;
+      setTimeout(() => {
+        toast.className = 'status-toast';
+        toast.style.display = 'none';
+      }, 4000);
+    }
+
+    /**
+     * Sanitiza cadenas para evitar inyecciones HTML
+     */
+    function escapeHTML(str) {
+      if (typeof str !== 'string') return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /**
+     * SECCIÓN A: Gestión del Formulario de Carga de Nuevo Traje (POST /api/trajes)
+     */
+    function initFormNuevoTraje() {
+      const form = document.getElementById('form-nuevo-traje');
+      const fileInput = document.getElementById('foto');
+      const previewContainer = document.getElementById('preview-container');
+      const previewImg = document.getElementById('preview-img');
+      const previewInfo = document.getElementById('preview-info');
+      const submitBtn = document.getElementById('btn-submit-traje');
+      const statusSpan = document.getElementById('traje-submit-status');
+
+      if (!form || !fileInput) return;
+
+      // Preview inmediato al seleccionar archivo
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            previewInfo.innerHTML = `<strong>${escapeHTML(file.name)}</strong><br>${(file.size / 1024).toFixed(1)} KB`;
+            previewContainer.style.display = 'flex';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          previewContainer.style.display = 'none';
+        }
+      });
+
+      // Submit del Formulario con FormData
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+          alert('Por favor selecciona una foto para el traje.');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span> Subiendo y guardando...';
+        statusSpan.style.color = 'var(--dorado-light)';
+        statusSpan.textContent = 'Enviando imagen y registrando traje...';
+
+        try {
+          const formData = new FormData(form);
+
+          const response = await fetch('/api/trajes', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Error al guardar el traje en el servidor.');
+          }
+
+          // Éxito: Feedback y limpieza
+          statusSpan.style.color = '#2ecc71';
+          statusSpan.textContent = '✓ ¡Traje guardado exitosamente!';
+          
+          mostrarToast(`✓ ¡Traje "${data.traje.comparsero}" publicado con éxito en el catálogo!`, 'success');
+          alert(`✓ ¡Éxito! El traje "${data.traje.comparsero}" ha sido guardado y su imagen almacenada físicamente en el servidor.`);
+
+          form.reset();
+          previewContainer.style.display = 'none';
+
+          setTimeout(() => {
+            statusSpan.textContent = '';
+          }, 3500);
+
+        } catch (error) {
+          console.error('Error al enviar formulario:', error);
+          statusSpan.style.color = '#e74c3c';
+          statusSpan.textContent = '⚠️ ' + error.message;
+          mostrarToast(error.message, 'error');
+          alert('Error: ' + error.message);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>✦</span> Publicar Traje en el Catálogo';
+        }
+      });
+    }
+
+    /**
+     * SECCIÓN B: Carga y renderizado dinámico de comentarios (GET /api/comentarios/todos)
+     */
+    async function cargarTodosLosComentarios() {
+      const loading = document.getElementById('admin-loading');
+      const tabla = document.getElementById('tabla-comentarios');
+      const tbody = document.getElementById('tbody-comentarios');
+      const vacio = document.getElementById('admin-vacio');
+      const contador = document.getElementById('total-comentarios');
+
+      loading.style.display = 'block';
+      tabla.style.display = 'none';
+      vacio.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/comentarios/todos');
+        if (!res.ok) throw new Error('Error al conectar con /api/comentarios/todos');
+
+        const comentarios = await res.json();
+        loading.style.display = 'none';
+        contador.textContent = comentarios.length;
+
+        if (!Array.isArray(comentarios) || comentarios.length === 0) {
+          vacio.style.display = 'block';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        comentarios.forEach(com => {
+          const row = document.createElement('tr');
+          row.id = `fila-comentario-${com.id}`;
+
+          const trajeTxt = com.comparsero 
+            ? `<strong>${escapeHTML(com.comparsero)}</strong><br><span style="font-size: 0.78rem; color: var(--dorado);">${escapeHTML(com.comparsa || '')}</span>`
+            : `Traje #${com.traje_id}`;
+
+          row.innerHTML = `
+            <td style="color: var(--dorado-light); font-weight: 700;">#${com.id}</td>
+            <td>
+              <a href="/traje/${com.traje_id}" target="_blank" style="color: #ffffff; text-decoration: underline; font-weight: 600;">
+                ${trajeTxt}
+              </a>
+            </td>
+            <td style="font-weight: 600; color: #ffffff;">${escapeHTML(com.usuario)}</td>
+            <td style="color: var(--text-main); line-height: 1.5;">${escapeHTML(com.texto)}</td>
+            <td style="font-size: 0.82rem; color: var(--text-muted);">${escapeHTML(com.fecha || '')}</td>
+            <td style="text-align: center;">
+              <button type="button" class="btn-eliminar-rojo" onclick="eliminarComentario(${com.id})">
+                <span>🗑️</span> Eliminar
+              </button>
+            </td>
+          `;
+
+          tbody.appendChild(row);
+        });
+
+        tabla.style.display = 'table';
+      } catch (err) {
+        console.error(err);
+        loading.style.display = 'none';
+        mostrarToast('Error al cargar comentarios desde el servidor.', 'error');
+      }
+    }
+
+    /**
+     * Eliminación de comentario (DELETE /api/comentarios/<id>)
+     */
+    async function eliminarComentario(id) {
+      if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el comentario #${id}?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/comentarios/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!res.ok) {
+          throw new Error('No se pudo eliminar el comentario del servidor.');
+        }
+
+        mostrarToast(`✓ Comentario #${id} eliminado correctamente.`, 'success');
+
+        // Quitar la fila de la tabla en el DOM con animación
+        const fila = document.getElementById(`fila-comentario-${id}`);
+        if (fila) {
+          fila.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+          fila.style.opacity = '0';
+          fila.style.transform = 'translateX(25px)';
+          setTimeout(() => {
+            fila.remove();
+            const totalEl = document.getElementById('total-comentarios');
+            const filasRestantes = document.querySelectorAll('#tbody-comentarios tr').length;
+            totalEl.textContent = filasRestantes;
+            if (filasRestantes === 0) {
+              document.getElementById('tabla-comentarios').style.display = 'none';
+              document.getElementById('admin-vacio').style.display = 'block';
+            }
+          }, 350);
+        }
+      } catch (err) {
+        console.error(err);
+        mostrarToast('Error al intentar eliminar el comentario.', 'error');
+        alert('Error: No se pudo eliminar el comentario.');
+      }
+    }
+
+    // Exponer función para invocación en el atributo onclick inline
+    window.eliminarComentario = eliminarComentario;
+  </script>
+
+</body>
+</html>

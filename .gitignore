@@ -1,0 +1,41 @@
+# ==============================================================================
+# Git Ignore - Hugo Fernández Arte Creativo
+# ==============================================================================
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv/
+
+# Caché y compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Archivos de entorno y configuración local
+.env
+*.log
+
+# IDEs y editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Sistemas Operativos
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================================================================
+# EXCEPCIONES CRÍTICAS (RESPALDO DE BASE DE DATOS Y ASSETS)
+# Se preserva expresamente la base de datos y los recursos multimedia para migración
+# ==============================================================================
+!carnaval.db
+!assets/img/
+!assets/img/**
+!static/assets/img/
+!static/assets/img/**
