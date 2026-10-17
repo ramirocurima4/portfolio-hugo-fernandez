@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initIntersectionObserver();
   initMobileMenu();
   cargarTrajes();
+  cargarTrajesFeedMobile();
   initTrajeGalleryThumbs();
   initImageComparison();
   initFichaDetalleDinamica();
@@ -448,16 +449,105 @@ function hidratarFichaDetalle(traje) {
     metaRealizacion.textContent = 'Hugo Fernández';
   }
 
+  // FASE 12: Créditos de Diseño Original y Herrería
+  if (traje.diseno_original) {
+    const disenoEl = document.getElementById('credito-diseno');
+    if (disenoEl) disenoEl.textContent = traje.diseno_original;
+  }
+  if (traje.herreria_estructura) {
+    const herreriaEl = document.getElementById('credito-herreria');
+    if (herreriaEl) herreriaEl.textContent = traje.herreria_estructura;
+  }
+
+  // FASE 12: Párrafo inspiracional / descripción enriquecida
   if (pContainer) {
-    pContainer.innerHTML = `
-      <p>Vestuario oficial coordinado y realizado para la figura de <strong>${escapeHTML(traje.comparsero)}</strong> de la comparsa <strong>${escapeHTML(traje.comparsa)}</strong>.</p>
-      <p>Confeccionado artesanalmente bajo la dirección técnica de Hugo Fernández, integrando herrería de alta absorción de movimiento, distribución ergonómica de cargas y materiales escénicos seleccionados para máxima visibilidad en corsódromo.</p>
-    `;
+    if (traje.descripcion) {
+      pContainer.innerHTML = `<p>${escapeHTML(traje.descripcion)}</p>`;
+    } else {
+      pContainer.innerHTML = `
+        <p>Vestuario oficial coordinado y realizado para la figura de <strong>${escapeHTML(traje.comparsero)}</strong> de la comparsa <strong>${escapeHTML(traje.comparsa)}</strong>.</p>
+        <p>Confeccionado artesanalmente bajo la dirección técnica de Hugo Fernández, integrando herrería de alta absorción de movimiento, distribución ergonómica de cargas y materiales escénicos seleccionados para máxima visibilidad en corsódromo.</p>
+      `;
+    }
+  }
+
+  // FASE 12: Galería de fotos dinámica si el traje cuenta con múltiples fotos
+  if (Array.isArray(traje.fotos) && traje.fotos.length > 1) {
+    const thumbsContainer = document.getElementById('gallery-thumbs-container') || document.querySelector('.gallery-thumbs');
+    if (thumbsContainer) {
+      const fotosSecundarias = traje.fotos.filter(f => !f.es_principal);
+      if (fotosSecundarias.length > 0) {
+        thumbsContainer.innerHTML = fotosSecundarias.map(f => `
+          <div class="gallery-thumb-item" title="Click para ampliar detalle">
+            <img src="${escapeHTML(resolverRutaImagen(f.ruta_imagen))}" 
+                 alt="${escapeHTML(f.titulo || 'Detalle')}" loading="lazy">
+            <span class="thumb-caption">${escapeHTML(f.titulo || 'Detalle')}</span>
+          </div>
+        `).join('');
+        initTrajeGalleryThumbs();
+      }
+    }
   }
 
   // Sincronizar imagen de realidad en slider comparativo
   if (rImg && traje.foto_url) {
     rImg.src = resolverRutaImagen(traje.foto_url);
+  }
+}
+
+/**
+ * FASE 12: Carga dinámica y sin filtros hardcodeados del Feed Vertical Inmersivo (Scroll Snap)
+ * Selecciona los contenedores .feed-trajes-mobile y los alimenta con todos los trajes registrados en SQLite.
+ */
+async function cargarTrajesFeedMobile() {
+  const feedContainers = document.querySelectorAll('.feed-trajes-mobile');
+  if (!feedContainers.length) return;
+
+  try {
+    const res = await fetch('/api/trajes');
+    if (!res.ok) return;
+    const trajes = await res.json();
+    if (!Array.isArray(trajes) || trajes.length === 0) return;
+
+    feedContainers.forEach(container => {
+      // Reemplaza contenido si solo tiene tarjetas de ejemplo estáticas
+      const hasStaticPlaceholders = container.querySelectorAll('a[href*="fenix-solar"], a[href*="guerrero-profundidades"]').length > 0;
+      if (hasStaticPlaceholders || container.children.length === 0) {
+        container.innerHTML = '';
+        trajes.forEach((traje, idx) => {
+          const card = document.createElement('article');
+          card.className = `tarjeta-feed immersive-traje-card reveal visible delay-${(idx % 3) + 1}`;
+          card.setAttribute('data-id', traje.id);
+
+          const foto = escapeHTML(resolverRutaImagen(traje.foto_url || ''));
+          const comparsero = escapeHTML(traje.comparsero || 'Traje de Carnaval');
+          const comparsa = escapeHTML(traje.comparsa || 'Comparsa');
+          const genero = escapeHTML(traje.genero || 'Oficial');
+          const desc = escapeHTML(traje.descripcion || traje.materiales || 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.');
+
+          card.innerHTML = `
+            <div class="immersive-traje-img-box">
+              <img src="${foto}" alt="${comparsero} - ${comparsa}" loading="lazy">
+            </div>
+            <div class="immersive-traje-overlay">
+              <div class="immersive-info">
+                <span class="immersive-badge">${genero} • ${comparsa}</span>
+                <h3 class="immersive-title">${comparsero}</h3>
+                <p class="immersive-desc">${desc}</p>
+              </div>
+              <div class="immersive-action">
+                <a href="/traje/${traje.id}" class="btn-dorado">
+                  Consultar Ficha Técnica →
+                </a>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    });
+  } catch (err) {
+    console.warn('Error al cargar feed móvil de trajes:', err);
   }
 }
 

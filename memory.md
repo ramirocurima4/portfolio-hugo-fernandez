@@ -2,7 +2,57 @@
 
 ## Estado Actual del Proyecto
 - **Fecha de Actualización:** Octubre 2026
-- **Directiva Vigente:** Fase 10 - Creación del Panel de Administración (CMS Propio).
+- **Directiva Vigente:** Fase 12 - Expansión de Base de Datos, Galería Dinámica y Fix de Filtros.
+
+---
+
+### Fase 12: Expansión de Base de Datos, Galería Dinámica y Fix de Filtros
+**Estado:** COMPLETADA ✅
+**Hito Registrado:** Galería Fotográfica Múltiple, Créditos Enriquecidos y Feed Absoluto
+
+#### Enfoque Arquitectural:
+- **Evolución del Esquema Relacional (SQLite):**
+  - Incorporación de metadatos narrativos y créditos en `trajes`: `descripcion` (párrafo inspiracional), `diseno_original` (créditos de boceto), `herreria_estructura` (detalles y peso de arnés).
+  - Creación de la tabla `fotos_traje`: modelado 1:N (`traje_id`, `ruta_imagen`, `titulo`, `es_principal`) con soporte de claves foráneas y cascada de eliminación. Migración automática retroactiva para sincronizar `foto_url` preexistentes.
+- **Fix Integral del Feed Móvil (Scroll Snap):**
+  - Eliminación de cualquier filtro hardcodeado que limitara la vista solo a comparsas conocidas.
+  - Implementación de consulta `SELECT * FROM trajes ORDER BY id DESC` absoluto tanto en el endpoint REST `/api/trajes` como en la renderización Server-Side Rendering (`/trajes`, `/pages/trajes.html` con `templates/trajes.html`). Todo traje registrado desde el CMS aparece inmediatamente en el feed vertical de trajes.
+- **CMS Dinámico de Múltiples Imágenes (`admin.html`):**
+  - Refactor del formulario de carga para soportar agregado interactivo de fotografías múltiples con títulos personalizados y selector radial para definir la foto principal de portada (`es_principal = 1`).
+  - Inputs dedicados para "Descripción de la obra", "Diseño Original" y "Herrería/Estructura".
+- **Backend Multilateral (`app.py`):**
+  - Endpoint `POST /api/trajes` optimizado para procesar `files = request.files.getlist("fotos")`, persistir físicamente los binarios en `assets/img/` y registrar cada imagen vinculada en `fotos_traje`.
+  - Enriquecimiento de `ver_traje_ssr` (`/traje/<id>`) para inyectar dinámicamente las fotos secundarias en las miniaturas de la galería y mostrar los créditos de producción.
+
+---
+
+### Fase 11: Autenticación del Panel de Administración
+**Estado:** COMPLETADA ✅
+**Hito Registrado:** Seguridad y Control de Acceso con Sesiones Flask
+
+#### Enfoque Arquitectural:
+- Protección perimetral completa de la interfaz de administración (`/admin`) y de los endpoints de mutación en la API REST (`POST /api/trajes`, `DELETE /api/comentarios/<id>`).
+- Implementación de control de sesiones basado en cookies firmadas criptográficamente (`Flask.session`) usando `app.secret_key = 'una_clave_secreta_muy_dificil_de_adivinar'`.
+- Autenticación con contraseña maestra centralizada (`ADMIN_PASSWORD = 'noloalias2026'`) con validación server-side.
+- Manejo de ciclo de vida de sesión completo: autenticación mediante formulario en `/login`, revocación y destrucción de sesión en `/logout`, y redirecciones contextuales según estado de sesión.
+
+#### Entregables Implementados:
+1. **Configuración de Seguridad en Backend (`app.py`):**
+   - Configuración de clave de firma de cookies: `app.secret_key = 'una_clave_secreta_muy_dificil_de_adivinar'`.
+   - Definición de credencial maestra: `ADMIN_PASSWORD = 'noloalias2026'`.
+   - Middleware de comprobación de sesión en `@app.route('/admin')`: redirige a `/login` si `not session.get('admin_logged_in')`.
+   - Protección de endpoints de escritura y borrado: `POST /api/trajes` y `DELETE /api/comentarios/<int:id>` devuelven `401 Unauthorized` si no existe sesión activa.
+   - Endpoint `@app.route('/login', methods=['GET', 'POST'])`:
+     - `POST`: valida la contraseña contra `ADMIN_PASSWORD`; ante éxito, establece `session['admin_logged_in'] = True` y redirige a `/admin`; ante fallo, retorna feedback visual con mensaje de error.
+     - `GET`: si ya existe sesión activa, redirige automáticamente a `/admin`; de lo contrario renderiza `login.html`.
+   - Endpoint `@app.route('/logout')`: elimina `admin_logged_in` de `session` y redirige al inicio (`/`).
+2. **Interfaz de Acceso (`templates/login.html`, `pages/login.html`, `login.html`):**
+   - Formulario elegante y minimalista acorde a la estética dark/gold de Hugo Fernández.
+   - Campo individual de contraseña `<input type="password" id="password" name="password" required>` (sin usuario).
+   - Manejo de alertas de error con animación visual de feedback.
+   - Enlace de retorno directo a la página principal.
+3. **Barra de Navegación del Panel (`templates/admin.html`, `pages/admin.html`, `admin.html`):**
+   - Botón directo de "Cerrar Sesión" (`/logout`) en el header administrativo.
 
 ---
 

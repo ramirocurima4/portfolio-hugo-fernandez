@@ -3,11 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ficha técnica de realización y desglose de materiales de trajes de carnaval coordinados por Hugo Fernández Arte Creativo.">
-  <title>Ficha Técnica del Traje | Hugo Fernández Arte Creativo</title>
-  <link rel="stylesheet" href="../css/estilos.css">
-  <script src="../js/main.js" defer></script>
-  <script src="../js/detalle.js" defer></script>
+  <title>{{ traje.comparsero }} - {{ traje.comparsa }} | Hugo Fernández Arte Creativo</title>
+  <meta name="description" content="Descubre los detalles y materiales de esta obra del carnaval.">
+
+  <!-- ==========================================================================
+       FASE 8: ETIQUETAS OPEN GRAPH & TWITTER CARDS (RICH PREVIEW PARA SOCIAL SHARING)
+       ========================================================================== -->
+  <meta property="og:title" content="{{ traje.comparsero }} - {{ traje.comparsa }} | Hugo Fernández">
+  <meta property="og:description" content="Descubre los detalles y materiales de esta obra del carnaval.">
+  {% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://')) %}
+  <meta property="og:image" content="{{ traje.foto_url }}">
+  {% else %}
+  <meta property="og:image" content="{{ url_for('static', filename=traje.foto_url, _external=True) }}">
+  {% endif %}
+  <meta property="og:url" content="{{ request.url }}">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/detalle.js') }}" defer></script>
 </head>
 <body>
 
@@ -83,14 +97,14 @@
     <div class="container">
 
       <!-- Botón de retorno a la Galería -->
-      <a href="arandu-beleza.html" class="btn-back-nav slide-up">
+      <a href="/pages/arandu-beleza.html" class="btn-back-nav slide-up">
         ← Volver a la Galería de Comparseros
       </a>
 
       <!-- ==========================================================================
            PASO 2: ESTRUCTURA DE LA FICHA INDIVIDUAL DEL COMPARSERO
            ========================================================================== -->
-      <article class="traje-showcase reveal">
+      <article class="traje-showcase reveal" data-traje-id="{{ traje.id }}">
 
         <!-- 1. Galería Asimétrica: 1 Foto Grande + 4 Miniaturas al lado -->
         <div class="traje-gallery">
@@ -100,36 +114,45 @@
             <span class="gallery-badge" id="gallery-badge-txt">Vista Principal</span>
             <img id="detalle-imagen" 
                  class="detalle-imagen"
-                 src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=1200&auto=format&fit=crop" 
-                 alt="Traje de Carnaval - Vista frontal completa" 
+                 src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                 alt="{{ traje.comparsero }}" 
                  loading="lazy">
           </div>
 
-          <!-- 4 Miniaturas en Grilla al lado (Interactivas al hacer click) -->
-          <div class="gallery-thumbs">
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" 
-                   alt="Detalle de cristales checos y pedrería fina" loading="lazy">
-              <span class="thumb-caption">Cristales & Bordado</span>
-            </div>
-
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=600&auto=format&fit=crop" 
-                   alt="Corona ceremonial y plumaje superior" loading="lazy">
-              <span class="thumb-caption">Tocado & Plumas</span>
-            </div>
-
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop" 
-                   alt="Estructura posterior y arnés anatómico" loading="lazy">
-              <span class="thumb-caption">Herrería & Arnés</span>
-            </div>
-
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?q=80&w=600&auto=format&fit=crop" 
-                   alt="Accesorios coordinados y calce" loading="lazy">
-              <span class="thumb-caption">Brazaletes & Calce</span>
-            </div>
+          <!-- Miniaturas en Grilla al lado (Interactivas al hacer click - FASE 12) -->
+          <div class="gallery-thumbs" id="gallery-thumbs-container">
+            {% if fotos and fotos|length > 1 %}
+              {% for f in fotos %}
+                {% if not f.es_principal %}
+                <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                  <img src="{% if f.ruta_imagen and (f.ruta_imagen.startswith('http://') or f.ruta_imagen.startswith('https://')) %}{{ f.ruta_imagen }}{% else %}{{ url_for('static', filename=f.ruta_imagen) }}{% endif %}" 
+                       alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy">
+                  <span class="thumb-caption">{{ f.titulo or 'Detalle' }}</span>
+                </div>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" 
+                     alt="Detalle de cristales checos y pedrería fina" loading="lazy">
+                <span class="thumb-caption">Cristales & Bordado</span>
+              </div>
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=600&auto=format&fit=crop" 
+                     alt="Corona ceremonial y plumaje superior" loading="lazy">
+                <span class="thumb-caption">Tocado & Plumas</span>
+              </div>
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop" 
+                     alt="Estructura posterior y arnés anatómico" loading="lazy">
+                <span class="thumb-caption">Herrería & Arnés</span>
+              </div>
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?q=80&w=600&auto=format&fit=crop" 
+                     alt="Accesorios coordinados y calce" loading="lazy">
+                <span class="thumb-caption">Brazaletes & Calce</span>
+              </div>
+            {% endif %}
           </div>
 
         </div>
@@ -142,16 +165,28 @@
 
             <!-- 2.A Narrativa: Título (efecto dorado) y descripción -->
             <div class="traje-narrative">
-              <h1 class="dorado-titulo traje-title" id="detalle-titulo">El Ave Fénix Solar</h1>
-              <span class="traje-rol-tag" id="traje-badge-rol">Gran Bastonera • Edición Oficial 2025</span>
+              <h1 class="dorado-titulo traje-title" id="detalle-titulo">{{ traje.comparsero }} - {{ traje.comparsa }}</h1>
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <span class="traje-rol-tag" id="traje-badge-rol">{{ traje.genero }} • {{ traje.comparsa }}</span>
+                <button type="button" id="btn-compartir-traje" class="btn-compartir" onclick="compartirTraje()">
+                  <span>📲</span> Compartir Traje
+                </button>
+              </div>
+              <div id="share-feedback" class="share-feedback" style="display: none;">
+                ✓ ¡Enlace copiado al portapapeles!
+              </div>
               
               <div id="traje-desc-paragraphs">
-                <p>
-                  Inspirado en el renacer mítico del fuego solar sobre el litoral correntino, este traje representa la coronación escénica de la Gran Bastonera en la máxima fiesta del carnaval. Cada línea de su silueta fue calculada para destacar la velocidad y soltura coreográfica de la comparsera ante el jurado.
-                </p>
-                <p>
-                  El espaldar alado cuenta con una envergadura de 3.20 metros con pivote ergonómico y sistema de suspensión liviana. Fue realizado artesanalmente en el taller de Hugo Fernández integrando degradados de color en plumas seleccionadas y herrería de alta absorción de movimiento.
-                </p>
+                {% if traje.descripcion %}
+                  <p>{{ traje.descripcion }}</p>
+                {% else %}
+                  <p>
+                    Inspirado en el renacer mítico del fuego solar sobre el litoral correntino, este traje representa la coronación escénica de la Gran Bastonera en la máxima fiesta del carnaval. Cada línea de su silueta fue calculada para destacar la velocidad y soltura coreográfica de la comparsera ante el jurado.
+                  </p>
+                  <p>
+                    El espaldar alado cuenta con una envergadura de 3.20 metros con pivote ergonómico y sistema de suspensión liviana. Fue realizado artesanalmente en el taller de Hugo Fernández integrando degradados de color en plumas seleccionadas y herrería de alta absorción de movimiento.
+                  </p>
+                {% endif %}
               </div>
             </div>
 
@@ -182,7 +217,7 @@
 
                 <!-- Capa 2: Superpuesta (Imagen "Después" / Realidad con overflow: hidden) -->
                 <div class="comparison-image-box comparison-after" id="comparison-after-box">
-                  <img src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=1200&auto=format&fit=crop" 
+                  <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
                        alt="Realización final del traje en el corsódromo" 
                        id="comparison-real-img" 
                        loading="lazy">
@@ -216,38 +251,19 @@
               </h2>
 
               <div class="materiales-tags-grid" id="detalle-materiales">
-                <div class="material-tag">
-                  <span class="tag-label">Strass Checo Boreal</span>
-                  <span class="tag-quantity">6.500 cristales</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Plumas Amazónicas Ocre</span>
-                  <span class="tag-quantity">350 unidades</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Faisanes de Collar</span>
-                  <span class="tag-quantity">180 plumas</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Acetato Espejado</span>
-                  <span class="tag-quantity">4 metros</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Armazón Estructural</span>
-                  <span class="tag-quantity">Duraluminio ultraliviano (3.8 kg)</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Terciopelo de Seda</span>
-                  <span class="tag-quantity">3.5 metros</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Gemas Acrílicas Gota</span>
-                  <span class="tag-quantity">280 unidades</span>
-                </div>
-                <div class="material-tag">
-                  <span class="tag-label">Canutillos de Vidrio</span>
-                  <span class="tag-quantity">4.5 kilogramos</span>
-                </div>
+                {% if materiales_lista %}
+                  {% for material in materiales_lista %}
+                  <div class="material-tag reveal visible delay-{{ (loop.index0 % 3) + 1 }}">
+                    <span class="tag-label">✦ Material</span>
+                    <span class="tag-quantity">{{ material }}</span>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="material-tag">
+                    <span class="tag-label">✦ Materiales</span>
+                    <span class="tag-quantity">{{ traje.materiales }}</span>
+                  </div>
+                {% endif %}
               </div>
 
               <p class="materiales-nota">
@@ -267,11 +283,11 @@
             <ul class="creditos-list">
               <li class="credito-item">
                 <span class="credito-cargo">Diseño Original</span>
-                <span class="credito-nombre" id="credito-diseno">Marcos Romero</span>
+                <span class="credito-nombre" id="credito-diseno">{{ traje.diseno_original if traje.diseno_original else 'Marcos Romero (Diseño Escénico)' }}</span>
               </li>
               <li class="credito-item">
                 <span class="credito-cargo">Herrería y Estructura</span>
-                <span class="credito-nombre" id="credito-herreria">Carlos "Tito" Gómez (Taller Escénico)</span>
+                <span class="credito-nombre" id="credito-herreria">{{ traje.herreria_estructura if traje.herreria_estructura else 'Carlos "Tito" Gómez (Taller Escénico)' }}</span>
               </li>
               <li class="credito-item credito-destacado">
                 <span class="credito-cargo">Coordinación y Realización General</span>
@@ -282,7 +298,7 @@
             <div class="creditos-meta">
               <div class="meta-row">
                 <span class="meta-sub">Comparsa:</span>
-                <span class="meta-val" id="meta-comparsa">Arandú Beleza</span>
+                <span class="meta-val" id="meta-comparsa">{{ traje.comparsa }}</span>
               </div>
               <div class="meta-row">
                 <span class="meta-sub">Edición:</span>
@@ -290,7 +306,7 @@
               </div>
               <div class="meta-row">
                 <span class="meta-sub">Rol Escénico:</span>
-                <span class="meta-val" id="meta-rol">Gran Bastonera (1º Premio Vestuario)</span>
+                <span class="meta-val" id="meta-rol">{{ traje.genero }} ({{ traje.comparsa }})</span>
               </div>
             </div>
           </aside>

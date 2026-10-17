@@ -119,31 +119,40 @@
                  loading="lazy">
           </div>
 
-          <!-- 4 Miniaturas en Grilla al lado (Interactivas al hacer click) -->
-          <div class="gallery-thumbs">
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" 
-                   alt="Detalle de cristales checos y pedrería fina" loading="lazy">
-              <span class="thumb-caption">Cristales & Bordado</span>
-            </div>
-
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=600&auto=format&fit=crop" 
-                   alt="Corona ceremonial y plumaje superior" loading="lazy">
-              <span class="thumb-caption">Tocado & Plumas</span>
-            </div>
-
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop" 
-                   alt="Estructura posterior y arnés anatómico" loading="lazy">
-              <span class="thumb-caption">Herrería & Arnés</span>
-            </div>
-
-            <div class="gallery-thumb-item" title="Click para ampliar detalle">
-              <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?q=80&w=600&auto=format&fit=crop" 
-                   alt="Accesorios coordinados y calce" loading="lazy">
-              <span class="thumb-caption">Brazaletes & Calce</span>
-            </div>
+          <!-- Miniaturas en Grilla al lado (Interactivas al hacer click - FASE 12) -->
+          <div class="gallery-thumbs" id="gallery-thumbs-container">
+            {% if fotos and fotos|length > 1 %}
+              {% for f in fotos %}
+                {% if not f.es_principal %}
+                <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                  <img src="{% if f.ruta_imagen and (f.ruta_imagen.startswith('http://') or f.ruta_imagen.startswith('https://')) %}{{ f.ruta_imagen }}{% else %}{{ url_for('static', filename=f.ruta_imagen) }}{% endif %}" 
+                       alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy">
+                  <span class="thumb-caption">{{ f.titulo or 'Detalle' }}</span>
+                </div>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" 
+                     alt="Detalle de cristales checos y pedrería fina" loading="lazy">
+                <span class="thumb-caption">Cristales & Bordado</span>
+              </div>
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=600&auto=format&fit=crop" 
+                     alt="Corona ceremonial y plumaje superior" loading="lazy">
+                <span class="thumb-caption">Tocado & Plumas</span>
+              </div>
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop" 
+                     alt="Estructura posterior y arnés anatómico" loading="lazy">
+                <span class="thumb-caption">Herrería & Arnés</span>
+              </div>
+              <div class="gallery-thumb-item" title="Click para ampliar detalle">
+                <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?q=80&w=600&auto=format&fit=crop" 
+                     alt="Accesorios coordinados y calce" loading="lazy">
+                <span class="thumb-caption">Brazaletes & Calce</span>
+              </div>
+            {% endif %}
           </div>
 
         </div>
@@ -168,12 +177,16 @@
               </div>
               
               <div id="traje-desc-paragraphs">
-                <p>
-                  Inspirado en el renacer mítico del fuego solar sobre el litoral correntino, este traje representa la coronación escénica de la Gran Bastonera en la máxima fiesta del carnaval. Cada línea de su silueta fue calculada para destacar la velocidad y soltura coreográfica de la comparsera ante el jurado.
-                </p>
-                <p>
-                  El espaldar alado cuenta con una envergadura de 3.20 metros con pivote ergonómico y sistema de suspensión liviana. Fue realizado artesanalmente en el taller de Hugo Fernández integrando degradados de color en plumas seleccionadas y herrería de alta absorción de movimiento.
-                </p>
+                {% if traje.descripcion %}
+                  <p>{{ traje.descripcion }}</p>
+                {% else %}
+                  <p>
+                    Inspirado en el renacer mítico del fuego solar sobre el litoral correntino, este traje representa la coronación escénica de la Gran Bastonera en la máxima fiesta del carnaval. Cada línea de su silueta fue calculada para destacar la velocidad y soltura coreográfica de la comparsera ante el jurado.
+                  </p>
+                  <p>
+                    El espaldar alado cuenta con una envergadura de 3.20 metros con pivote ergonómico y sistema de suspensión liviana. Fue realizado artesanalmente en el taller de Hugo Fernández integrando degradados de color en plumas seleccionadas y herrería de alta absorción de movimiento.
+                  </p>
+                {% endif %}
               </div>
             </div>
 
@@ -270,11 +283,11 @@
             <ul class="creditos-list">
               <li class="credito-item">
                 <span class="credito-cargo">Diseño Original</span>
-                <span class="credito-nombre" id="credito-diseno">Marcos Romero</span>
+                <span class="credito-nombre" id="credito-diseno">{{ traje.diseno_original if traje.diseno_original else 'Marcos Romero (Diseño Escénico)' }}</span>
               </li>
               <li class="credito-item">
                 <span class="credito-cargo">Herrería y Estructura</span>
-                <span class="credito-nombre" id="credito-herreria">Carlos "Tito" Gómez (Taller Escénico)</span>
+                <span class="credito-nombre" id="credito-herreria">{{ traje.herreria_estructura if traje.herreria_estructura else 'Carlos "Tito" Gómez (Taller Escénico)' }}</span>
               </li>
               <li class="credito-item credito-destacado">
                 <span class="credito-cargo">Coordinación y Realización General</span>

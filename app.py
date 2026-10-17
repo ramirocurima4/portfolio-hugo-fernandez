@@ -7,7 +7,7 @@ import os
 import shutil
 import time
 from werkzeug.utils import secure_filename
-from flask import Flask, jsonify, request, send_from_directory, render_template, url_for
+from flask import Flask, jsonify, request, send_from_directory, render_template, url_for, session, redirect
 from database import get_db_connection, init_db
 
 # FASE 8 & 10: Configuración de Flask para SSR y subida de archivos (CMS)
@@ -25,6 +25,10 @@ app = Flask(
 # FASE 10: Configuración de carpeta de subida de imágenes (relativa a estructura estática)
 app.config['UPLOAD_FOLDER'] = 'assets/img/'
 
+# FASE 11: Configuración de sesiones y contraseña maestra para administración
+app.secret_key = 'una_clave_secreta_muy_dificil_de_adivinar'
+ADMIN_PASSWORD = 'noloalias2026'
+
 
 # ==============================================================================
 # FASE 8: SERVER-SIDE RENDERING (SSR) Y OPEN GRAPH PARA REDES SOCIALES
@@ -35,24 +39,74 @@ def ver_traje_ssr(id):
     """
     Ruta con Server-Side Rendering (SSR) y etiquetas Open Graph.
     Permite generar Rich Previews al compartir en WhatsApp, Facebook o Twitter.
+    Incluye galería fotográfica completa y créditos técnicos (FASE 12).
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT id, comparsero, comparsa, genero, materiales, foto_url 
-        FROM trajes 
-        WHERE id = ?
-    """, (id,))
+    cursor.execute("SELECT * FROM trajes WHERE id = ?", (id,))
     row = cursor.fetchone()
-    conn.close()
 
     if row is None:
+        conn.close()
         return jsonify({"error": "Traje no encontrado"}), 404
 
     traje = dict(row)
+
+    # Consultar galería de fotos en tabla fotos_traje (FASE 12)
+    cursor.execute("""
+        SELECT id, ruta_imagen, titulo, es_principal 
+        FROM fotos_traje 
+        WHERE traje_id = ? 
+        ORDER BY es_principal DESC, id ASC
+    """, (id,))
+    fotos = [dict(f) for f in cursor.fetchall()]
+    traje["fotos"] = fotos
+    conn.close()
+
+    # Fallback seguro para foto_url si estuviera vacía
+    if not traje.get("foto_url") and fotos:
+        traje["foto_url"] = fotos[0]["ruta_imagen"]
+
     materiales_lista = [m.strip() for m in traje.get("materiales", "").rstrip(".").split(",") if m.strip()]
 
-    return render_template("traje-detalle.html", traje=traje, materiales_lista=materiales_lista)
+    return render_template("traje-detalle.html", traje=traje, materiales_lista=materiales_lista, fotos=fotos)
+
+
+@app.route("/trajes")
+@app.route("/pages/trajes.html")
+def ver_trajes_feed():
+    """
+    FASE 12: Sirve la vista de Trajes con Server-Side Rendering (SSR) o fallback estático.
+    Consulta SELECT * FROM trajes ORDER BY id DESC absoluto sin filtros hardcodeados
+    para garantizar que cualquier comparsa nueva creada en /admin aparezca en el feed móvil.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM trajes ORDER BY id DESC")
+    rows = cursor.fetchall()
+    trajes = []
+    for r in rows:
+        t = dict(r)
+        cursor.execute("""
+            SELECT ruta_imagen FROM fotos_traje 
+            WHERE traje_id = ? 
+            ORDER BY es_principal DESC, id ASC 
+            LIMIT 1
+        """, (t["id"],))
+        f_row = cursor.fetchone()
+        if f_row and f_row["ruta_imagen"]:
+            t["foto_url"] = f_row["ruta_imagen"]
+        trajes.append(t)
+    conn.close()
+
+    templates_trajes = os.path.join(TEMPLATES_DIR, "trajes.html")
+    if os.path.isfile(templates_trajes):
+        return render_template("trajes.html", trajes=trajes)
+
+    pages_trajes = os.path.join(BASE_DIR, "pages", "trajes.html")
+    if os.path.isfile(pages_trajes):
+        return send_from_directory(os.path.join(BASE_DIR, "pages"), "trajes.html")
+    return send_from_directory(BASE_DIR, "pages", "trajes.html")
 
 
 @app.route("/pages/traje-detalle.html")
@@ -109,83 +163,147 @@ def get_trajes():
     """
     Endpoint principal de API:
     Retorna la lista completa de trajes almacenados en carnaval.db en formato JSON.
+    FASE 12: SELECT * FROM trajes ORDER BY id DESC absoluto, garantizando que
+    todos los nuevos trajes y comparsas aparezcan de inmediato con su galería.
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, comparsero, comparsa, genero, materiales, foto_url FROM trajes ORDER BY id ASC")
+    cursor.execute("SELECT * FROM trajes ORDER BY id DESC")
     rows = cursor.fetchall()
+    trajes = []
+    for row in rows:
+        t = dict(row)
+        cursor.execute("""
+            SELECT id, ruta_imagen, titulo, es_principal 
+            FROM fotos_traje 
+            WHERE traje_id = ? 
+            ORDER BY es_principal DESC, id ASC
+        """, (t["id"],))
+        fotos = [dict(f) for f in cursor.fetchall()]
+        t["fotos"] = fotos
+        if not t.get("foto_url") and fotos:
+            t["foto_url"] = fotos[0]["ruta_imagen"]
+        trajes.append(t)
     conn.close()
-
-    # Convertir sqlite3.Row a lista de diccionarios
-    trajes = [dict(row) for row in rows]
     return jsonify(trajes), 200
 
 
 @app.route("/api/trajes", methods=["POST"])
 def post_traje():
     """
-    Endpoint de creación de trajes (CMS Propio - FASE 10):
-    Recibe multipart/form-data con imagen y campos de texto,
-    guarda la imagen físicamente en UPLOAD_FOLDER y registra en SQLite.
+    Endpoint de creación de trajes (CMS Propio - FASE 10 & 12):
+    Recibe multipart/form-data con múltiples imágenes, títulos y créditos de producción.
+    Guarda las imágenes físicamente en UPLOAD_FOLDER y registra en trajes y fotos_traje.
+    Protegido por autenticación de administrador (FASE 11).
     """
-    if "foto" not in request.files:
-        return jsonify({"error": "No se envió el archivo de imagen 'foto'"}), 400
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
 
-    file = request.files["foto"]
-    if file.filename == "":
-        return jsonify({"error": "No se seleccionó ningún archivo de imagen"}), 400
-
-    raw_filename = secure_filename(file.filename)
-    if not raw_filename:
-        raw_filename = f"traje_{int(time.time())}.jpg"
-
-    # Evitar sobreescrituras accidentales
-    base_name, ext = os.path.splitext(raw_filename)
-    filename = raw_filename
-    target_dir = os.path.join(BASE_DIR, "assets", "img")
-    os.makedirs(target_dir, exist_ok=True)
-    counter = 1
-    while os.path.exists(os.path.join(target_dir, filename)):
-        filename = f"{base_name}_{counter}{ext}"
-        counter += 1
-
-    # Guardar archivo físicamente en assets/img
-    dest_path = os.path.join(target_dir, filename)
-    file.save(dest_path)
-
-    # Copiar a static/assets/img para asegurar disponibilidad en el static_folder de Flask
-    static_img_dir = os.path.join(STATIC_DIR, "assets", "img")
-    os.makedirs(static_img_dir, exist_ok=True)
-    static_dest_path = os.path.join(static_img_dir, filename)
-    shutil.copyfile(dest_path, static_dest_path)
-
-    # Extraer campos de texto enviados en el formulario
+    # Extraer campos de texto (FASE 12: con descripción, diseño original y herrería)
     comparsero = (request.form.get("comparsero") or "").strip()
     comparsa = (request.form.get("comparsa") or "").strip()
     genero = (request.form.get("genero") or "Femenino").strip()
     materiales = (request.form.get("materiales") or "").strip()
+    descripcion = (request.form.get("descripcion") or "").strip()
+    diseno_original = (request.form.get("diseno_original") or "").strip()
+    herreria_estructura = (request.form.get("herreria_estructura") or "").strip()
 
     if not comparsero or not comparsa:
         return jsonify({"error": "Los campos 'comparsero' y 'comparsa' son obligatorios."}), 400
 
-    # Guardar ruta relativa normalizada en la base de datos
-    foto_url = f"assets/img/{filename}"
+    # Soporte para múltiples fotos (FASE 12) con fallback a foto simple (FASE 10)
+    files = request.files.getlist("fotos")
+    if not files or all(f.filename == "" for f in files):
+        if "foto" in request.files and request.files["foto"].filename != "":
+            files = [request.files["foto"]]
+        else:
+            return jsonify({"error": "No se seleccionó ningún archivo de imagen para el traje."}), 400
 
+    titulos = request.form.getlist("titulos_fotos")
+    try:
+        principal_idx = int(request.form.get("foto_principal_index", 0))
+    except (ValueError, TypeError):
+        principal_idx = 0
+
+    target_dir = os.path.join(BASE_DIR, "assets", "img")
+    static_img_dir = os.path.join(STATIC_DIR, "assets", "img")
+    os.makedirs(target_dir, exist_ok=True)
+    os.makedirs(static_img_dir, exist_ok=True)
+
+    fotos_guardadas = []
+    # Guardar cada archivo físico y asociar metadatos
+    for idx, file in enumerate(files):
+        if not file or file.filename == "":
+            continue
+
+        raw_filename = secure_filename(file.filename)
+        if not raw_filename:
+            raw_filename = f"traje_{int(time.time())}_{idx}.jpg"
+
+        base_name, ext = os.path.splitext(raw_filename)
+        filename = raw_filename
+        counter = 1
+        while os.path.exists(os.path.join(target_dir, filename)):
+            filename = f"{base_name}_{counter}{ext}"
+            counter += 1
+
+        dest_path = os.path.join(target_dir, filename)
+        file.save(dest_path)
+
+        static_dest_path = os.path.join(static_img_dir, filename)
+        shutil.copyfile(dest_path, static_dest_path)
+
+        titulo = titulos[idx].strip() if idx < len(titulos) and titulos[idx].strip() else f"Foto {idx + 1}"
+        es_principal = 1 if idx == principal_idx else 0
+        foto_rel = f"assets/img/{filename}"
+
+        fotos_guardadas.append({
+            "ruta_imagen": foto_rel,
+            "titulo": titulo,
+            "es_principal": es_principal
+        })
+
+    if not fotos_guardadas:
+        return jsonify({"error": "No se pudieron procesar las fotografías enviadas."}), 400
+
+    # Asegurar que al menos una foto esté designada como principal
+    if not any(f["es_principal"] == 1 for f in fotos_guardadas):
+        fotos_guardadas[0]["es_principal"] = 1
+
+    foto_principal_url = next(f["ruta_imagen"] for f in fotos_guardadas if f["es_principal"] == 1)
+
+    # Inserción en tabla trajes
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO trajes (comparsero, comparsa, genero, materiales, foto_url)
-        VALUES (?, ?, ?, ?, ?)
-    """, (comparsero, comparsa, genero, materiales, foto_url))
+        INSERT INTO trajes (comparsero, comparsa, genero, materiales, foto_url, descripcion, diseno_original, herreria_estructura)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (comparsero, comparsa, genero, materiales, foto_principal_url, descripcion, diseno_original, herreria_estructura))
     nuevo_id = cursor.lastrowid
+
+    # Inserción de cada foto en la tabla fotos_traje
+    for f in fotos_guardadas:
+        cursor.execute("""
+            INSERT INTO fotos_traje (traje_id, ruta_imagen, titulo, es_principal)
+            VALUES (?, ?, ?, ?)
+        """, (nuevo_id, f["ruta_imagen"], f["titulo"], f["es_principal"]))
+
     conn.commit()
 
-    cursor.execute("SELECT id, comparsero, comparsa, genero, materiales, foto_url FROM trajes WHERE id = ?", (nuevo_id,))
+    # Devolver el traje completo con su galería
+    cursor.execute("SELECT * FROM trajes WHERE id = ?", (nuevo_id,))
     nuevo_traje = dict(cursor.fetchone())
+    cursor.execute("""
+        SELECT id, ruta_imagen, titulo, es_principal 
+        FROM fotos_traje 
+        WHERE traje_id = ? 
+        ORDER BY es_principal DESC, id ASC
+    """, (nuevo_id,))
+    nuevo_traje["fotos"] = [dict(f) for f in cursor.fetchall()]
     conn.close()
 
     return jsonify({
-        "mensaje": "Traje registrado con éxito en el catálogo",
+        "mensaje": "Traje y galería registrados con éxito en el catálogo",
         "traje": nuevo_traje
     }), 201
 
@@ -203,7 +321,7 @@ def filtrar_trajes():
     comparsa = request.args.get("comparsa", "").strip()
     busqueda = request.args.get("q", "").strip()
 
-    query = "SELECT id, comparsero, comparsa, genero, materiales, foto_url FROM trajes WHERE 1=1"
+    query = "SELECT * FROM trajes WHERE 1=1"
     params = []
 
     if genero:
@@ -218,34 +336,60 @@ def filtrar_trajes():
         query += " AND (LOWER(comparsero) LIKE LOWER(?) OR LOWER(materiales) LIKE LOWER(?))"
         params.extend([f"%{busqueda}%", f"%{busqueda}%"])
 
-    query += " ORDER BY id ASC"
+    query += " ORDER BY id DESC"
 
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(query, params)
     rows = cursor.fetchall()
-    conn.close()
 
-    trajes_filtrados = [dict(row) for row in rows]
+    trajes_filtrados = []
+    for row in rows:
+        t = dict(row)
+        cursor.execute("""
+            SELECT id, ruta_imagen, titulo, es_principal 
+            FROM fotos_traje 
+            WHERE traje_id = ? 
+            ORDER BY es_principal DESC, id ASC
+        """, (t["id"],))
+        fotos = [dict(f) for f in cursor.fetchall()]
+        t["fotos"] = fotos
+        if not t.get("foto_url") and fotos:
+            t["foto_url"] = fotos[0]["ruta_imagen"]
+        trajes_filtrados.append(t)
+
+    conn.close()
     return jsonify(trajes_filtrados), 200
 
 
 @app.route("/api/trajes/<int:traje_id>", methods=["GET"])
 def get_traje_por_id(traje_id):
     """
-    Endpoint para consultar un traje individual por ID.
-    Útil para hidratar dinámicamente la ficha técnica traje-detalle.html.
+    Endpoint para consultar un traje individual por ID con su galería de fotos completa.
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, comparsero, comparsa, genero, materiales, foto_url FROM trajes WHERE id = ?", (traje_id,))
+    cursor.execute("SELECT * FROM trajes WHERE id = ?", (traje_id,))
     row = cursor.fetchone()
-    conn.close()
 
     if row is None:
+        conn.close()
         return jsonify({"error": "Traje no encontrado"}), 404
 
-    return jsonify(dict(row)), 200
+    traje = dict(row)
+    cursor.execute("""
+        SELECT id, ruta_imagen, titulo, es_principal 
+        FROM fotos_traje 
+        WHERE traje_id = ? 
+        ORDER BY es_principal DESC, id ASC
+    """, (traje_id,))
+    fotos = [dict(f) for f in cursor.fetchall()]
+    traje["fotos"] = fotos
+    if not traje.get("foto_url") and fotos:
+        traje["foto_url"] = fotos[0]["ruta_imagen"]
+    conn.close()
+
+    return jsonify(traje), 200
 
 
 # ==============================================================================
@@ -255,9 +399,12 @@ def get_traje_por_id(traje_id):
 @app.route("/admin")
 def admin_panel():
     """
-    Sirve el Dashboard de Gestión y Panel de Administración (CMS Propio - FASE 10):
-    Permite cargar nuevos trajes con subida física de imágenes y moderar comentarios.
+    Sirve el Dashboard de Gestión y Panel de Administración (CMS Propio - FASE 10 & 11):
+    Protegido por autenticación de sesión maestra.
     """
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("login"))
+
     templates_admin = os.path.join(TEMPLATES_DIR, "admin.html")
     if os.path.isfile(templates_admin):
         return render_template("admin.html")
@@ -265,6 +412,32 @@ def admin_panel():
     if os.path.isfile(pages_admin):
         return send_from_directory(os.path.join(BASE_DIR, "pages"), "admin.html")
     return send_from_directory(BASE_DIR, "admin.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    Ruta de autenticación para administradores con contraseña maestra (FASE 11).
+    """
+    if request.method == "POST":
+        password = (request.form.get("password") or "").strip()
+        if password == ADMIN_PASSWORD:
+            session["admin_logged_in"] = True
+            return redirect(url_for("admin_panel"))
+        return render_template("login.html", error="Contraseña incorrecta. Intenta nuevamente.")
+
+    # Si ya cuenta con sesión activa, redirigir al panel de administración
+    if session.get("admin_logged_in"):
+        return redirect(url_for("admin_panel"))
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    """Cierra la sesión del administrador y redirige a la página de inicio."""
+    session.pop("admin_logged_in", None)
+    return redirect(url_for("index"))
 
 
 @app.route("/api/comentarios/<int:traje_id>", methods=["GET"])
@@ -331,7 +504,13 @@ def get_todos_comentarios():
 
 @app.route("/api/comentarios/<int:id>", methods=["DELETE"])
 def delete_comentario(id):
-    """Elimina un comentario por su identificador único ID."""
+    """
+    Elimina un comentario por su identificador único ID.
+    Protegido por autenticación de administrador (FASE 11).
+    """
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
+
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM comentarios WHERE id = ?", (id,))

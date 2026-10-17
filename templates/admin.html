@@ -128,58 +128,57 @@
 
     /* Notificación Toast */
     .status-toast {
-      display: none;
-      padding: 1rem 1.4rem;
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.6rem;
       border-radius: 8px;
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      animation: fadeIn 0.3s ease;
+      font-size: 0.92rem;
+      font-weight: 600;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      animation: slideInUp 0.3s ease;
     }
 
     .status-toast.success {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: rgba(46, 204, 113, 0.15);
+      background: rgba(46, 204, 113, 0.95);
+      color: #ffffff;
       border: 1px solid #2ecc71;
-      color: #2ecc71;
+      display: block;
     }
 
     .status-toast.error {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: rgba(231, 76, 60, 0.15);
+      background: rgba(231, 76, 60, 0.95);
+      color: #ffffff;
       border: 1px solid #e74c3c;
-      color: #e74c3c;
+      display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes slideInUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
-    /* Grid de Secciones Dashboard */
+    /* Layout en Secciones */
     .dashboard-layout {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 2.5rem;
     }
 
-    /* Tarjetas de Sección */
     .dashboard-card {
       background: var(--card-bg);
       border: 1px solid var(--dorado-border);
       border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
     .dashboard-card-header {
-      padding: 1.4rem 1.8rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: linear-gradient(90deg, rgba(15, 34, 64, 0.6) 0%, rgba(10, 25, 47, 0.8) 100%);
+      background: var(--card-bg-subtle);
+      border-bottom: 1px solid var(--dorado-border);
+      padding: 1.2rem 1.8rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -188,9 +187,10 @@
     }
 
     .dashboard-card-header h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
       margin: 0;
-      font-size: 1.25rem;
-      color: #ffffff;
+      color: var(--dorado);
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -200,12 +200,11 @@
       padding: 2rem 1.8rem;
     }
 
-    /* Formularios */
+    /* Formulario */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.4rem;
-      margin-bottom: 1.4rem;
     }
 
     .form-group {
@@ -224,14 +223,14 @@
       color: var(--dorado-light);
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
     }
 
     .form-control {
-      background: rgba(5, 13, 26, 0.85);
+      background: rgba(5, 13, 26, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 6px;
-      padding: 0.8rem 1rem;
+      padding: 0.75rem 1rem;
       color: #ffffff;
       font-family: inherit;
       font-size: 0.95rem;
@@ -249,74 +248,105 @@
 
     textarea.form-control {
       resize: vertical;
-      min-height: 95px;
+      min-height: 85px;
     }
 
-    /* Input File estilizado y Preview */
-    .file-upload-box {
-      border: 2px dashed var(--dorado-border);
-      border-radius: 8px;
-      padding: 1.5rem;
-      text-align: center;
-      background: rgba(10, 25, 47, 0.4);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .file-upload-box:hover {
-      border-color: var(--dorado);
-      background: rgba(191, 149, 63, 0.08);
-    }
-
-    .file-upload-box input[type="file"] {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .file-upload-label {
+    /* FASE 12: Galería de Subida Dinámica Múltiple */
+    .fotos-upload-list {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-muted);
-      font-size: 0.9rem;
+      gap: 1rem;
     }
 
-    .file-upload-label span.upload-icon {
-      font-size: 2.2rem;
-    }
-
-    .file-upload-label strong {
-      color: var(--dorado-light);
-    }
-
-    .preview-container {
-      display: none;
-      margin-top: 1rem;
-      align-items: center;
-      gap: 1.2rem;
-      padding: 0.8rem;
-      background: rgba(0, 0, 0, 0.4);
+    .foto-upload-card {
+      background: rgba(10, 25, 47, 0.6);
+      border: 1px solid var(--dorado-border);
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.1rem;
+      transition: all 0.3s ease;
     }
 
-    .preview-img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 6px;
+    .foto-upload-card:hover {
+      border-color: rgba(191, 149, 63, 0.65);
+    }
+
+    .foto-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .foto-card-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--dorado-light);
+      background: rgba(191, 149, 63, 0.2);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
       border: 1px solid var(--dorado-border);
     }
 
-    .preview-info {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .foto-principal-radio-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.86rem;
+      color: var(--dorado-light);
+      cursor: pointer;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .foto-principal-radio-label input[type="radio"] {
+      accent-color: var(--dorado);
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-del-foto {
+      background: rgba(230, 57, 70, 0.15);
+      border: 1px solid rgba(230, 57, 70, 0.4);
+      color: #ff6b6b;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-del-foto:hover {
+      background: var(--red-btn);
+      color: #ffffff;
+    }
+
+    .foto-card-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      .foto-card-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .foto-preview-thumb {
+      margin-top: 0.5rem;
+    }
+
+    .foto-preview-thumb img {
+      width: 75px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--dorado-border);
     }
 
     .btn-submit-traje {
@@ -381,11 +411,11 @@
       background: rgba(191, 149, 63, 0.06);
     }
 
-    .btn-eliminar-rojo {
-      background: var(--red-btn);
-      color: #ffffff;
-      border: none;
-      padding: 0.5rem 0.9rem;
+    .btn-delete-comentario {
+      background: rgba(230, 57, 70, 0.15);
+      border: 1px solid rgba(230, 57, 70, 0.5);
+      color: #ff6b6b;
+      padding: 0.45rem 0.9rem;
       border-radius: 5px;
       font-size: 0.82rem;
       font-weight: 600;
@@ -394,28 +424,21 @@
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      white-space: nowrap;
     }
 
-    .btn-eliminar-rojo:hover {
-      background: var(--red-hover);
-      transform: scale(1.05);
+    .btn-delete-comentario:hover {
+      background: var(--red-btn);
+      color: #ffffff;
+      transform: scale(1.04);
       box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
     }
 
-    .admin-loading {
+    .admin-empty-state, .admin-loading {
       text-align: center;
       padding: 3rem 1rem;
       color: var(--text-muted);
     }
 
-    .admin-empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-muted);
-    }
-
-    /* Responsive */
     @media (max-width: 768px) {
       .admin-navbar {
         padding: 0.8rem 1rem;
@@ -445,11 +468,17 @@
       <span class="admin-role-badge">CMS & Moderación</span>
     </div>
     <div class="admin-nav-actions">
+      <a href="/trajes" class="btn-admin-nav" target="_blank">
+        <span>🎭</span> Ver Feed Trajes
+      </a>
       <a href="/pages/arandu-beleza.html" class="btn-admin-nav" target="_blank">
-        <span>🎭</span> Ver Catálogo
+        <span>✨</span> Catálogo Comparsas
       </a>
       <a href="/" class="btn-admin-nav">
         <span>🏠</span> Volver al Sitio
+      </a>
+      <a href="/logout" class="btn-admin-nav" style="border-color: rgba(230, 57, 70, 0.4); color: #ff6b6b;">
+        <span>🔒</span> Cerrar Sesión
       </a>
     </div>
   </header>
@@ -459,7 +488,7 @@
     
     <div class="admin-title-area">
       <h1>Panel de Administración (CMS)</h1>
-      <p>Gestión centralizada del catálogo de vestuarios y moderación comunitaria del taller.</p>
+      <p>Gestión centralizada del catálogo de vestuarios, galería dinámica y moderación comunitaria del taller.</p>
     </div>
 
     <!-- Notificación Toast Dinámica -->
@@ -468,12 +497,12 @@
     <div class="dashboard-layout">
 
       <!-- ======================================================================
-           SECCIÓN A: CARGAR NUEVO TRAJE (SUBIDA MULTIPART / FORM-DATA)
+           SECCIÓN A: CARGAR NUEVO TRAJE (FASE 12: GALERÍA MÚLTIPLE & CRÉDITOS)
            ====================================================================== -->
       <section class="dashboard-card" aria-label="Cargar nuevo traje">
         <div class="dashboard-card-header">
           <h2><span>✨</span> Sección A: Cargar Nuevo Traje al Catálogo</h2>
-          <span style="font-size: 0.82rem; color: var(--dorado-light);">API REST • POST /api/trajes</span>
+          <span style="font-size: 0.82rem; color: var(--dorado-light);">API REST • POST /api/trajes (FASE 12)</span>
         </div>
         <div class="dashboard-card-body">
           <form id="form-nuevo-traje" enctype="multipart/form-data">
@@ -513,6 +542,7 @@
                   <option value="Comparsa Panambí">
                   <option value="Copacabana">
                   <option value="Imperio Bahiano">
+                  <option value="Kamandukahia">
                 </datalist>
               </div>
 
@@ -528,29 +558,40 @@
                 </select>
               </div>
 
-              <!-- Subida Física de Imagen -->
+              <!-- FASE 12: Diseño Original -->
               <div class="form-group">
-                <label for="foto" class="form-label">
-                  <span>📸</span> Fotografía del Traje (Subida Física)
+                <label for="diseno_original" class="form-label">
+                  <span>✏️</span> Diseño Original (Créditos de Boceto)
                 </label>
-                <div class="file-upload-box" id="file-dropzone">
-                  <input type="file" 
-                         id="foto" 
-                         name="foto" 
-                         accept="image/*" 
-                         required>
-                  <div class="file-upload-label" id="file-upload-label">
-                    <span class="upload-icon">📁</span>
-                    <span><strong>Haz clic para seleccionar</strong> o arrastra la foto aquí</span>
-                    <span style="font-size: 0.78rem;">Formatos soportados: JPG, PNG, WEBP</span>
-                  </div>
-                </div>
+                <input type="text" 
+                       id="diseno_original" 
+                       name="diseno_original" 
+                       class="form-control" 
+                       placeholder="Ej: Marcos Romero (Diseño Escénico)">
+              </div>
 
-                <!-- Preview de la imagen seleccionada -->
-                <div class="preview-container" id="preview-container">
-                  <img src="" alt="Vista previa" class="preview-img" id="preview-img">
-                  <div class="preview-info" id="preview-info"></div>
-                </div>
+              <!-- FASE 12: Herrería y Estructura -->
+              <div class="form-group">
+                <label for="herreria_estructura" class="form-label">
+                  <span>⚙️</span> Herrería / Estructura (Arnés, Material y Peso)
+                </label>
+                <input type="text" 
+                       id="herreria_estructura" 
+                       name="herreria_estructura" 
+                       class="form-control" 
+                       placeholder="Ej: Carlos Tito Gómez (3.8 kg duraluminio)">
+              </div>
+
+              <!-- FASE 12: Descripción de la Obra (Párrafo Inspiracional) -->
+              <div class="form-group full-width">
+                <label for="descripcion" class="form-label">
+                  <span>📜</span> Descripción de la Obra (Párrafo Inspiracional)
+                </label>
+                <textarea id="descripcion" 
+                          name="descripcion" 
+                          class="form-control" 
+                          rows="3" 
+                          placeholder="Ej: Inspirado en la mística del río y el sol naciente sobre el litoral, combinando ergonomía de alta movilidad y destello reflectivo bajo las luces del corsódromo."></textarea>
               </div>
 
               <!-- Desglose de Materiales -->
@@ -565,14 +606,56 @@
                           placeholder="Ej: Strass checo boreal, plumas amazónicas verde esmeralda, arnés de duraluminio 3.2 kg, corselete y botas bordadas a medida." 
                           required></textarea>
                 <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
-                  * Estos materiales se separarán automáticamente en tags interactivos en la ficha individual del traje.
+                  * Estos materiales se separarán automáticamente en tags interactivos en la ficha técnica del traje.
                 </span>
+              </div>
+
+              <!-- FASE 12: Refactor de Upload de Imágenes con Galería Dinámica -->
+              <div class="form-group full-width">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                  <label class="form-label" style="margin: 0;">
+                    <span>📸</span> Galería de Fotografías del Traje (Subida Física Múltiple)
+                  </label>
+                  <button type="button" id="btn-add-foto" class="btn-admin-nav" style="cursor: pointer; font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                    <span>➕</span> Agregar otra foto
+                  </button>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0; margin-bottom: 0.8rem;">
+                  Cargá una o más fotos. Marcá con el selector circular la que deseas que sea la <strong>Vista Principal (Portada)</strong>.
+                </p>
+
+                <!-- Contenedor dinámico de fotos -->
+                <div id="fotos-container" class="fotos-upload-list">
+                  <!-- Fila Inicial Foto #1 -->
+                  <div class="foto-upload-card" data-index="0">
+                    <div class="foto-card-top">
+                      <span class="foto-card-tag">Foto #1</span>
+                      <label class="foto-principal-radio-label">
+                        <input type="radio" name="foto_principal" value="0" checked>
+                        <span>★ Vista Principal (Portada)</span>
+                      </label>
+                      <button type="button" class="btn-del-foto" style="display: none;" title="Eliminar foto">✕</button>
+                    </div>
+                    <div class="foto-card-inputs">
+                      <div class="foto-file-box">
+                        <input type="file" name="fotos" accept="image/*" class="form-control input-file-foto" required>
+                        <div class="foto-preview-thumb" style="display: none;">
+                          <img src="" alt="Preview">
+                        </div>
+                      </div>
+                      <div class="foto-title-box">
+                        <input type="text" name="titulos_fotos" class="form-control" placeholder="Título en galería (ej: Vista Frontal)" value="Vista Principal" required>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
             </div>
 
             <!-- Botón de Envío -->
-            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem;">
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem;">
               <span id="traje-submit-status" style="font-size: 0.9rem;"></span>
               <button type="submit" id="btn-submit-traje" class="btn-submit-traje">
                 <span>✦</span> Publicar Traje en el Catálogo
@@ -676,51 +759,156 @@
     }
 
     /**
-     * SECCIÓN A: Gestión del Formulario de Carga de Nuevo Traje (POST /api/trajes)
+     * SECCIÓN A: Gestión del Formulario de Carga de Nuevo Traje (POST /api/trajes - FASE 12)
      */
     function initFormNuevoTraje() {
       const form = document.getElementById('form-nuevo-traje');
-      const fileInput = document.getElementById('foto');
-      const previewContainer = document.getElementById('preview-container');
-      const previewImg = document.getElementById('preview-img');
-      const previewInfo = document.getElementById('preview-info');
       const submitBtn = document.getElementById('btn-submit-traje');
       const statusSpan = document.getElementById('traje-submit-status');
+      const fotosContainer = document.getElementById('fotos-container');
+      const btnAddFoto = document.getElementById('btn-add-foto');
 
-      if (!form || !fileInput) return;
+      if (!form || !fotosContainer) return;
 
-      // Preview inmediato al seleccionar archivo
-      fileInput.addEventListener('change', () => {
-        const file = fileInput.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            previewImg.src = e.target.result;
-            previewInfo.innerHTML = `<strong>${escapeHTML(file.name)}</strong><br>${(file.size / 1024).toFixed(1)} KB`;
-            previewContainer.style.display = 'flex';
-          };
-          reader.readAsDataURL(file);
-        } else {
-          previewContainer.style.display = 'none';
+      let fotoCounter = 1;
+
+      // Vincular eventos de previsualización y eliminación a una tarjeta de foto
+      function bindFotoCardEvents(card) {
+        const fileInput = card.querySelector('input[type="file"]');
+        const thumbBox = card.querySelector('.foto-preview-thumb');
+        const thumbImg = thumbBox ? thumbBox.querySelector('img') : null;
+        const btnDel = card.querySelector('.btn-del-foto');
+
+        if (fileInput && thumbBox && thumbImg) {
+          fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                thumbImg.src = e.target.result;
+                thumbBox.style.display = 'block';
+              };
+              reader.readAsDataURL(file);
+            } else {
+              thumbBox.style.display = 'none';
+            }
+          });
         }
-      });
+
+        if (btnDel) {
+          btnDel.addEventListener('click', () => {
+            const allCards = fotosContainer.querySelectorAll('.foto-upload-card');
+            if (allCards.length > 1) {
+              const wasChecked = card.querySelector('input[type="radio"]').checked;
+              card.remove();
+              updateFotoCardsIndexing();
+              if (wasChecked) {
+                const firstRadio = fotosContainer.querySelector('input[type="radio"]');
+                if (firstRadio) firstRadio.checked = true;
+              }
+            } else {
+              alert('Debes mantener al menos una fotografía para el traje.');
+            }
+          });
+        }
+      }
+
+      // Re-indexar tags y valores de radio buttons
+      function updateFotoCardsIndexing() {
+        const allCards = fotosContainer.querySelectorAll('.foto-upload-card');
+        allCards.forEach((card, idx) => {
+          const tag = card.querySelector('.foto-card-tag');
+          if (tag) tag.textContent = `Foto #${idx + 1}`;
+          const radio = card.querySelector('input[type="radio"]');
+          if (radio) radio.value = String(idx);
+          const btnDel = card.querySelector('.btn-del-foto');
+          if (btnDel) {
+            btnDel.style.display = allCards.length > 1 ? 'inline-block' : 'none';
+          }
+        });
+      }
+
+      // Inicializar la primera fila
+      const primeraFila = fotosContainer.querySelector('.foto-upload-card');
+      if (primeraFila) {
+        bindFotoCardEvents(primeraFila);
+        updateFotoCardsIndexing();
+      }
+
+      // Botón para agregar otra foto a la galería
+      if (btnAddFoto) {
+        btnAddFoto.addEventListener('click', () => {
+          fotoCounter++;
+          const allCards = fotosContainer.querySelectorAll('.foto-upload-card');
+          const newIdx = allCards.length;
+
+          const defaultTitles = [
+            'Detalle de Espaldar & Plumas',
+            'Cristales & Pedrería Boreal',
+            'Corona Ceremonial & Tocado',
+            'Herrería & Arnés Liviano',
+            'Calce & Accesorios'
+          ];
+          const defaultTitle = defaultTitles[newIdx - 1] || `Detalle #${newIdx + 1}`;
+
+          const newCard = document.createElement('div');
+          newCard.className = 'foto-upload-card';
+          newCard.setAttribute('data-index', String(newIdx));
+          newCard.innerHTML = `
+            <div class="foto-card-top">
+              <span class="foto-card-tag">Foto #${newIdx + 1}</span>
+              <label class="foto-principal-radio-label">
+                <input type="radio" name="foto_principal" value="${newIdx}">
+                <span>★ Vista Principal (Portada)</span>
+              </label>
+              <button type="button" class="btn-del-foto" title="Eliminar foto">✕</button>
+            </div>
+            <div class="foto-card-inputs">
+              <div class="foto-file-box">
+                <input type="file" name="fotos" accept="image/*" class="form-control input-file-foto" required>
+                <div class="foto-preview-thumb" style="display: none;">
+                  <img src="" alt="Preview">
+                </div>
+              </div>
+              <div class="foto-title-box">
+                <input type="text" name="titulos_fotos" class="form-control" placeholder="Título en galería" value="${defaultTitle}" required>
+              </div>
+            </div>
+          `;
+
+          fotosContainer.appendChild(newCard);
+          bindFotoCardEvents(newCard);
+          updateFotoCardsIndexing();
+        });
+      }
 
       // Submit del Formulario con FormData
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if (!fileInput.files || fileInput.files.length === 0) {
-          alert('Por favor selecciona una foto para el traje.');
+        const fileInputs = form.querySelectorAll('input[name="fotos"]');
+        let hasFiles = true;
+        fileInputs.forEach(inp => {
+          if (!inp.files || inp.files.length === 0) hasFiles = false;
+        });
+
+        if (!hasFiles) {
+          alert('Por favor selecciona un archivo de imagen en cada sección de fotografía.');
           return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳</span> Subiendo y guardando...';
+        submitBtn.innerHTML = '<span>⏳</span> Subiendo y guardando galería...';
         statusSpan.style.color = 'var(--dorado-light)';
-        statusSpan.textContent = 'Enviando imagen y registrando traje...';
+        statusSpan.textContent = 'Enviando fotografías y registrando traje en SQLite...';
 
         try {
           const formData = new FormData(form);
+
+          // Capturar el índice seleccionado para la foto principal
+          const checkedRadio = form.querySelector('input[name="foto_principal"]:checked');
+          const principalIndex = checkedRadio ? checkedRadio.value : '0';
+          formData.set('foto_principal_index', principalIndex);
 
           const response = await fetch('/api/trajes', {
             method: 'POST',
@@ -735,13 +923,40 @@
 
           // Éxito: Feedback y limpieza
           statusSpan.style.color = '#2ecc71';
-          statusSpan.textContent = '✓ ¡Traje guardado exitosamente!';
+          statusSpan.textContent = '✓ ¡Traje y galería guardados exitosamente!';
           
           mostrarToast(`✓ ¡Traje "${data.traje.comparsero}" publicado con éxito en el catálogo!`, 'success');
-          alert(`✓ ¡Éxito! El traje "${data.traje.comparsero}" ha sido guardado y su imagen almacenada físicamente en el servidor.`);
+          alert(`✓ ¡Éxito! El traje "${data.traje.comparsero}" de comparsa "${data.traje.comparsa}" ha sido guardado junto con sus fotos en la base de datos.`);
 
           form.reset();
-          previewContainer.style.display = 'none';
+
+          // Resetear contenedor de fotos a solo una fila
+          fotosContainer.innerHTML = `
+            <div class="foto-upload-card" data-index="0">
+              <div class="foto-card-top">
+                <span class="foto-card-tag">Foto #1</span>
+                <label class="foto-principal-radio-label">
+                  <input type="radio" name="foto_principal" value="0" checked>
+                  <span>★ Vista Principal (Portada)</span>
+                </label>
+                <button type="button" class="btn-del-foto" style="display: none;" title="Eliminar foto">✕</button>
+              </div>
+              <div class="foto-card-inputs">
+                <div class="foto-file-box">
+                  <input type="file" name="fotos" accept="image/*" class="form-control input-file-foto" required>
+                  <div class="foto-preview-thumb" style="display: none;">
+                    <img src="" alt="Preview">
+                  </div>
+                </div>
+                <div class="foto-title-box">
+                  <input type="text" name="titulos_fotos" class="form-control" placeholder="Título en galería (ej: Vista Frontal, Cristales & Bordado)" value="Vista Principal" required>
+                </div>
+              </div>
+            </div>
+          `;
+          const primer = fotosContainer.querySelector('.foto-upload-card');
+          bindFotoCardEvents(primer);
+          updateFotoCardsIndexing();
 
           setTimeout(() => {
             statusSpan.textContent = '';
@@ -775,100 +990,107 @@
       vacio.style.display = 'none';
 
       try {
-        const res = await fetch('/api/comentarios/todos');
-        if (!res.ok) throw new Error('Error al conectar con /api/comentarios/todos');
+        const response = await fetch('/api/comentarios/todos');
+        if (!response.ok) {
+          throw new Error(`Error en servidor: ${response.status}`);
+        }
 
-        const comentarios = await res.json();
-        loading.style.display = 'none';
+        const comentarios = await response.json();
         contador.textContent = comentarios.length;
+        loading.style.display = 'none';
 
-        if (!Array.isArray(comentarios) || comentarios.length === 0) {
+        if (comentarios.length === 0) {
           vacio.style.display = 'block';
           return;
         }
 
         tbody.innerHTML = '';
         comentarios.forEach(com => {
-          const row = document.createElement('tr');
-          row.id = `fila-comentario-${com.id}`;
+          const tr = document.createElement('tr');
+          tr.id = `fila-comentario-${com.id}`;
 
-          const trajeTxt = com.comparsero 
-            ? `<strong>${escapeHTML(com.comparsero)}</strong><br><span style="font-size: 0.78rem; color: var(--dorado);">${escapeHTML(com.comparsa || '')}</span>`
-            : `Traje #${com.traje_id}`;
+          const trajeInfo = com.comparsero 
+            ? `<strong>${escapeHTML(com.comparsero)}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${escapeHTML(com.comparsa || '')} (ID #${com.traje_id})</span>`
+            : `<span style="color:var(--text-muted);">Traje ID #${com.traje_id}</span>`;
 
-          row.innerHTML = `
-            <td style="color: var(--dorado-light); font-weight: 700;">#${com.id}</td>
-            <td>
-              <a href="/traje/${com.traje_id}" target="_blank" style="color: #ffffff; text-decoration: underline; font-weight: 600;">
-                ${trajeTxt}
-              </a>
-            </td>
-            <td style="font-weight: 600; color: #ffffff;">${escapeHTML(com.usuario)}</td>
-            <td style="color: var(--text-main); line-height: 1.5;">${escapeHTML(com.texto)}</td>
+          tr.innerHTML = `
+            <td style="color: var(--dorado-light); font-weight: 600;">#${com.id}</td>
+            <td>${trajeInfo}</td>
+            <td style="font-weight: 600;">${escapeHTML(com.usuario)}</td>
+            <td style="line-height: 1.4;">${escapeHTML(com.texto)}</td>
             <td style="font-size: 0.82rem; color: var(--text-muted);">${escapeHTML(com.fecha || '')}</td>
             <td style="text-align: center;">
-              <button type="button" class="btn-eliminar-rojo" onclick="eliminarComentario(${com.id})">
+              <button type="button" 
+                      class="btn-delete-comentario" 
+                      data-id="${com.id}" 
+                      title="Eliminar este comentario">
                 <span>🗑️</span> Eliminar
               </button>
             </td>
           `;
 
-          tbody.appendChild(row);
+          // Evento de eliminación al botón
+          const btnDelete = tr.querySelector('.btn-delete-comentario');
+          btnDelete.addEventListener('click', () => eliminarComentario(com.id, com.usuario));
+
+          tbody.appendChild(tr);
         });
 
         tabla.style.display = 'table';
-      } catch (err) {
-        console.error(err);
-        loading.style.display = 'none';
-        mostrarToast('Error al cargar comentarios desde el servidor.', 'error');
+
+      } catch (error) {
+        console.error('Error cargando comentarios:', error);
+        loading.innerHTML = `<p style="color: #ff6b6b;">⚠️ Error al cargar comentarios: ${error.message}</p>`;
       }
     }
 
     /**
-     * Eliminación de comentario (DELETE /api/comentarios/<id>)
+     * Eliminación de comentario por ID (DELETE /api/comentarios/<id>)
      */
-    async function eliminarComentario(id) {
-      if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el comentario #${id}?`)) {
-        return;
-      }
+    async function eliminarComentario(id, usuario) {
+      const confirmar = confirm(`¿Estás seguro de que deseas eliminar permanentemente el comentario de "${usuario}" (ID #${id})?`);
+      if (!confirmar) return;
 
       try {
-        const res = await fetch(`/api/comentarios/${id}`, {
+        const response = await fetch(`/api/comentarios/${id}`, {
           method: 'DELETE'
         });
 
-        if (!res.ok) {
-          throw new Error('No se pudo eliminar el comentario del servidor.');
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'No se pudo eliminar el comentario.');
         }
 
-        mostrarToast(`✓ Comentario #${id} eliminado correctamente.`, 'success');
-
-        // Quitar la fila de la tabla en el DOM con animación
+        // Remover visualmente la fila de la tabla
         const fila = document.getElementById(`fila-comentario-${id}`);
         if (fila) {
-          fila.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+          fila.style.transition = 'all 0.3s ease';
           fila.style.opacity = '0';
-          fila.style.transform = 'translateX(25px)';
+          fila.style.transform = 'scale(0.95)';
           setTimeout(() => {
             fila.remove();
-            const totalEl = document.getElementById('total-comentarios');
-            const filasRestantes = document.querySelectorAll('#tbody-comentarios tr').length;
-            totalEl.textContent = filasRestantes;
-            if (filasRestantes === 0) {
+            const contador = document.getElementById('total-comentarios');
+            if (contador) {
+              const current = parseInt(contador.textContent) || 1;
+              contador.textContent = Math.max(0, current - 1);
+            }
+            const tbody = document.getElementById('tbody-comentarios');
+            if (tbody && tbody.children.length === 0) {
               document.getElementById('tabla-comentarios').style.display = 'none';
               document.getElementById('admin-vacio').style.display = 'block';
             }
-          }, 350);
+          }, 300);
         }
-      } catch (err) {
-        console.error(err);
-        mostrarToast('Error al intentar eliminar el comentario.', 'error');
-        alert('Error: No se pudo eliminar el comentario.');
+
+        mostrarToast(`✓ Comentario #${id} eliminado con éxito`, 'success');
+
+      } catch (error) {
+        console.error('Error al eliminar comentario:', error);
+        mostrarToast(`Error: ${error.message}`, 'error');
+        alert(`Error al eliminar: ${error.message}`);
       }
     }
-
-    // Exponer función para invocación en el atributo onclick inline
-    window.eliminarComentario = eliminarComentario;
   </script>
 
 </body>
