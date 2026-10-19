@@ -1140,22 +1140,27 @@ main {
   box-shadow: var(--sombra-card), var(--sombra-dorada);
 }
 
-/* Contenedor responsive para iframe de YouTube / TV con relación 16/9 */
+/* Contenedor responsive para <video controls width="100%"> e <iframe> con relación 16/9 */
 .video-responsive-container {
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%; /* 16:9 ratio */
-  height: 0;
+  aspect-ratio: 16 / 9;
   background-color: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.video-responsive-container video,
 .video-responsive-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
   border: 0;
+  background-color: #000;
 }
 
 .entrevista-body {
@@ -2818,4 +2823,442 @@ html, body {
     font-weight: 700 !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 15px rgba(191, 149, 63, 0.3) !important;
   }
+}
+
+/* ==========================================================================
+   FASE 14: MÓDULO SOCIAL, PÁGINAS DE COMPARSAS Y MEJORAS AUTÓNOMAS DE UX
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   MÓDULO 3 (LIBRE ALBEDRÍO UX - MEJORA AUTÓNOMA #1):
+   CONTADOR REGRESIVO EN TIEMPO REAL PARA EL PRÓXIMO CARNAVAL CORRENTINO
+   Justificación técnica y de UX:
+   En Corrientes ("Capital Nacional del Carnaval"), todo el año gira en torno
+   a la cuenta regresiva hacia la primera noche de desfile en el Corsódromo
+   "Nolo Alías". Esta barra superior no destructiva refuerza la inmersión
+   cultural y ofrece un acceso directo para que los comparseros suban su traje.
+   -------------------------------------------------------------------------- */
+.carnaval-countdown-bar {
+  background: linear-gradient(90deg, rgba(5, 13, 26, 0.96), rgba(15, 34, 64, 0.96), rgba(5, 13, 26, 0.96));
+  border-bottom: 1px solid rgba(191, 149, 63, 0.35);
+  padding: 0.42rem 1.25rem;
+  font-size: 0.78rem;
+  color: var(--texto-gris-claro);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  letter-spacing: 0.4px;
+  position: relative;
+  z-index: 1001;
+}
+
+.carnaval-countdown-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--dorado-brillo);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+}
+
+.carnaval-countdown-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-unit {
+  background: rgba(191, 149, 63, 0.16);
+  border: 1px solid rgba(191, 149, 63, 0.4);
+  border-radius: 4px;
+  padding: 0.12rem 0.45rem;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.76rem;
+}
+
+.countdown-unit small {
+  color: var(--dorado-brillo);
+  font-weight: 600;
+  margin-left: 1px;
+}
+
+.carnaval-countdown-cta {
+  color: #0a0a0a;
+  background: var(--dorado-gradiente);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.carnaval-countdown-cta:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 0 12px rgba(252, 246, 186, 0.55);
+  color: #0a0a0a;
+}
+
+/* --------------------------------------------------------------------------
+   MÓDULO 3 (LIBRE ALBEDRÍO UX - MEJORA AUTÓNOMA #2):
+   ANIMACIÓN SUTIL DE "BRILLO / PURPURINA" EN TARJETAS DE OBRAS MAESTRAS
+   Justificación técnica y de UX:
+   Los trajes insignia del Carnaval Correntino destacan por la refracción de
+   miles de cristales Swarovski y strass boreal bajo los reflectores del
+   corsódromo. Se implementa un barrido especular GPU-accelerated (transform)
+   y destellos sutiles en .coordinacion-card y .obra-maestra-glitter.
+   -------------------------------------------------------------------------- */
+.coordinacion-card,
+.obra-maestra-glitter {
+  position: relative;
+  overflow: hidden;
+}
+
+.coordinacion-card::after,
+.obra-maestra-glitter::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -120%;
+  width: 65%;
+  height: 220%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(252, 246, 186, 0.08) 35%,
+    rgba(255, 255, 255, 0.26) 50%,
+    rgba(191, 149, 63, 0.12) 65%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  z-index: 4;
+  animation: destelloPurpurinaCarnaval 6.5s ease-in-out infinite;
+}
+
+@keyframes destelloPurpurinaCarnaval {
+  0%, 55% {
+    left: -120%;
+    opacity: 0;
+  }
+  65% {
+    opacity: 1;
+  }
+  88% {
+    left: 160%;
+    opacity: 0.9;
+  }
+  100% {
+    left: 160%;
+    opacity: 0;
+  }
+}
+
+.badge-masterpiece {
+  animation: pulsoInsigniaObraMaestra 3.2s ease-in-out infinite;
+}
+
+@keyframes pulsoInsigniaObraMaestra {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 8px rgba(191, 149, 63, 0.35);
+  }
+  50% {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.8), 0 0 18px rgba(252, 246, 186, 0.75);
+  }
+}
+
+/* Botón Compartir por WhatsApp en traje-detalle.html (Módulo 3) */
+.btn-whatsapp-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(37, 211, 102, 0.15);
+  border: 1px solid rgba(37, 211, 102, 0.6);
+  color: #4cd137;
+  padding: 0.6rem 1.15rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-whatsapp-share:hover {
+  background: #25d366;
+  color: #041b0b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   MÓDULO 2: PÁGINAS DINÁMICAS DE COMPARSAS (/comparsa/<nombre_comparsa>)
+   -------------------------------------------------------------------------- */
+.comparsas-pills-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.comparsa-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1.05rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--texto-gris-claro);
+  background: rgba(10, 25, 47, 0.75);
+  border: 1px solid rgba(191, 149, 63, 0.35);
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.comparsa-pill:hover,
+.comparsa-pill.active {
+  background: var(--dorado-gradiente);
+  color: #050d1a;
+  border-color: var(--dorado-brillo);
+  font-weight: 700;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(191, 149, 63, 0.35);
+}
+
+.comparsa-apodo-subtitle {
+  font-family: var(--font-heading);
+  color: var(--dorado-brillo) !important;
+  font-size: 1.05rem !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: -0.25rem;
+}
+
+.comparsa-comunidad-cta {
+  margin-top: 3.5rem;
+  padding: 2rem 2.2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(10, 25, 47, 0.9), rgba(15, 34, 64, 0.95));
+  border: 1px solid rgba(191, 149, 63, 0.45);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.comparsa-comunidad-cta h3 {
+  font-family: var(--font-heading);
+  color: var(--dorado-brillo);
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+}
+
+.comparsa-comunidad-cta p {
+  margin: 0;
+  color: var(--texto-gris-claro);
+  font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------------------------
+   MÓDULO 1: FORMULARIO PÚBLICO DE COMUNIDAD (/comunidad/subir)
+   -------------------------------------------------------------------------- */
+.comunidad-alert-success {
+  background: rgba(46, 204, 113, 0.12);
+  border: 1px solid #2ecc71;
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 2.5rem;
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.comunidad-alert-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.comunidad-alert-content h2 {
+  font-family: var(--font-heading);
+  color: #2ecc71;
+  font-size: 1.35rem;
+  margin: 0 0 0.5rem;
+}
+
+.comunidad-alert-content p {
+  color: var(--texto-blanco);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.comunidad-alert-error {
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid #e74c3c;
+  color: #ff7675;
+  padding: 1.2rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.comunidad-form-card {
+  background: rgba(10, 25, 47, 0.85);
+  border: 1px solid rgba(191, 149, 63, 0.4);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.55);
+  max-width: 960px;
+  margin: 0 auto 3rem;
+}
+
+.comunidad-form-header {
+  background: rgba(15, 34, 64, 0.95);
+  border-bottom: 1px solid rgba(191, 149, 63, 0.35);
+  padding: 1.3rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.comunidad-form-header h2 {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--dorado-brillo);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.comunidad-badge-moderacion {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #f9ca24;
+  background: rgba(243, 156, 18, 0.15);
+  border: 1px solid rgba(243, 156, 18, 0.45);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+}
+
+.comunidad-form-body {
+  padding: 2rem;
+}
+
+.comunidad-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.4rem;
+}
+
+.comunidad-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.comunidad-field.full-span {
+  grid-column: 1 / -1;
+}
+
+.comunidad-field label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dorado-brillo);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.comunidad-field input[type="text"],
+.comunidad-field select,
+.comunidad-field textarea {
+  background: rgba(5, 13, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.comunidad-field input:focus,
+.comunidad-field select:focus,
+.comunidad-field textarea:focus {
+  outline: none;
+  border-color: var(--dorado-solido);
+  box-shadow: 0 0 12px rgba(191, 149, 63, 0.35);
+}
+
+.comunidad-upload-zone {
+  border: 2px dashed rgba(191, 149, 63, 0.45);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  background: rgba(5, 13, 26, 0.6);
+}
+
+.upload-zone-title {
+  color: var(--dorado-brillo);
+  font-weight: 600;
+  margin: 0 0 0.7rem;
+}
+
+.upload-zone-hint {
+  font-size: 0.8rem;
+  color: var(--texto-gris-medio);
+  margin: 0.7rem 0 0;
+}
+
+.comunidad-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.comunidad-preview-item {
+  background: rgba(5, 13, 26, 0.8);
+  border: 1px solid rgba(191, 149, 63, 0.35);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.comunidad-preview-item img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.comunidad-preview-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dorado-brillo);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.comunidad-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(191, 149, 63, 0.25);
 }

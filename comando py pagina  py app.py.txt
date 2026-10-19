@@ -1,0 +1,51 @@
+comando py pagina : py app.py
+contraseña admin:noloalias2026
+Manual de Supervivencia Full-Stack: Proyecto Hugo Fernández
+Guárdate este documento en un bloc de notas o en tu WhatsApp. Es tu machete definitivo para solucionar cualquier problema técnico de terminal, Git o Python en Windows cuando estés trabajando por tu cuenta.
+
+1. Destrabar Windows y la Terminal (PowerShell)
+Si al intentar activar el entorno virtual la terminal te lanza un texto rojo diciendo que "la ejecución de scripts está deshabilitada", Windows te está bloqueando.
+
+El comando para abrir el candado: Ejecuta Set-ExecutionPolicy Unrestricted -Scope CurrentUser.
+
+Confirmación: Si el sistema te hace una pregunta, escribe la letra S (o Y si está en inglés) y dale Enter. Esto se hace una sola vez por computadora.
+
+2. Encender la Sala de Máquinas (Entorno Virtual y Flask)
+Si cambiaste de computadora, clonaste el proyecto de cero, o se borró la carpeta venv, tienes que armar el motor siguiendo este orden exacto:
+
+Crear el entorno (aislar el proyecto): py -m venv venv (si falla, usa python -m venv venv).
+
+Activar el entorno: .\venv\Scripts\activate. Sabrás que funcionó cuando veas el (venv) verde al principio de la línea en tu terminal.
+
+Instalar las dependencias: pip install Flask werkzeug.
+
+Prender el servidor: python app.py (o py app.py).
+
+Apagar el servidor: Cuando termines de trabajar, haz clic en la terminal y presiona Ctrl + C.
+
+3. Guardar y Subir Código a GitHub (El Respaldo)
+Cada vez que hagas un cambio importante en la página y quieras asegurarlo en la nube:
+
+Preparar todos los archivos modificados: git add .
+
+Empaquetar con un mensaje descriptivo: git commit -m "Agrego sección de trajes inmersiva"
+
+Subir a tu caja fuerte en GitHub: git push (o git push -u origin main si es la primera vez que subes esa rama).
+
+4. Solución a Errores Comunes de Git
+Error "nothing to commit, working tree clean": Git te está diciendo que no hay archivos nuevos. Casi siempre significa que te olvidaste de guardar el archivo en Visual Studio Code (presiona Ctrl + S) antes de intentar subirlo.
+
+Modificaste algo directamente en la página de GitHub (como el README): Tu computadora quedó un paso atrás de la nube. Antes de seguir programando, ejecuta git pull origin main para descargar esos cambios a tu máquina local y evitar conflictos.
+
+Git te bloquea el primer commit porque "no sabe quién eres": Ejecuta estos dos comandos para firmar tu código:
+
+git config --global user.email "tu_correo@gmail.com"
+
+git config --global user.name "Ramiro Curima"
+5. Hacer correr el servidor de Python (Flask)
+Cuándo usarlo: Cuando vas a empezar a programar o probar la página, y ya te aseguraste de tener el entorno virtual activado (ves el (venv) a la izquierda en la terminal).
+El comando:
+python app.py
+(Si PowerShell te dice que no reconoce 'python', usá el atajo de Windows: py app.py).
+Cómo saber si funcionó: La terminal se va a quedar "trabajando" y te va a mostrar un mensaje que dice algo como Running on http://127.0.0.1:5000. Esa es la señal de que el motor arrancó.
+Para ver la página: Abrís tu navegador web (Chrome, Edge, etc.), escribís esa misma dirección ([http://127.0.0.1:5000](http://127.0.0.1:5000)) en la barra de arriba y le das Enter.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Gestión & CMS | Hugo Fernández Arte Creativo</title>
+  <title>{% if traje_editar %}Editar Traje #{{ traje_editar.id }} | {% endif %}Dashboard de Gestión & CMS | Hugo Fernández Arte Creativo</title>
   <link rel="stylesheet" href="/static/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
   <style>
@@ -24,11 +24,22 @@
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
       margin: 0;
       padding: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Optimización Móvil Extrema (iOS/Android Touch Standard & Anti Auto-Zoom) */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    select,
+    textarea,
+    button {
+      min-height: 48px;
+      font-size: 16px;
     }
 
     /* Barra Superior del Administrador */
@@ -60,9 +71,9 @@
     }
 
     .admin-role-badge {
-      font-size: 0.72rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      padding: 0.25rem 0.6rem;
+      padding: 0.3rem 0.65rem;
       background: rgba(191, 149, 63, 0.15);
       border: 1px solid var(--dorado-border);
       border-radius: 4px;
@@ -72,22 +83,26 @@
 
     .admin-nav-actions {
       display: flex;
-      gap: 0.8rem;
+      gap: 0.85rem;
+      flex-wrap: wrap;
     }
 
     .btn-admin-nav {
       color: var(--dorado-light);
       border: 1px solid var(--dorado-border);
-      background: rgba(10, 25, 47, 0.6);
-      padding: 0.5rem 1.1rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
+      background: rgba(10, 25, 47, 0.75);
+      min-height: 48px;
+      padding: 0.65rem 1.2rem;
+      border-radius: 8px;
+      font-size: 16px;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      justify-content: center;
+      gap: 0.5rem;
+      box-sizing: border-box;
     }
 
     .btn-admin-nav:hover {
@@ -99,7 +114,7 @@
 
     /* Contenedor Principal */
     .admin-main {
-      max-width: 1250px;
+      max-width: 1280px;
       width: 100%;
       margin: 2rem auto 4rem;
       padding: 0 1.5rem;
@@ -108,6 +123,11 @@
 
     .admin-title-area {
       margin-bottom: 2.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .admin-title-area h1 {
@@ -123,18 +143,21 @@
     .admin-title-area p {
       color: var(--text-muted);
       margin: 0;
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     /* Notificación Toast */
     .status-toast {
       position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      padding: 1rem 1.6rem;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      font-weight: 600;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      left: 1.5rem;
+      max-width: 520px;
+      margin-left: auto;
+      padding: 1.1rem 1.6rem;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
       z-index: 1000;
       display: none;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
@@ -142,14 +165,14 @@
     }
 
     .status-toast.success {
-      background: rgba(46, 204, 113, 0.95);
+      background: rgba(46, 204, 113, 0.96);
       color: #ffffff;
       border: 1px solid #2ecc71;
       display: block;
     }
 
     .status-toast.error {
-      background: rgba(231, 76, 60, 0.95);
+      background: rgba(231, 76, 60, 0.96);
       color: #ffffff;
       border: 1px solid #e74c3c;
       display: block;
@@ -175,6 +198,11 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
+    .dashboard-card.edit-mode-card {
+      border-color: var(--dorado-light);
+      box-shadow: 0 0 28px rgba(191, 149, 63, 0.25);
+    }
+
     .dashboard-card-header {
       background: var(--card-bg-subtle);
       border-bottom: 1px solid var(--dorado-border);
@@ -188,11 +216,12 @@
 
     .dashboard-card-header h2 {
       font-family: 'Cinzel', serif;
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       margin: 0;
       color: var(--dorado);
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 0.6rem;
     }
 
@@ -204,13 +233,13 @@
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.4rem;
+      gap: 1.5rem;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .form-group.full-width {
@@ -218,22 +247,24 @@
     }
 
     .form-label {
-      font-size: 0.88rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 700;
       color: var(--dorado-light);
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
     }
 
     .form-control {
-      background: rgba(5, 13, 26, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
+      background: rgba(5, 13, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+      min-height: 48px;
+      padding: 0.8rem 1rem;
       color: #ffffff;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 16px;
+      line-height: 1.4;
       transition: all 0.3s ease;
       box-sizing: border-box;
       width: 100%;
@@ -248,43 +279,109 @@
 
     textarea.form-control {
       resize: vertical;
-      min-height: 85px;
+      min-height: 100px;
+      font-size: 16px;
     }
 
-    /* FASE 12: Galería de Subida Dinámica Múltiple */
-    .fotos-upload-list {
+    /* Checkbox Destacar en Obras Maestras (FASE 13) */
+    .obra-maestra-checkbox-card {
+      background: linear-gradient(135deg, rgba(191, 149, 63, 0.14), rgba(10, 25, 47, 0.85));
+      border: 1px solid var(--dorado);
+      border-radius: 8px;
+      min-height: 56px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-sizing: border-box;
+    }
+
+    .obra-maestra-checkbox-card:hover {
+      background: linear-gradient(135deg, rgba(191, 149, 63, 0.24), rgba(15, 34, 64, 0.95));
+      box-shadow: 0 0 16px rgba(191, 149, 63, 0.25);
+    }
+
+    .obra-maestra-checkbox-card input[type="checkbox"] {
+      width: 26px;
+      height: 26px;
+      accent-color: var(--dorado);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .obra-maestra-label-content {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.25rem;
+    }
+
+    .obra-maestra-label-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--dorado-light);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .obra-maestra-label-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* Interfaz de Selección Múltiple de Archivos (FASE 13) */
+    .multi-upload-dropzone {
+      border: 2px dashed var(--dorado-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+      background: rgba(5, 13, 26, 0.6);
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    .multi-upload-dropzone:hover {
+      border-color: var(--dorado);
+      background: rgba(191, 149, 63, 0.06);
+    }
+
+    .fotos-upload-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.2rem;
     }
 
     .foto-upload-card {
-      background: rgba(10, 25, 47, 0.6);
+      background: rgba(10, 25, 47, 0.75);
       border: 1px solid var(--dorado-border);
       border-radius: 8px;
-      padding: 1.1rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
       transition: all 0.3s ease;
     }
 
     .foto-upload-card:hover {
-      border-color: rgba(191, 149, 63, 0.65);
+      border-color: rgba(191, 149, 63, 0.7);
     }
 
     .foto-card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.8rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .foto-card-tag {
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 700;
       color: var(--dorado-light);
       background: rgba(191, 149, 63, 0.2);
-      padding: 0.25rem 0.6rem;
+      padding: 0.3rem 0.65rem;
       border-radius: 4px;
       border: 1px solid var(--dorado-border);
     }
@@ -292,8 +389,9 @@
     .foto-principal-radio-label {
       display: inline-flex;
       align-items: center;
+      min-height: 48px;
       gap: 0.5rem;
-      font-size: 0.86rem;
+      font-size: 0.95rem;
       color: var(--dorado-light);
       cursor: pointer;
       font-weight: 600;
@@ -303,20 +401,25 @@
     .foto-principal-radio-label input[type="radio"] {
       accent-color: var(--dorado);
       cursor: pointer;
-      width: 16px;
-      height: 16px;
+      width: 22px;
+      height: 22px;
     }
 
     .btn-del-foto {
-      background: rgba(230, 57, 70, 0.15);
-      border: 1px solid rgba(230, 57, 70, 0.4);
+      background: rgba(230, 57, 70, 0.2);
+      border: 1px solid rgba(230, 57, 70, 0.55);
       color: #ff6b6b;
-      padding: 0.3rem 0.7rem;
-      border-radius: 4px;
+      min-height: 48px;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
       transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
     }
 
     .btn-del-foto:hover {
@@ -324,47 +427,39 @@
       color: #ffffff;
     }
 
-    .foto-card-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      align-items: start;
-    }
-
-    @media (max-width: 640px) {
-      .foto-card-inputs {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .foto-preview-thumb {
-      margin-top: 0.5rem;
+    .foto-preview-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
     }
 
     .foto-preview-thumb img {
-      width: 75px;
-      height: 75px;
+      width: 72px;
+      height: 72px;
       object-fit: cover;
       border-radius: 6px;
       border: 1px solid var(--dorado-border);
+      flex-shrink: 0;
     }
 
     .btn-submit-traje {
       background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
       color: #0a0a0a;
       border: none;
-      border-radius: 6px;
-      padding: 0.95rem 2rem;
-      font-size: 0.95rem;
-      font-weight: 700;
+      border-radius: 8px;
+      min-height: 54px;
+      padding: 1rem 2rem;
+      font-size: 16px;
+      font-weight: 800;
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.6rem;
+      gap: 0.65rem;
       text-transform: uppercase;
+      box-sizing: border-box;
     }
 
     .btn-submit-traje:hover {
@@ -378,24 +473,28 @@
       transform: none;
     }
 
-    /* Tabla de Moderación */
+    /* Tablas de Gestión con Deslizamiento Horizontal Responsivo */
     .admin-table-wrapper {
+      width: 100%;
+      max-width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
     .admin-table {
       width: 100%;
+      min-width: 780px;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.96rem;
     }
 
     .admin-table th {
       background: rgba(15, 34, 64, 0.95);
       color: var(--dorado-light);
-      font-weight: 600;
+      font-weight: 700;
       padding: 1rem 1.2rem;
       border-bottom: 2px solid var(--dorado-border);
       white-space: nowrap;
@@ -403,7 +502,7 @@
 
     .admin-table td {
       padding: 1rem 1.2rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       vertical-align: middle;
     }
 
@@ -411,49 +510,192 @@
       background: rgba(191, 149, 63, 0.06);
     }
 
-    .btn-delete-comentario {
-      background: rgba(230, 57, 70, 0.15);
-      border: 1px solid rgba(230, 57, 70, 0.5);
-      color: #ff6b6b;
-      padding: 0.45rem 0.9rem;
-      border-radius: 5px;
-      font-size: 0.82rem;
-      font-weight: 600;
+    .traje-table-thumb {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--dorado-border);
+    }
+
+    .badge-obra-table {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      background: rgba(191, 149, 63, 0.2);
+      border: 1px solid var(--dorado);
+      color: var(--dorado-light);
+      white-space: nowrap;
+    }
+
+    .badge-estandar-table {
+      display: inline-block;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.06);
+      white-space: nowrap;
+    }
+
+    /* Botones de Acción Grandes, Separados (gap amplio) y con Iconos Claros */
+    .acciones-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      padding: 0.25rem 0;
+    }
+
+    .btn-edit-traje {
+      background: rgba(191, 149, 63, 0.22);
+      border: 2px solid var(--dorado);
+      color: var(--dorado-light);
+      min-height: 48px;
+      min-width: 130px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
       cursor: pointer;
       transition: all 0.25s ease;
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      justify-content: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
 
-    .btn-delete-comentario:hover {
+    .btn-edit-traje:hover {
+      background: var(--dorado);
+      color: #0a0a0a;
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(191, 149, 63, 0.35);
+    }
+
+    .btn-delete-comentario,
+    .btn-delete-traje {
+      background: rgba(230, 57, 70, 0.2);
+      border: 2px solid rgba(230, 57, 70, 0.75);
+      color: #ff8585;
+      min-height: 48px;
+      min-width: 135px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    .btn-delete-comentario:hover,
+    .btn-delete-traje:hover {
       background: var(--red-btn);
       color: #ffffff;
-      transform: scale(1.04);
+      transform: scale(1.03);
       box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+    }
+
+    .btn-approve-traje {
+      background: rgba(46, 204, 113, 0.22);
+      border: 2px solid #2ecc71;
+      color: #2ecc71;
+      min-height: 48px;
+      min-width: 135px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    .btn-approve-traje:hover {
+      background: #2ecc71;
+      color: #05140b;
+      transform: scale(1.03);
+      box-shadow: 0 4px 14px rgba(46, 204, 113, 0.4);
+    }
+
+    .badge-pendiente-table {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      background: rgba(243, 156, 18, 0.2);
+      border: 1px solid #f39c12;
+      color: #f9ca24;
+      white-space: nowrap;
     }
 
     .admin-empty-state, .admin-loading {
       text-align: center;
-      padding: 3rem 1rem;
+      padding: 2.5rem 1rem;
       color: var(--text-muted);
+      font-size: 1rem;
     }
 
     @media (max-width: 768px) {
       .admin-navbar {
-        padding: 0.8rem 1rem;
+        padding: 0.9rem 1rem;
         flex-direction: column;
-        gap: 0.8rem;
-        align-items: flex-start;
+        gap: 0.85rem;
+        align-items: stretch;
       }
       .admin-nav-actions {
         width: 100%;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+      }
+      .btn-admin-nav {
+        width: 100%;
+        padding: 0.75rem 0.6rem;
+        font-size: 16px;
+      }
+      .admin-main {
+        padding: 0 0.85rem;
+        margin: 1.25rem auto 3rem;
+      }
+      .dashboard-card-header {
+        padding: 1rem 1.1rem;
       }
       .dashboard-card-body {
-        padding: 1.5rem 1.2rem;
+        padding: 1.25rem 1rem;
       }
       .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn-submit-traje {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .admin-nav-actions {
         grid-template-columns: 1fr;
       }
     }
@@ -465,14 +707,20 @@
   <header class="admin-navbar">
     <div class="admin-brand">
       <span class="admin-logo-text">Hugo Fernández</span>
-      <span class="admin-role-badge">CMS & Moderación</span>
+      <span class="admin-role-badge">CMS & Moderación (FASE 14)</span>
     </div>
     <div class="admin-nav-actions">
+      <a href="#bandeja-moderacion" class="btn-admin-nav" style="border-color: #f39c12; color: #f9ca24;">
+        <span>🛡️</span> Bandeja de Moderación ({{ trajes_pendientes|length if trajes_pendientes else 0 }})
+      </a>
+      <a href="/comunidad/subir" class="btn-admin-nav" target="_blank">
+        <span>📸</span> Subir (Comunidad)
+      </a>
       <a href="/trajes" class="btn-admin-nav" target="_blank">
         <span>🎭</span> Ver Feed Trajes
       </a>
-      <a href="/pages/arandu-beleza.html" class="btn-admin-nav" target="_blank">
-        <span>✨</span> Catálogo Comparsas
+      <a href="/pages/coordinacion.html" class="btn-admin-nav" target="_blank">
+        <span>✦</span> Ver Obras Maestras
       </a>
       <a href="/" class="btn-admin-nav">
         <span>🏠</span> Volver al Sitio
@@ -487,8 +735,15 @@
   <main class="admin-main">
     
     <div class="admin-title-area">
-      <h1>Panel de Administración (CMS)</h1>
-      <p>Gestión centralizada del catálogo de vestuarios, galería dinámica y moderación comunitaria del taller.</p>
+      <div>
+        <h1>{% if traje_editar %}Editar Traje #{{ traje_editar.id }}{% else %}Panel de Administración (CMS){% endif %}</h1>
+        <p>Gestión integral del catálogo de vestuarios, Obras Maestras, galería fotográfica múltiple y moderación.</p>
+      </div>
+      {% if traje_editar %}
+      <a href="/admin" class="btn-admin-nav" style="border-color: var(--dorado); background: rgba(191, 149, 63, 0.15);">
+        <span>←</span> Cancelar edición y crear nuevo traje
+      </a>
+      {% endif %}
     </div>
 
     <!-- Notificación Toast Dinámica -->
@@ -497,15 +752,33 @@
     <div class="dashboard-layout">
 
       <!-- ======================================================================
-           SECCIÓN A: CARGAR NUEVO TRAJE (FASE 12: GALERÍA MÚLTIPLE & CRÉDITOS)
+           SECCIÓN A: FORMULARIO DE CREACIÓN / EDICIÓN DE TRAJE (FASE 13)
            ====================================================================== -->
-      <section class="dashboard-card" aria-label="Cargar nuevo traje">
+      <section class="dashboard-card {% if traje_editar %}edit-mode-card{% endif %}" aria-label="Formulario de traje">
         <div class="dashboard-card-header">
-          <h2><span>✨</span> Sección A: Cargar Nuevo Traje al Catálogo</h2>
-          <span style="font-size: 0.82rem; color: var(--dorado-light);">API REST • POST /api/trajes (FASE 12)</span>
+          <h2>
+            {% if traje_editar %}
+              <span>✏️</span> Editando Traje #{{ traje_editar.id }}: {{ traje_editar.comparsero }}
+            {% else %}
+              <span>✨</span> Sección A: Cargar Nuevo Traje al Catálogo
+            {% endif %}
+          </h2>
+          <span style="font-size: 0.82rem; color: var(--dorado-light);">
+            {% if traje_editar %}
+              API REST • POST/PUT /api/trajes/editar/{{ traje_editar.id }}
+            {% else %}
+              API REST • POST /api/trajes
+            {% endif %}
+          </span>
         </div>
+
         <div class="dashboard-card-body">
-          <form id="form-nuevo-traje" enctype="multipart/form-data">
+          <form id="form-traje-cms" 
+                data-modo="{{ 'editar' if traje_editar else 'crear' }}"
+                data-traje-id="{{ traje_editar.id if traje_editar else '' }}"
+                action="{{ '/api/trajes/editar/' ~ traje_editar.id if traje_editar else '/api/trajes' }}"
+                method="POST"
+                enctype="multipart/form-data">
             
             <div class="form-grid">
               
@@ -518,6 +791,7 @@
                        id="comparsero" 
                        name="comparsero" 
                        class="form-control" 
+                       value="{{ traje_editar.comparsero if traje_editar else '' }}"
                        placeholder="Ej: Mariana C. (Gran Bastonera)" 
                        required>
               </div>
@@ -532,6 +806,7 @@
                        name="comparsa" 
                        class="form-control" 
                        list="lista-comparsas" 
+                       value="{{ traje_editar.comparsa if traje_editar else '' }}"
                        placeholder="Ej: Arandú Beleza, Sapucay, Samba Total..." 
                        required>
                 <datalist id="lista-comparsas">
@@ -552,13 +827,13 @@
                   <span>✦</span> Categoría / Género
                 </label>
                 <select id="genero" name="genero" class="form-control" required>
-                  <option value="Femenino" selected>Femenino</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Unisex / Especial">Unisex / Especial</option>
+                  <option value="Femenino" {% if not traje_editar or traje_editar.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
+                  <option value="Masculino" {% if traje_editar and traje_editar.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+                  <option value="Unisex / Especial" {% if traje_editar and traje_editar.genero not in ['Femenino', 'Masculino'] %}selected{% endif %}>Unisex / Especial</option>
                 </select>
               </div>
 
-              <!-- FASE 12: Diseño Original -->
+              <!-- Diseño Original -->
               <div class="form-group">
                 <label for="diseno_original" class="form-label">
                   <span>✏️</span> Diseño Original (Créditos de Boceto)
@@ -567,10 +842,11 @@
                        id="diseno_original" 
                        name="diseno_original" 
                        class="form-control" 
+                       value="{{ (traje_editar.diseno_original or '') if traje_editar else '' }}"
                        placeholder="Ej: Marcos Romero (Diseño Escénico)">
               </div>
 
-              <!-- FASE 12: Herrería y Estructura -->
+              <!-- Herrería y Estructura -->
               <div class="form-group">
                 <label for="herreria_estructura" class="form-label">
                   <span>⚙️</span> Herrería / Estructura (Arnés, Material y Peso)
@@ -579,10 +855,26 @@
                        id="herreria_estructura" 
                        name="herreria_estructura" 
                        class="form-control" 
+                       value="{{ (traje_editar.herreria_estructura or '') if traje_editar else '' }}"
                        placeholder="Ej: Carlos Tito Gómez (3.8 kg duraluminio)">
               </div>
 
-              <!-- FASE 12: Descripción de la Obra (Párrafo Inspiracional) -->
+              <!-- Checkbox Obra Maestra (FASE 13 Paso 4) -->
+              <div class="form-group" style="justify-content: flex-end;">
+                <label class="obra-maestra-checkbox-card" for="es_obra_maestra">
+                  <input type="checkbox" 
+                         id="es_obra_maestra" 
+                         name="es_obra_maestra" 
+                         value="1"
+                         {% if traje_editar and traje_editar.es_obra_maestra %}checked{% endif %}>
+                  <div class="obra-maestra-label-content">
+                    <span class="obra-maestra-label-title">★ Destacar en Obras Maestras</span>
+                    <span class="obra-maestra-label-sub">Muestra este traje en la colección exclusiva de Obras Maestras.</span>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Descripción de la Obra -->
               <div class="form-group full-width">
                 <label for="descripcion" class="form-label">
                   <span>📜</span> Descripción de la Obra (Párrafo Inspiracional)
@@ -591,7 +883,7 @@
                           name="descripcion" 
                           class="form-control" 
                           rows="3" 
-                          placeholder="Ej: Inspirado en la mística del río y el sol naciente sobre el litoral, combinando ergonomía de alta movilidad y destello reflectivo bajo las luces del corsódromo."></textarea>
+                          placeholder="Ej: Inspirado en la mística del río y el sol naciente sobre el litoral, combinando ergonomía de alta movilidad y destello reflectivo bajo las luces del corsódromo.">{{ (traje_editar.descripcion or '') if traje_editar else '' }}</textarea>
               </div>
 
               <!-- Desglose de Materiales -->
@@ -604,61 +896,101 @@
                           class="form-control" 
                           rows="3" 
                           placeholder="Ej: Strass checo boreal, plumas amazónicas verde esmeralda, arnés de duraluminio 3.2 kg, corselete y botas bordadas a medida." 
-                          required></textarea>
+                          required>{{ (traje_editar.materiales or '') if traje_editar else '' }}</textarea>
                 <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
                   * Estos materiales se separarán automáticamente en tags interactivos en la ficha técnica del traje.
                 </span>
               </div>
 
-              <!-- FASE 12: Refactor de Upload de Imágenes con Galería Dinámica -->
+              <!-- Si estamos en Modo Edición: Mostrar Fotografías Existentes -->
+              {% if traje_editar and traje_editar.fotos %}
               <div class="form-group full-width">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-                  <label class="form-label" style="margin: 0;">
-                    <span>📸</span> Galería de Fotografías del Traje (Subida Física Múltiple)
-                  </label>
-                  <button type="button" id="btn-add-foto" class="btn-admin-nav" style="cursor: pointer; font-size: 0.8rem; padding: 0.4rem 0.8rem;">
-                    <span>➕</span> Agregar otra foto
-                  </button>
-                </div>
-                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0; margin-bottom: 0.8rem;">
-                  Cargá una o más fotos. Marcá con el selector circular la que deseas que sea la <strong>Vista Principal (Portada)</strong>.
-                </p>
-
-                <!-- Contenedor dinámico de fotos -->
-                <div id="fotos-container" class="fotos-upload-list">
-                  <!-- Fila Inicial Foto #1 -->
-                  <div class="foto-upload-card" data-index="0">
+                <label class="form-label">
+                  <span>🖼️</span> Fotografías Actuales del Traje (Podés cambiar la portada, editar títulos o eliminar fotos)
+                </label>
+                <div id="fotos-existentes-container" class="fotos-upload-list">
+                  {% for f in traje_editar.fotos %}
+                  <div class="foto-upload-card foto-existente-card" id="card-foto-existente-{{ f.id }}" data-foto-id="{{ f.id }}">
                     <div class="foto-card-top">
-                      <span class="foto-card-tag">Foto #1</span>
+                      <span class="foto-card-tag">Foto Guardada #{{ loop.index }}</span>
                       <label class="foto-principal-radio-label">
-                        <input type="radio" name="foto_principal" value="0" checked>
+                        <input type="radio" 
+                               name="foto_principal_choice" 
+                               value="existing_{{ f.id }}" 
+                               {% if f.es_principal %}checked{% endif %}>
                         <span>★ Vista Principal (Portada)</span>
                       </label>
-                      <button type="button" class="btn-del-foto" style="display: none;" title="Eliminar foto">✕</button>
+                      <button type="button" 
+                              class="btn-del-foto btn-del-existente" 
+                              data-foto-id="{{ f.id }}"
+                              title="Eliminar esta fotografía">
+                        🗑️ Quitar
+                      </button>
                     </div>
-                    <div class="foto-card-inputs">
-                      <div class="foto-file-box">
-                        <input type="file" name="fotos" accept="image/*" class="form-control input-file-foto" required>
-                        <div class="foto-preview-thumb" style="display: none;">
-                          <img src="" alt="Preview">
-                        </div>
+                    <div class="foto-preview-row">
+                      <div class="foto-preview-thumb">
+                        <img src="{% if f.ruta_imagen and (f.ruta_imagen.startswith('http://') or f.ruta_imagen.startswith('https://') or f.ruta_imagen.startswith('/')) %}{{ f.ruta_imagen }}{% else %}{{ url_for('static', filename=f.ruta_imagen) }}{% endif %}" 
+                             alt="{{ f.titulo }}">
                       </div>
-                      <div class="foto-title-box">
-                        <input type="text" name="titulos_fotos" class="form-control" placeholder="Título en galería (ej: Vista Frontal)" value="Vista Principal" required>
+                      <div style="flex: 1;">
+                        <input type="text" 
+                               name="titulo_existente_{{ f.id }}" 
+                               class="form-control" 
+                               value="{{ f.titulo or 'Vista Principal' }}" 
+                               placeholder="Título de la foto">
                       </div>
                     </div>
                   </div>
+                  {% endfor %}
+                </div>
+                <!-- Inputs ocultos de fotos a eliminar -->
+                <div id="inputs-fotos-eliminar"></div>
+              </div>
+              {% endif %}
+
+              <!-- FASE 13 (Paso 4): Interfaz para Selección Múltiple de Archivos -->
+              <div class="form-group full-width">
+                <label for="input-fotos-multiple" class="form-label">
+                  <span>📸</span> {% if traje_editar %}Agregar Nuevas Fotografías a la Galería (Selección Múltiple){% else %}Galería de Fotografías del Traje (Selección Múltiple de Archivos){% endif %}
+                </label>
+
+                <div class="multi-upload-dropzone">
+                  <p style="margin: 0 0 0.7rem; color: var(--dorado-light); font-weight: 600;">
+                    📂 Seleccioná una o múltiples imágenes simultáneamente desde tu dispositivo
+                  </p>
+                  <input type="file" 
+                         id="input-fotos-multiple" 
+                         name="fotos" 
+                         accept="image/*" 
+                         multiple 
+                         class="form-control" 
+                         style="max-width: 520px; margin: 0 auto; cursor: pointer;"
+                         {% if not traje_editar %}required{% endif %}>
+                  <p style="margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
+                    Podés elegir varios archivos a la vez manteniendo presionada la tecla <strong>Ctrl</strong> o <strong>Shift</strong>. Luego personalizá el título de cada foto y elegí cuál será la portada.
+                  </p>
                 </div>
 
+                <!-- Lista de previsualización de nuevas fotos seleccionadas -->
+                <div id="nuevas-fotos-preview-list" class="fotos-upload-list"></div>
               </div>
 
             </div>
 
-            <!-- Botón de Envío -->
-            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+            <!-- Botones de Envío -->
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
               <span id="traje-submit-status" style="font-size: 0.9rem;"></span>
+              {% if traje_editar %}
+              <a href="/admin" class="btn-admin-nav" style="padding: 0.85rem 1.4rem;">
+                Cancelar
+              </a>
+              {% endif %}
               <button type="submit" id="btn-submit-traje" class="btn-submit-traje">
-                <span>✦</span> Publicar Traje en el Catálogo
+                {% if traje_editar %}
+                  <span>💾</span> Guardar Cambios del Traje
+                {% else %}
+                  <span>✦</span> Publicar Traje en el Catálogo
+                {% endif %}
               </button>
             </div>
 
@@ -667,17 +999,198 @@
       </section>
 
       <!-- ======================================================================
-           SECCIÓN B: MODERACIÓN DE COMENTARIOS PÚBLICOS
+           FASE 14 (MÓDULO 1): BANDEJA DE MODERACIÓN (COMUNIDAD DE COMPARSEROS)
+           Muestra los trajes enviados en /comunidad/subir con estado = 'pendiente'
+           y permite Aprobar (UPDATE a 'publicado') o Rechazar (DELETE registro).
+           ====================================================================== -->
+      <section class="dashboard-card" id="bandeja-moderacion" aria-label="Bandeja de Moderación" style="border-color: rgba(243, 156, 18, 0.5);">
+        <div class="dashboard-card-header" style="background: linear-gradient(90deg, rgba(243, 156, 18, 0.14), rgba(15, 34, 64, 0.95));">
+          <h2>
+            <span>🛡️</span> Bandeja de Moderación (Comunidad de Comparseros)
+            <span style="font-size: 0.85rem; color: #f9ca24; font-weight: 600;">
+              (<span id="total-pendientes-admin">{{ trajes_pendientes|length if trajes_pendientes else 0 }}</span> pendientes de revisión)
+            </span>
+          </h2>
+          <a href="/comunidad/subir" class="btn-admin-nav" target="_blank" style="border-color: rgba(243, 156, 18, 0.5); color: #f9ca24;">
+            <span>📸</span> Ver Formulario Público (/comunidad/subir)
+          </a>
+        </div>
+
+        <div class="dashboard-card-body" style="padding: 1.2rem;">
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="tabla-moderacion-pendientes">
+              <thead>
+                <tr>
+                  <th style="width: 55px;">ID</th>
+                  <th style="width: 80px;">Portada</th>
+                  <th>Comparsero / Figura</th>
+                  <th>Comparsa & Género</th>
+                  <th>Descripción & Materiales</th>
+                  <th>Estado</th>
+                  <th style="width: 300px; text-align: center;">Decisión de Moderación</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-trajes-pendientes">
+                {% for traje in trajes_pendientes %}
+                <tr id="fila-pendiente-{{ traje.id }}">
+                  <td style="color: #f9ca24; font-weight: 700;">#{{ traje.id }}</td>
+                  <td>
+                    <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                         alt="{{ traje.comparsero }}" 
+                         class="traje-table-thumb">
+                  </td>
+                  <td>
+                    <strong style="color: #fff;">{{ traje.comparsero }}</strong>
+                    {% if traje.diseno_original %}
+                      <br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ {{ traje.diseno_original }}</span>
+                    {% endif %}
+                    <br><span style="font-size: 0.76rem; color: var(--dorado-light);">📸 {{ traje.fotos|length if traje.fotos else 1 }} foto(s) adjunta(s)</span>
+                  </td>
+                  <td>
+                    <span>{{ traje.comparsa }}</span><br>
+                    <span style="font-size: 0.78rem; color: var(--dorado-light);">{{ traje.genero }}</span>
+                  </td>
+                  <td style="max-width: 320px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
+                    {% if traje.descripcion %}
+                      <div style="color: #e2e8f0; margin-bottom: 0.25rem;">{{ traje.descripcion[:110] }}{% if traje.descripcion|length > 110 %}...{% endif %}</div>
+                    {% endif %}
+                    <div>💎 {{ traje.materiales[:90] }}{% if traje.materiales and traje.materiales|length > 90 %}...{% endif %}</div>
+                  </td>
+                  <td>
+                    <span class="badge-pendiente-table">⏳ {{ traje.estado|default('pendiente')|upper }}</span>
+                  </td>
+                  <td>
+                    <div class="acciones-cell">
+                      <button type="button"
+                              class="btn-approve-traje"
+                              data-id="{{ traje.id }}"
+                              data-nombre="{{ traje.comparsero }}"
+                              onclick="aprobarTrajeModeracion({{ traje.id }}, this.getAttribute('data-nombre'))"
+                              title="Aprobar y publicar en el catálogo">
+                        <span>✅</span> Aprobar
+                      </button>
+                      <button type="button"
+                              class="btn-delete-traje"
+                              data-id="{{ traje.id }}"
+                              data-nombre="{{ traje.comparsero }}"
+                              onclick="rechazarTrajeModeracion({{ traje.id }}, this.getAttribute('data-nombre'))"
+                              title="Rechazar y eliminar registro">
+                        <span>❌</span> Rechazar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div id="pendientes-admin-vacio" class="admin-empty-state" style="display: {% if trajes_pendientes and trajes_pendientes|length > 0 %}none{% else %}block{% endif %};">
+            <p style="font-size: 1.05rem; color: var(--dorado-light); margin-bottom: 0.3rem;">✓ La Bandeja de Moderación está al día.</p>
+            <span style="font-size: 0.85rem;">No hay trajes pendientes de revisión en este momento. Cuando un comparsero suba su traje en <code>/comunidad/subir</code>, aparecerá aquí.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SECCIÓN B: LISTA DE TRAJES CARGADOS EN EL DASHBOARD (FASE 13 Paso 4)
+           Incluye botón "Editar" (/admin/editar/<id>) junto al de "Eliminar"
+           ====================================================================== -->
+      <section class="dashboard-card" aria-label="Lista de trajes cargados">
+        <div class="dashboard-card-header">
+          <h2>
+            <span>🎭</span> Sección B: Lista de Trajes Publicados (Dashboard)
+            <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
+              (<span id="total-trajes-admin">{{ trajes|length if trajes else 0 }}</span> en catálogo)
+            </span>
+          </h2>
+          <button type="button" id="btn-recargar-trajes" class="btn-admin-nav" style="cursor: pointer;">
+            <span>🔄</span> Actualizar Catálogo
+          </button>
+        </div>
+
+        <div class="dashboard-card-body" style="padding: 1.2rem;">
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="tabla-trajes-admin">
+              <thead>
+                <tr>
+                  <th style="width: 55px;">ID</th>
+                  <th style="width: 80px;">Portada</th>
+                  <th>Comparsero / Figura</th>
+                  <th>Comparsa & Género</th>
+                  <th>Destacado</th>
+                  <th>Galería</th>
+                  <th style="width: 300px; text-align: center;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-trajes-admin">
+                {% if trajes %}
+                  {% for t in trajes %}
+                  <tr id="fila-traje-{{ t.id }}">
+                    <td style="color: var(--dorado-light); font-weight: 600;">#{{ t.id }}</td>
+                    <td>
+                      <img src="{% if t.foto_url and (t.foto_url.startswith('http://') or t.foto_url.startswith('https://') or t.foto_url.startswith('/')) %}{{ t.foto_url }}{% else %}{{ url_for('static', filename=t.foto_url) }}{% endif %}" 
+                           alt="{{ t.comparsero }}" 
+                           class="traje-table-thumb">
+                    </td>
+                    <td>
+                      <strong style="color: #fff;">{{ t.comparsero }}</strong>
+                      {% if t.diseno_original %}
+                        <br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ {{ t.diseno_original }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span>{{ t.comparsa }}</span><br>
+                      <span style="font-size: 0.78rem; color: var(--dorado-light);">{{ t.genero }}</span>
+                    </td>
+                    <td>
+                      {% if t.es_obra_maestra %}
+                        <span class="badge-obra-table">★ Obra Maestra</span>
+                      {% else %}
+                        <span class="badge-estandar-table">Catálogo General</span>
+                      {% endif %}
+                    </td>
+                    <td style="font-size: 0.82rem; color: var(--text-muted);">
+                      📸 {{ t.fotos|length if t.fotos else 1 }} foto(s)
+                    </td>
+                    <td>
+                      <div class="acciones-cell">
+                        <a href="/admin/editar/{{ t.id }}" class="btn-edit-traje" title="Editar este traje">
+                          <span>✏️</span> Editar
+                        </a>
+                        <button type="button" 
+                                class="btn-delete-traje" 
+                                data-id="{{ t.id }}"
+                                data-nombre="{{ t.comparsero }}"
+                                onclick="eliminarTrajeDashboard({{ t.id }}, this.getAttribute('data-nombre'))"
+                                title="Eliminar este traje">
+                          <span>🗑️</span> Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          <div id="trajes-admin-vacio" class="admin-empty-state" style="display: {% if trajes and trajes|length > 0 %}none{% else %}block{% endif %};">
+            <p style="font-size: 1.05rem; color: var(--dorado-light);">No hay trajes cargados todavía.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SECCIÓN C: MODERACIÓN DE COMENTARIOS PÚBLICOS
            ====================================================================== -->
       <section class="dashboard-card" aria-label="Moderación de comentarios">
         <div class="dashboard-card-header">
           <h2>
-            <span>💬</span> Sección B: Moderación de Comentarios
+            <span>💬</span> Sección C: Moderación de Comentarios
             <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
               (<span id="total-comentarios">0</span> registrados)
             </span>
           </h2>
-          <button id="btn-recargar" class="btn-admin-nav" style="cursor: pointer;">
+          <button type="button" id="btn-recargar" class="btn-admin-nav" style="cursor: pointer;">
             <span>🔄</span> Actualizar Lista
           </button>
         </div>
@@ -717,37 +1230,40 @@
     </div>
   </main>
 
-  <!-- Lógica JavaScript del CMS & Dashboard -->
+  <!-- Lógica JavaScript del CMS & Dashboard (FASE 13) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      initFormNuevoTraje();
+      initFormTrajeCMS();
       cargarTodosLosComentarios();
 
-      const btnRecargar = document.getElementById('btn-recargar');
-      if (btnRecargar) {
-        btnRecargar.addEventListener('click', () => {
-          cargarTodosLosComentarios();
-        });
+      const tbodyTrajes = document.getElementById('tbody-trajes-admin');
+      if (tbodyTrajes && tbodyTrajes.children.length === 0) {
+        cargarTrajesDashboard();
+      }
+
+      const btnRecargarComentarios = document.getElementById('btn-recargar');
+      if (btnRecargarComentarios) {
+        btnRecargarComentarios.addEventListener('click', cargarTodosLosComentarios);
+      }
+
+      const btnRecargarTrajes = document.getElementById('btn-recargar-trajes');
+      if (btnRecargarTrajes) {
+        btnRecargarTrajes.addEventListener('click', cargarTrajesDashboard);
       }
     });
 
-    /**
-     * Muestra notificaciones visuales toast
-     */
     function mostrarToast(mensaje, tipo = 'success') {
       const toast = document.getElementById('admin-toast');
       if (!toast) return;
       toast.textContent = mensaje;
       toast.className = `status-toast ${tipo}`;
+      toast.style.display = 'block';
       setTimeout(() => {
         toast.className = 'status-toast';
         toast.style.display = 'none';
       }, 4000);
     }
 
-    /**
-     * Sanitiza cadenas para evitar inyecciones HTML
-     */
     function escapeHTML(str) {
       if (typeof str !== 'string') return '';
       return str
@@ -758,159 +1274,209 @@
         .replace(/'/g, '&#039;');
     }
 
+    function resolverImagenAdmin(url) {
+      if (!url) return '';
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('/')) {
+        return url;
+      }
+      return `/static/${url}`;
+    }
+
     /**
-     * SECCIÓN A: Gestión del Formulario de Carga de Nuevo Traje (POST /api/trajes - FASE 12)
+     * SECCIÓN A: Gestión del Formulario de Creación y Edición con Selección Múltiple de Imágenes
      */
-    function initFormNuevoTraje() {
-      const form = document.getElementById('form-nuevo-traje');
+    function initFormTrajeCMS() {
+      const form = document.getElementById('form-traje-cms');
+      const fileInput = document.getElementById('input-fotos-multiple');
+      const previewContainer = document.getElementById('nuevas-fotos-preview-list');
       const submitBtn = document.getElementById('btn-submit-traje');
       const statusSpan = document.getElementById('traje-submit-status');
-      const fotosContainer = document.getElementById('fotos-container');
-      const btnAddFoto = document.getElementById('btn-add-foto');
+      const inputsEliminarBox = document.getElementById('inputs-fotos-eliminar');
 
-      if (!form || !fotosContainer) return;
+      if (!form || !fileInput || !previewContainer) return;
 
-      let fotoCounter = 1;
+      const modo = form.getAttribute('data-modo') || 'crear';
+      const trajeId = form.getAttribute('data-traje-id') || '';
 
-      // Vincular eventos de previsualización y eliminación a una tarjeta de foto
-      function bindFotoCardEvents(card) {
-        const fileInput = card.querySelector('input[type="file"]');
-        const thumbBox = card.querySelector('.foto-preview-thumb');
-        const thumbImg = thumbBox ? thumbBox.querySelector('img') : null;
-        const btnDel = card.querySelector('.btn-del-foto');
+      // Estado en memoria de los nuevos archivos seleccionados
+      let nuevasFotosState = [];
 
-        if (fileInput && thumbBox && thumbImg) {
-          fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                thumbImg.src = e.target.result;
-                thumbBox.style.display = 'block';
-              };
-              reader.readAsDataURL(file);
-            } else {
-              thumbBox.style.display = 'none';
-            }
-          });
-        }
+      // Manejo de botones para eliminar fotos existentes (en Modo Edición)
+      const btnsDelExistentes = document.querySelectorAll('.btn-del-existente');
+      btnsDelExistentes.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const fotoId = btn.getAttribute('data-foto-id');
+          const card = document.getElementById(`card-foto-existente-${fotoId}`);
+          if (!card || !inputsEliminarBox) return;
 
-        if (btnDel) {
-          btnDel.addEventListener('click', () => {
-            const allCards = fotosContainer.querySelectorAll('.foto-upload-card');
-            if (allCards.length > 1) {
-              const wasChecked = card.querySelector('input[type="radio"]').checked;
-              card.remove();
-              updateFotoCardsIndexing();
-              if (wasChecked) {
-                const firstRadio = fotosContainer.querySelector('input[type="radio"]');
-                if (firstRadio) firstRadio.checked = true;
-              }
-            } else {
-              alert('Debes mantener al menos una fotografía para el traje.');
-            }
-          });
-        }
-      }
+          const restantesExistentes = document.querySelectorAll('.foto-existente-card').length;
+          if (restantesExistentes <= 1 && nuevasFotosState.length === 0) {
+            alert('El traje debe conservar al menos una fotografía, o bien seleccioná una foto nueva antes de quitar esta.');
+            return;
+          }
 
-      // Re-indexar tags y valores de radio buttons
-      function updateFotoCardsIndexing() {
-        const allCards = fotosContainer.querySelectorAll('.foto-upload-card');
-        allCards.forEach((card, idx) => {
-          const tag = card.querySelector('.foto-card-tag');
-          if (tag) tag.textContent = `Foto #${idx + 1}`;
-          const radio = card.querySelector('input[type="radio"]');
-          if (radio) radio.value = String(idx);
-          const btnDel = card.querySelector('.btn-del-foto');
-          if (btnDel) {
-            btnDel.style.display = allCards.length > 1 ? 'inline-block' : 'none';
+          const wasChecked = card.querySelector('input[type="radio"]')?.checked;
+          card.remove();
+
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'fotos_eliminar';
+          hiddenInput.value = fotoId;
+          inputsEliminarBox.appendChild(hiddenInput);
+
+          if (wasChecked) {
+            const firstRadio = form.querySelector('input[name="foto_principal_choice"]');
+            if (firstRadio) firstRadio.checked = true;
           }
         });
-      }
+      });
 
-      // Inicializar la primera fila
-      const primeraFila = fotosContainer.querySelector('.foto-upload-card');
-      if (primeraFila) {
-        bindFotoCardEvents(primeraFila);
-        updateFotoCardsIndexing();
-      }
+      // Al seleccionar múltiples archivos en el input[type="file"][multiple]
+      fileInput.addEventListener('change', () => {
+        const selected = Array.from(fileInput.files || []);
+        if (!selected.length) return;
 
-      // Botón para agregar otra foto a la galería
-      if (btnAddFoto) {
-        btnAddFoto.addEventListener('click', () => {
-          fotoCounter++;
-          const allCards = fotosContainer.querySelectorAll('.foto-upload-card');
-          const newIdx = allCards.length;
+        selected.forEach((file, idx) => {
+          const totalIndex = nuevasFotosState.length;
+          const defaultTitle = (modo === 'crear' && totalIndex === 0)
+            ? 'Vista Principal'
+            : `Detalle #${totalIndex + 1}`;
+          nuevasFotosState.push({
+            file: file,
+            titulo: defaultTitle,
+            esPrincipal: (modo === 'crear' && totalIndex === 0)
+          });
+        });
 
-          const defaultTitles = [
-            'Detalle de Espaldar & Plumas',
-            'Cristales & Pedrería Boreal',
-            'Corona Ceremonial & Tocado',
-            'Herrería & Arnés Liviano',
-            'Calce & Accesorios'
-          ];
-          const defaultTitle = defaultTitles[newIdx - 1] || `Detalle #${newIdx + 1}`;
+        renderizarNuevasFotosPreview();
+      });
 
-          const newCard = document.createElement('div');
-          newCard.className = 'foto-upload-card';
-          newCard.setAttribute('data-index', String(newIdx));
-          newCard.innerHTML = `
+      function renderizarNuevasFotosPreview() {
+        previewContainer.innerHTML = '';
+
+        const anyExistingChecked = Boolean(form.querySelector('.foto-existente-card input[name="foto_principal_choice"]:checked'));
+
+        nuevasFotosState.forEach((item, idx) => {
+          const card = document.createElement('div');
+          card.className = 'foto-upload-card';
+
+          const radioChecked = (modo === 'crear')
+            ? (item.esPrincipal || (!nuevasFotosState.some(x => x.esPrincipal) && idx === 0))
+            : (!anyExistingChecked && idx === 0);
+
+          if (modo === 'crear' && radioChecked) {
+            item.esPrincipal = true;
+          }
+
+          card.innerHTML = `
             <div class="foto-card-top">
-              <span class="foto-card-tag">Foto #${newIdx + 1}</span>
+              <span class="foto-card-tag">Nueva Foto #${idx + 1}</span>
               <label class="foto-principal-radio-label">
-                <input type="radio" name="foto_principal" value="${newIdx}">
+                <input type="radio" name="foto_principal_choice" value="new_${idx}" ${radioChecked ? 'checked' : ''}>
                 <span>★ Vista Principal (Portada)</span>
               </label>
-              <button type="button" class="btn-del-foto" title="Eliminar foto">✕</button>
+              <button type="button" class="btn-del-foto" title="Quitar de la selección">✕</button>
             </div>
-            <div class="foto-card-inputs">
-              <div class="foto-file-box">
-                <input type="file" name="fotos" accept="image/*" class="form-control input-file-foto" required>
-                <div class="foto-preview-thumb" style="display: none;">
-                  <img src="" alt="Preview">
-                </div>
+            <div class="foto-preview-row">
+              <div class="foto-preview-thumb">
+                <img src="" alt="Preview">
               </div>
-              <div class="foto-title-box">
-                <input type="text" name="titulos_fotos" class="form-control" placeholder="Título en galería" value="${defaultTitle}" required>
+              <div style="flex: 1;">
+                <input type="text" class="form-control input-titulo-nueva" value="${escapeHTML(item.titulo)}" placeholder="Título de la foto (ej: Vista Frontal)">
+                <span style="font-size: 0.74rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">
+                  ${escapeHTML(item.file.name)}
+                </span>
               </div>
             </div>
           `;
 
-          fotosContainer.appendChild(newCard);
-          bindFotoCardEvents(newCard);
-          updateFotoCardsIndexing();
+          const imgEl = card.querySelector('img');
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            if (imgEl) imgEl.src = e.target.result;
+          };
+          reader.readAsDataURL(item.file);
+
+          const titleInp = card.querySelector('.input-titulo-nueva');
+          titleInp.addEventListener('input', (e) => {
+            item.titulo = e.target.value;
+          });
+
+          const radioInp = card.querySelector('input[type="radio"]');
+          radioInp.addEventListener('change', () => {
+            nuevasFotosState.forEach((f, i) => {
+              f.esPrincipal = (i === idx);
+            });
+          });
+
+          const btnDel = card.querySelector('.btn-del-foto');
+          btnDel.addEventListener('click', () => {
+            nuevasFotosState.splice(idx, 1);
+            if (nuevasFotosState.length === 0) {
+              fileInput.value = '';
+            }
+            renderizarNuevasFotosPreview();
+          });
+
+          previewContainer.appendChild(card);
         });
       }
 
-      // Submit del Formulario con FormData
+      // Envío del formulario (Crear o Editar)
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const fileInputs = form.querySelectorAll('input[name="fotos"]');
-        let hasFiles = true;
-        fileInputs.forEach(inp => {
-          if (!inp.files || inp.files.length === 0) hasFiles = false;
-        });
-
-        if (!hasFiles) {
-          alert('Por favor selecciona un archivo de imagen en cada sección de fotografía.');
+        if (modo === 'crear' && nuevasFotosState.length === 0 && (!fileInput.files || fileInput.files.length === 0)) {
+          alert('Por favor seleccioná al menos una fotografía para el traje.');
           return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳</span> Subiendo y guardando galería...';
+        const originalBtnHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span>⏳</span> Guardando en SQLite...';
         statusSpan.style.color = 'var(--dorado-light)';
-        statusSpan.textContent = 'Enviando fotografías y registrando traje en SQLite...';
+        statusSpan.textContent = modo === 'editar'
+          ? 'Actualizando datos y galería del traje...'
+          : 'Subiendo fotografías y publicando traje...';
 
         try {
           const formData = new FormData(form);
+          formData.delete('fotos');
+          formData.delete('titulos_fotos');
 
-          // Capturar el índice seleccionado para la foto principal
-          const checkedRadio = form.querySelector('input[name="foto_principal"]:checked');
-          const principalIndex = checkedRadio ? checkedRadio.value : '0';
-          formData.set('foto_principal_index', principalIndex);
+          // Asegurar el envío explícito del estado del checkbox es_obra_maestra
+          const chkObra = document.getElementById('es_obra_maestra');
+          formData.set('es_obra_maestra', chkObra && chkObra.checked ? '1' : '0');
 
-          const response = await fetch('/api/trajes', {
+          // Adjuntar los archivos seleccionados y sus títulos
+          const filesToUpload = nuevasFotosState.length > 0
+            ? nuevasFotosState
+            : Array.from(fileInput.files || []).map((f, i) => ({
+                file: f,
+                titulo: i === 0 ? 'Vista Principal' : `Detalle #${i + 1}`,
+                esPrincipal: i === 0
+              }));
+
+          let principalIdx = 0;
+          const checkedChoice = form.querySelector('input[name="foto_principal_choice"]:checked');
+          const choiceVal = checkedChoice ? checkedChoice.value : 'new_0';
+          formData.set('foto_principal_choice', choiceVal);
+
+          if (choiceVal.startsWith('new_')) {
+            principalIdx = parseInt(choiceVal.replace('new_', ''), 10) || 0;
+          }
+          formData.set('foto_principal_index', String(principalIdx));
+
+          filesToUpload.forEach((item) => {
+            formData.append('fotos', item.file);
+            formData.append('titulos_fotos', item.titulo || 'Vista del Traje');
+          });
+
+          const endpoint = modo === 'editar'
+            ? `/api/trajes/editar/${trajeId}`
+            : '/api/trajes';
+
+          const response = await fetch(endpoint, {
             method: 'POST',
             body: formData
           });
@@ -918,65 +1484,234 @@
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.error || 'Error al guardar el traje en el servidor.');
+            throw new Error(data.error || 'Error al procesar la solicitud en el servidor.');
           }
 
-          // Éxito: Feedback y limpieza
           statusSpan.style.color = '#2ecc71';
-          statusSpan.textContent = '✓ ¡Traje y galería guardados exitosamente!';
-          
-          mostrarToast(`✓ ¡Traje "${data.traje.comparsero}" publicado con éxito en el catálogo!`, 'success');
-          alert(`✓ ¡Éxito! El traje "${data.traje.comparsero}" de comparsa "${data.traje.comparsa}" ha sido guardado junto con sus fotos en la base de datos.`);
-
-          form.reset();
-
-          // Resetear contenedor de fotos a solo una fila
-          fotosContainer.innerHTML = `
-            <div class="foto-upload-card" data-index="0">
-              <div class="foto-card-top">
-                <span class="foto-card-tag">Foto #1</span>
-                <label class="foto-principal-radio-label">
-                  <input type="radio" name="foto_principal" value="0" checked>
-                  <span>★ Vista Principal (Portada)</span>
-                </label>
-                <button type="button" class="btn-del-foto" style="display: none;" title="Eliminar foto">✕</button>
-              </div>
-              <div class="foto-card-inputs">
-                <div class="foto-file-box">
-                  <input type="file" name="fotos" accept="image/*" class="form-control input-file-foto" required>
-                  <div class="foto-preview-thumb" style="display: none;">
-                    <img src="" alt="Preview">
-                  </div>
-                </div>
-                <div class="foto-title-box">
-                  <input type="text" name="titulos_fotos" class="form-control" placeholder="Título en galería (ej: Vista Frontal, Cristales & Bordado)" value="Vista Principal" required>
-                </div>
-              </div>
-            </div>
-          `;
-          const primer = fotosContainer.querySelector('.foto-upload-card');
-          bindFotoCardEvents(primer);
-          updateFotoCardsIndexing();
-
-          setTimeout(() => {
-            statusSpan.textContent = '';
-          }, 3500);
-
+          if (modo === 'editar') {
+            statusSpan.textContent = '✓ ¡Traje actualizado correctamente!';
+            mostrarToast(`✓ Traje "${data.traje.comparsero}" actualizado con éxito`, 'success');
+            setTimeout(() => {
+              window.location.href = '/admin';
+            }, 900);
+          } else {
+            statusSpan.textContent = '✓ ¡Traje y galería publicados exitosamente!';
+            mostrarToast(`✓ ¡Traje "${data.traje.comparsero}" publicado con éxito!`, 'success');
+            form.reset();
+            nuevasFotosState = [];
+            previewContainer.innerHTML = '';
+            cargarTrajesDashboard();
+            setTimeout(() => {
+              statusSpan.textContent = '';
+            }, 3500);
+          }
         } catch (error) {
-          console.error('Error al enviar formulario:', error);
+          console.error('Error al guardar traje:', error);
           statusSpan.style.color = '#e74c3c';
           statusSpan.textContent = '⚠️ ' + error.message;
           mostrarToast(error.message, 'error');
-          alert('Error: ' + error.message);
         } finally {
           submitBtn.disabled = false;
-          submitBtn.innerHTML = '<span>✦</span> Publicar Traje en el Catálogo';
+          submitBtn.innerHTML = originalBtnHTML;
         }
       });
     }
 
     /**
-     * SECCIÓN B: Carga y renderizado dinámico de comentarios (GET /api/comentarios/todos)
+     * SECCIÓN B: Recarga dinámica de la Lista de Trajes Cargados (Dashboard)
+     */
+    async function cargarTrajesDashboard() {
+      const tbody = document.getElementById('tbody-trajes-admin');
+      const contador = document.getElementById('total-trajes-admin');
+      const vacio = document.getElementById('trajes-admin-vacio');
+      if (!tbody) return;
+
+      try {
+        const res = await fetch('/api/trajes');
+        if (!res.ok) throw new Error('Error al consultar trajes');
+        const trajes = await res.json();
+
+        if (contador) contador.textContent = trajes.length;
+        tbody.innerHTML = '';
+
+        if (trajes.length === 0) {
+          if (vacio) vacio.style.display = 'block';
+          return;
+        }
+        if (vacio) vacio.style.display = 'none';
+
+        trajes.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.id = `fila-traje-${t.id}`;
+
+          const fotoUrl = escapeHTML(resolverImagenAdmin(t.foto_url || ''));
+          const cantFotos = Array.isArray(t.fotos) && t.fotos.length > 0 ? t.fotos.length : 1;
+          const badgeObra = t.es_obra_maestra
+            ? `<span class="badge-obra-table">★ Obra Maestra</span>`
+            : `<span class="badge-estandar-table">Catálogo General</span>`;
+          const disenoTxt = t.diseno_original
+            ? `<br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ ${escapeHTML(t.diseno_original)}</span>`
+            : '';
+
+          tr.innerHTML = `
+            <td style="color: var(--dorado-light); font-weight: 600;">#${t.id}</td>
+            <td>
+              <img src="${fotoUrl}" alt="${escapeHTML(t.comparsero)}" class="traje-table-thumb">
+            </td>
+            <td>
+              <strong style="color: #fff;">${escapeHTML(t.comparsero)}</strong>
+              ${disenoTxt}
+            </td>
+            <td>
+              <span>${escapeHTML(t.comparsa)}</span><br>
+              <span style="font-size: 0.78rem; color: var(--dorado-light);">${escapeHTML(t.genero)}</span>
+            </td>
+            <td>${badgeObra}</td>
+            <td style="font-size: 0.82rem; color: var(--text-muted);">📸 ${cantFotos} foto(s)</td>
+            <td>
+              <div class="acciones-cell">
+                <a href="/admin/editar/${t.id}" class="btn-edit-traje" title="Editar este traje">
+                  <span>✏️</span> Editar
+                </a>
+                <button type="button" class="btn-delete-traje" title="Eliminar este traje">
+                  <span>🗑️</span> Eliminar
+                </button>
+              </div>
+            </td>
+          `;
+
+          const btnDel = tr.querySelector('.btn-delete-traje');
+          btnDel.addEventListener('click', () => eliminarTrajeDashboard(t.id, t.comparsero));
+
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error cargando trajes en dashboard:', err);
+      }
+    }
+
+    /**
+     * Elimina un traje desde el Dashboard (DELETE /api/trajes/<id>)
+     */
+    async function eliminarTrajeDashboard(id, nombre) {
+      const confirmar = confirm(`¿Estás seguro de que deseas eliminar permanentemente el traje "${nombre}" (ID #${id}) y toda su galería?`);
+      if (!confirmar) return;
+
+      try {
+        const res = await fetch(`/api/trajes/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'No se pudo eliminar el traje.');
+        }
+
+        const fila = document.getElementById(`fila-traje-${id}`);
+        if (fila) {
+          fila.style.transition = 'all 0.3s ease';
+          fila.style.opacity = '0';
+          setTimeout(() => {
+            fila.remove();
+            const contador = document.getElementById('total-trajes-admin');
+            if (contador) {
+              contador.textContent = Math.max(0, (parseInt(contador.textContent, 10) || 1) - 1);
+            }
+          }, 280);
+        }
+        mostrarToast(`✓ Traje #${id} eliminado con éxito`, 'success');
+      } catch (err) {
+        console.error('Error al eliminar traje:', err);
+        mostrarToast(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    window.eliminarTrajeDashboard = eliminarTrajeDashboard;
+
+    /**
+     * FASE 14 (Módulo 1): Aprueba un traje pendiente en la Bandeja de Moderación (UPDATE estado = 'publicado')
+     */
+    async function aprobarTrajeModeracion(id, nombre) {
+      try {
+        const res = await fetch(`/api/trajes/aprobar/${id}`, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'No se pudo aprobar el traje.');
+        }
+
+        const fila = document.getElementById(`fila-pendiente-${id}`);
+        if (fila) {
+          fila.style.transition = 'all 0.3s ease';
+          fila.style.opacity = '0';
+          setTimeout(() => {
+            fila.remove();
+            const contadorPend = document.getElementById('total-pendientes-admin');
+            if (contadorPend) {
+              const nuevoTotal = Math.max(0, (parseInt(contadorPend.textContent, 10) || 1) - 1);
+              contadorPend.textContent = nuevoTotal;
+              if (nuevoTotal === 0) {
+                const vacioPend = document.getElementById('pendientes-admin-vacio');
+                if (vacioPend) vacioPend.style.display = 'block';
+              }
+            }
+          }, 260);
+        }
+
+        mostrarToast(`✓ Traje "${nombre}" (#${id}) aprobado y publicado en el catálogo`, 'success');
+        cargarTrajesDashboard();
+      } catch (err) {
+        console.error('Error al aprobar traje:', err);
+        mostrarToast(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    /**
+     * FASE 14 (Módulo 1): Rechaza y elimina un traje pendiente de la Bandeja de Moderación
+     */
+    async function rechazarTrajeModeracion(id, nombre) {
+      const confirmar = confirm(`¿Deseás rechazar y eliminar la propuesta "${nombre}" (ID #${id}) de la Bandeja de Moderación?`);
+      if (!confirmar) return;
+
+      try {
+        const res = await fetch(`/api/trajes/rechazar/${id}`, {
+          method: 'DELETE',
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'No se pudo rechazar el traje.');
+        }
+
+        const fila = document.getElementById(`fila-pendiente-${id}`);
+        if (fila) {
+          fila.style.transition = 'all 0.3s ease';
+          fila.style.opacity = '0';
+          setTimeout(() => {
+            fila.remove();
+            const contadorPend = document.getElementById('total-pendientes-admin');
+            if (contadorPend) {
+              const nuevoTotal = Math.max(0, (parseInt(contadorPend.textContent, 10) || 1) - 1);
+              contadorPend.textContent = nuevoTotal;
+              if (nuevoTotal === 0) {
+                const vacioPend = document.getElementById('pendientes-admin-vacio');
+                if (vacioPend) vacioPend.style.display = 'block';
+              }
+            }
+          }, 260);
+        }
+
+        mostrarToast(`✕ Propuesta #${id} rechazada y eliminada`, 'success');
+      } catch (err) {
+        console.error('Error al rechazar traje:', err);
+        mostrarToast(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    window.aprobarTrajeModeracion = aprobarTrajeModeracion;
+    window.rechazarTrajeModeracion = rechazarTrajeModeracion;
+
+    /**
+     * SECCIÓN C: Carga y renderizado dinámico de comentarios (GET /api/comentarios/todos)
      */
     async function cargarTodosLosComentarios() {
       const loading = document.getElementById('admin-loading');
@@ -1029,7 +1764,6 @@
             </td>
           `;
 
-          // Evento de eliminación al botón
           const btnDelete = tr.querySelector('.btn-delete-comentario');
           btnDelete.addEventListener('click', () => eliminarComentario(com.id, com.usuario));
 
@@ -1044,9 +1778,6 @@
       }
     }
 
-    /**
-     * Eliminación de comentario por ID (DELETE /api/comentarios/<id>)
-     */
     async function eliminarComentario(id, usuario) {
       const confirmar = confirm(`¿Estás seguro de que deseas eliminar permanentemente el comentario de "${usuario}" (ID #${id})?`);
       if (!confirmar) return;
@@ -1062,7 +1793,6 @@
           throw new Error(data.error || 'No se pudo eliminar el comentario.');
         }
 
-        // Remover visualmente la fila de la tabla
         const fila = document.getElementById(`fila-comentario-${id}`);
         if (fila) {
           fila.style.transition = 'all 0.3s ease';

@@ -1,0 +1,45 @@
+FASE 1: ESTRUCTURA DE NAVEGACIÓN Y COMPARSAS (Próximo paso técnico)
+
+[ ] Modificar la lógica de "Comparsas": Cambiar la navegación actual para que muestre una grilla con tarjetas pequeñas (miniaturas).
+
+[ ] Crear la "Ficha del Comparsero" (Página individual): Al hacer clic en una miniatura, debe llevar a una página exclusiva de ese traje.
+
+[ ] Filtros por Género en Trajes: Agregar la clasificación clara entre trajes "Femeninos" y "Masculinos" (por las diferencias de arneses, cortes y distribución de peso).
+
+[ ] Sección "Coordinación Independiente": Crear la galería premium para las "Obras Maestras" (los trajes que más tiempo y dedicación llevaron, sin importar de qué comparsa sean).
+
+FASE 2: LA FICHA TÉCNICA DEL TRAJE (Contenido de las páginas individuales)
+
+[ ] Bloque de Fotos: Galería dedicada al traje (1 principal grande y miniaturas).
+
+[ ] Bloque de Créditos: Recuadro elegante nombrando al Comparsero/a, Diseñador original y Herrero/Estructuras, dejando claro el rol de Hugo como Coordinador General.
+
+[ ] Desglose de Materiales: Lista de utilidad pública detallando cantidades (ej: plumas, kilos de strass, metros de acetato) para que otros comparseros calculen costos.
+
+FASE 3: HISTORIA Y NARRATIVA (El corazón de la página)
+
+[ ] Reescribir la sección "Historia": Integrar sus raíces en San Roque y su amor por la comparsa barrial Panambí.
+
+[ ] El ADN Comparsero: Mencionar que viene de una "familia comparsera" y que él mismo fue bailarín (sabe lo que el cuerpo necesita en la calzada).
+
+[ ] Los Inicios: Agregar la anécdota de cuando decoraba cumpleaños (forjando su destreza manual y creatividad) antes de dedicarse 100% al carnaval.
+
+[ ] Página dedicada a Panambí: Crear su propia sección como homenaje a la comparsa donde todo empezó.
+
+FASE 4: INTERACTIVIDAD Y FUNCIONES PROFESIONALES (JavaScript y UX)
+
+[ ] Slider "Boceto vs. Realidad": Componente interactivo para arrastrar y comparar el dibujo original del diseñador con el traje finalizado por Hugo.
+
+[ ] Puntos de Interés (Hotspots): Puntos interactivos sobre las fotos de los trajes que al pasar el mouse revelen datos técnicos (ej: "Duraluminio 2kg" o "Cristales engarzados").
+
+[ ] Botón de WhatsApp: Integrar un botón flotante global en la esquina de la pantalla para consultas y presupuestos directos.
+
+FASE 5: REVISIÓN FINAL Y REEMPLAZO DE DATOS
+
+[ ] Sustitución de Placeholders: Cambiar todas las fotos de prueba y los textos inventados por los archivos multimedia, nombres reales de comparseros y listas de materiales exactas que te pase tu tío.
+++ corregir sitio para celulares
+++sección admin para cargar trajes y datos
+
+++sección me gusta y comentarios
+
+++ para poder compartir en redes sociales

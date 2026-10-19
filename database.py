@@ -1,6 +1,6 @@
 """
 Hugo Fernández Arte Creativo - Módulo de Base de Datos SQLite
-FASE 12: Expansión de Base de Datos, Galería Dinámica y Fix de Filtros.
+FASE 13: Arquitectura Definitiva (Galería Dinámica, Edición, Obras Maestras y Fix de Feed).
 """
 
 import sqlite3
@@ -11,21 +11,22 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), DB_NAME)
 
 
 def get_db_connection():
-    """Retorna una conexión a la base de datos SQLite con formato de diccionario (sqlite3.Row)."""
+    """Retorna una conexión a la base de datos SQLite con formato de diccionario (sqlite3.Row) y claves foráneas activas."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 
 def init_db():
     """
     Inicializa el esquema de base de datos, ejecuta migraciones automáticas
-    para columnas nuevas (FASE 12) y puebla datos iniciales si no existen.
+    para las columnas de FASE 13 y puebla datos iniciales si no existen.
     """
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # 1. Creación de la tabla trajes (esquema actualizado FASE 12 con columnas enriquecidas)
+    # 1. Creación de la tabla trajes (esquema definitivo FASE 13 & FASE 14)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS trajes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +37,9 @@ def init_db():
             foto_url TEXT,
             descripcion TEXT,
             diseno_original TEXT,
-            herreria_estructura TEXT
+            herreria_estructura TEXT,
+            es_obra_maestra BOOLEAN DEFAULT 0,
+            estado VARCHAR DEFAULT 'pendiente'
         )
     """)
 
@@ -56,7 +59,17 @@ def init_db():
         cursor.execute("ALTER TABLE trajes ADD COLUMN herreria_estructura TEXT")
         print("[+] Migración SQLite: Columna 'herreria_estructura' agregada a tabla trajes.")
 
-    # 3. Creación de la NUEVA TABLA fotos_traje (FASE 12: Galería Dinámica Múltiple)
+    if "es_obra_maestra" not in columnas_actuales:
+        cursor.execute("ALTER TABLE trajes ADD COLUMN es_obra_maestra BOOLEAN DEFAULT 0")
+        cursor.execute("UPDATE trajes SET es_obra_maestra = 1 WHERE id IN (1, 2, 3, 4)")
+        print("[+] Migración SQLite: Columna 'es_obra_maestra' agregada a tabla trajes.")
+
+    if "estado" not in columnas_actuales:
+        cursor.execute("ALTER TABLE trajes ADD COLUMN estado VARCHAR DEFAULT 'pendiente'")
+        cursor.execute("UPDATE trajes SET estado = 'publicado' WHERE estado IS NULL OR estado = 'pendiente'")
+        print("[+] Migración SQLite FASE 14: Columna 'estado' agregada a tabla trajes.")
+
+    # 3. Creación de la tabla fotos_traje (FASE 12 & 13: Galería Dinámica Múltiple)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS fotos_traje (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,7 +81,7 @@ def init_db():
         )
     """)
 
-    # 4. FASE 7: Creación de la tabla comentarios
+    # 4. Creación de la tabla comentarios (FASE 7)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS comentarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,7 +102,6 @@ def init_db():
         seed_data(conn)
     else:
         print(f"[*] Base de datos lista: 'trajes' ya contiene {count_trajes} registros.")
-        # Migración retroactiva: migrar fotos de trajes existentes a fotos_traje si aún no tienen
         migrar_fotos_existentes(conn)
 
     # 6. Verificar si la tabla de comentarios tiene datos iniciales
@@ -106,7 +118,7 @@ def init_db():
 def migrar_fotos_existentes(conn):
     """
     Garantiza que todos los trajes preexistentes cuenten con al menos una entrada
-    marcada como principal en la nueva tabla fotos_traje (FASE 12).
+    marcada como principal en la tabla fotos_traje (FASE 12 & 13).
     """
     cursor = conn.cursor()
     cursor.execute("SELECT id, foto_url, comparsero FROM trajes")
@@ -127,7 +139,7 @@ def migrar_fotos_existentes(conn):
 
     if migradas > 0:
         conn.commit()
-        print(f"[+] Migración FASE 12: {migradas} fotos de trajes existentes sincronizadas en 'fotos_traje'.")
+        print(f"[+] Migración FASE 13: {migradas} fotos de trajes existentes sincronizadas en 'fotos_traje'.")
 
 
 def seed_comentarios(conn):
@@ -147,7 +159,7 @@ def seed_comentarios(conn):
 
 
 def seed_data(conn):
-    """Inserta registros de prueba iniciales (Seed Data) representativos con créditos y galerías."""
+    """Inserta registros de prueba iniciales (Seed Data) representativos con créditos, obras maestras y galerías."""
     cursor = conn.cursor()
     trajes_iniciales = [
         (
@@ -158,7 +170,8 @@ def seed_data(conn):
             "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=800&auto=format&fit=crop",
             "Inspirado en el renacer del fuego y la luz escénica del corsódromo correntino, combinando ergonomía de alta movilidad para la bastonera principal.",
             "Marcos Romero (Diseño Escénico)",
-            "Taller Escénico Corrientes (3.8 kg duraluminio con arnés anatómico)"
+            "Taller Escénico Corrientes (3.8 kg duraluminio con arnés anatómico)",
+            1
         ),
         (
             "Guerrero de las Profundidades (Solista)",
@@ -168,7 +181,8 @@ def seed_data(conn):
             "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop",
             "Coraza pectoral en termoformado espejado con garras de fundición dorada y espaldar alado con doble arco amortiguado para soportar el ritmo de batería.",
             "Hugo Fernández & Equipo de Arte",
-            "Herrería Artística TIG (4.2 kg acero al carbono liviano)"
+            "Herrería Artística TIG (4.2 kg acero al carbono liviano)",
+            1
         ),
         (
             "Diosa de las Aguas Doradas (Reina)",
@@ -178,7 +192,8 @@ def seed_data(conn):
             "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
             "Orfebrería en fundición dorada con refracción boreal y cascada de perlas de fantasía sobre malla metálica ligera para máxima prestancia real.",
             "Javier Benítez (Orfebrería Teatral)",
-            "Estructura Dorsal Ultraliviana (2.9 kg)"
+            "Estructura Dorsal Ultraliviana (2.9 kg)",
+            1
         ),
         (
             "Emperador Místico del Iberá (Bastonero)",
@@ -188,18 +203,19 @@ def seed_data(conn):
             "https://images.unsplash.com/photo-1506152983158-b4a74a01c721?q=80&w=800&auto=format&fit=crop",
             "Espaldar radial soldado en TIG con distribución de carga lumbar, arnés anatómico de duraluminio y apliques de cuero ecológico con gemas doradas.",
             "Hugo Fernández",
-            "Taller de Herrería Hugo Fernández (3.9 kg balanceado)"
+            "Taller de Herrería Hugo Fernández (3.9 kg balanceado)",
+            1
         )
     ]
 
     for t in trajes_iniciales:
         cursor.execute("""
-            INSERT INTO trajes (comparsero, comparsa, genero, materiales, foto_url, descripcion, diseno_original, herreria_estructura)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO trajes (comparsero, comparsa, genero, materiales, foto_url, descripcion, diseno_original, herreria_estructura, es_obra_maestra, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicado')
         """, t)
         t_id = cursor.lastrowid
 
-        # Insertar fotos en la nueva tabla fotos_traje
+        # Insertar fotos en la tabla fotos_traje
         foto_principal = t[4]
         cursor.execute("""
             INSERT INTO fotos_traje (traje_id, ruta_imagen, titulo, es_principal)
@@ -218,7 +234,7 @@ def seed_data(conn):
         """, (t_id, "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=600&auto=format&fit=crop", "Tocado & Plumas"))
 
     conn.commit()
-    print(f"[+] Seed Data FASE 12 insertada exitosamente: {len(trajes_iniciales)} trajes y galerías cargadas en {DB_NAME}.")
+    print(f"[+] Seed Data FASE 13 insertada exitosamente: {len(trajes_iniciales)} trajes y galerías cargadas en {DB_NAME}.")
 
 
 if __name__ == "__main__":

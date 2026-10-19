@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Colección de Obras Maestras y trajes insignia de alta costura coordinados y realizados de manera independiente por Hugo Fernández.">
+  <title>Obras Maestras | Hugo Fernández Coordinación Independiente</title>
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="../css/estilos.css">
+  <script src="/static/js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/" class="nav-link">Inicio</a>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Galería de Inspiración</a></li>
+              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/pages/arandu-beleza.html">Catálogo de Comparsas</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="/pages/coordinacion.html" class="nav-link active">Obras Maestras</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logo / Marca en la esquina superior derecha -->
+      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </a>
+
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <!-- Encabezado de la página -->
+      <header class="page-header slide-up">
+        <span class="hero-badge" style="margin-bottom: 0.8rem;">Colección Exclusiva de Taller</span>
+        <h1 class="dorado-titulo">Obras Maestras de Coordinación</h1>
+        <div class="section-divider"></div>
+        <p>
+          Las piezas de mayor complejidad artesanal, herrería de precisión y volumen monumental concebidas en nuestro taller. 
+          Trajes insignia donde el tiempo, la obsesión por el detalle y la devoción carnavalesca alcanzaron su máxima expresión de arte vivo.
+        </p>
+      </header>
+
+      <!-- ==========================================================================
+           GRILLA DE OBRAS MAESTRAS (.coordinacion-grid) - FASE 13 & FASE 14 (MÓDULO 3)
+           Alimentada por SELECT * FROM trajes WHERE estado = 'publicado' AND es_obra_maestra = 1
+           Incluye clase .obra-maestra-glitter con animación CSS autónoma de brillo/purpurina
+           que simula el destello de los cristales boreales bajo los reflectores del corsódromo.
+           ========================================================================== -->
+      <section class="coordinacion-grid" aria-label="Catálogo de Obras Maestras">
+        {% if trajes %}
+          {% for traje in trajes %}
+          <article class="coordinacion-card obra-maestra-glitter reveal visible delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ traje.id }}">
+            <span class="badge-masterpiece">✦ Obra Maestra</span>
+            <div class="comparsero-thumb">
+              <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                   alt="Obra Maestra - {{ traje.comparsero }}" loading="lazy">
+            </div>
+            <div class="coordinacion-body">
+              <div>
+                <p class="coordinacion-highlight">
+                  ✦ {{ traje.herreria_estructura if traje.herreria_estructura else traje.comparsa }} • {{ traje.genero }}
+                </p>
+                <h2 class="comparsero-title">{{ traje.comparsero }}</h2>
+                <p class="comparsero-subtitle">
+                  {{ traje.comparsa }} | {{ traje.diseno_original if traje.diseno_original else 'Coordinación & Realización Integral' }}
+                </p>
+              </div>
+              <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-ver-ficha">
+                Ver Ficha del Traje <span class="arrow-icon">→</span>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        {% else %}
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; color: var(--dorado-brillo); background: rgba(10, 25, 47, 0.6); border: 1px solid rgba(191, 149, 63, 0.3); border-radius: 12px;">
+            <p style="font-size: 1.15rem; margin-bottom: 0.5rem;">✦ Aún no hay trajes destacados en la sección de Obras Maestras.</p>
+            <p style="font-size: 0.9rem; color: var(--texto-gris-medio);">Podés destacar cualquier traje marcando la casilla "Destacar en Obras Maestras" desde el Panel de Administración.</p>
+          </div>
+        {% endif %}
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER PROFESIONAL
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-name">Hugo Fernández</div>
+        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/trajes">Inspiración de Trajes</a></li>
+          <li><a href="/pages/arandu-beleza.html">Catálogo Comparsas</a></li>
+          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+          <li><a href="/pages/materiales.html">Catálogo de Materiales</a></li>
+          <li><a href="/pages/entrevistas.html">Notas y Entrevistas</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto & Redes</h4>
+        <ul>
+          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
+          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
+          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
+          <li><span>Corrientes, Argentina</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
+      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
+    </div>
+  </footer>
+
+</body>
+</html>

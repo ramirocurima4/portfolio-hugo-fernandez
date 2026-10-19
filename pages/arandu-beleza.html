@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Directorio y catálogo interactivo de figuras y vestuarios de comparsas coordinados por Hugo Fernández Arte Creativo.">
   <title>Comparsas | Hugo Fernández Catálogo Interactivo</title>
+  <link rel="stylesheet" href="/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
-  <script src="../js/main.js" defer></script>
+  <script src="/js/main.js" defer></script>
 </head>
 <body>
 
@@ -37,40 +38,42 @@
               <li><a href="trajes.html#femeninos">Vestuarios Femeninos</a></li>
               <li><a href="trajes.html#masculinos">Vestuarios Masculinos</a></li>
               <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a href="arandu-beleza.html" class="nav-link active">
+            <a href="/pages/arandu-beleza.html" class="nav-link active">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="arandu-beleza.html">Catálogo Arandú Beleza</a></li>
-              <li><a href="../index.html#sapucay">Comparsa Sapucay</a></li>
-              <li><a href="../index.html#ara-bera">Comparsa Ará Berá</a></li>
+              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 
           <li class="nav-item">
-            <a href="coordinacion.html" class="nav-link">Obras Maestras</a>
+            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
           </li>
 
           <li class="nav-item">
-            <a href="materiales.html" class="nav-link">Materiales</a>
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
           </li>
 
           <li class="nav-item">
-            <a href="entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
           </li>
 
           <li class="nav-item">
-            <a href="../index.html#contacto" class="nav-link">Contacto</a>
+            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
           </li>
         </ul>
       </nav>
 
       <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="../index.html" class="header-logo" title="Hugo Fernández Arte Creativo">
+      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
         <span class="brand-name">Hugo Fernández</span>
         <span class="brand-sub">Arte Creativo</span>
       </a>
@@ -80,6 +83,14 @@
 
   <main>
     <div class="container">
+
+      <!-- Acceso Directo a las Páginas Individuales de Comparsas (FASE 14) -->
+      <nav class="comparsas-pills-nav slide-up" aria-label="Páginas de Comparsas">
+        <a href="/pages/arandu-beleza.html" class="comparsa-pill active">✦ Todas las Comparsas</a>
+        {% for comparsa in comparsas_unicas %}
+        <a href="{{ url_for('vista_comparsa', nombre=comparsa) }}" class="comparsa-pill">🎭 {{ comparsa }}</a>
+        {% endfor %}
+      </nav>
       
       <!-- Encabezado de la página -->
       <header class="page-header slide-up">
@@ -87,8 +98,8 @@
         <h1 class="dorado-titulo">Comparsas: Catálogo Interactivo</h1>
         <div class="section-divider"></div>
         <p>
-          Explorá las figuras y vestuarios realizados en nuestro taller para Arandú Beleza y las grandes comparsas. 
-          Utilizá el buscador en tiempo real o los filtros para localizar figuras, figuras clave o materiales específicos.
+          Explorá las figuras y vestuarios realizados en nuestro taller para Arandú Beleza, Sapucay, Ará Berá, Samba Total, Copacabana e Imperio Bahiano. 
+          Utilizá el buscador en tiempo real o los filtros para localizar figuras o materiales específicos.
         </p>
       </header>
 

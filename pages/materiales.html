@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Catálogo técnico de materiales de alta costura, orfebrería y plumaje utilizados por Hugo Fernández en vestuarios de carnaval.">
   <title>Materiales y Materia Prima | Hugo Fernández Arte Creativo</title>
+  <link rel="stylesheet" href="/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
-  <script src="../js/main.js" defer></script>
+  <script src="/js/main.js" defer></script>
 </head>
 <body>
 
@@ -41,13 +42,14 @@
           </li>
 
           <li class="nav-item dropdown">
-            <a href="arandu-beleza.html" class="nav-link">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="arandu-beleza.html">Arandú Beleza</a></li>
-              <li><a href="../index.html#sapucay">Comparsa Sapucay</a></li>
-              <li><a href="../index.html#ara-bera">Comparsa Ará Berá</a></li>
+              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 

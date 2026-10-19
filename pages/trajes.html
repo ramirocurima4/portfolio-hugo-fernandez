@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Galería de inspiración visual de vestuarios de carnaval femeninos y masculinos coordinados por Hugo Fernández.">
+  <meta name="description" content="Galería de inspiración visual de vestuarios de carnaval coordinados por Hugo Fernández.">
   <title>Inspiración de Trajes | Hugo Fernández Arte Creativo</title>
+  <link rel="stylesheet" href="/static/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
-  <script src="../js/main.js" defer></script>
+  <script src="/static/js/main.js" defer></script>
 </head>
 <body>
 
@@ -25,52 +26,53 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="../index.html" class="nav-link">Inicio</a>
+            <a href="/" class="nav-link">Inicio</a>
           </li>
           
           <li class="nav-item dropdown">
-            <a href="trajes.html" class="nav-link active">
+            <a href="/trajes" class="nav-link active">
               Trajes <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="trajes.html">Galería de Inspiración</a></li>
-              <li><a href="trajes.html#femeninos">Vestuarios Femeninos</a></li>
-              <li><a href="trajes.html#masculinos">Vestuarios Masculinos</a></li>
-              <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/trajes">Galería de Inspiración</a></li>
+              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a href="arandu-beleza.html" class="nav-link">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="arandu-beleza.html">Catálogo Arandú Beleza</a></li>
-              <li><a href="../index.html#sapucay">Comparsa Sapucay</a></li>
-              <li><a href="../index.html#ara-bera">Comparsa Ará Berá</a></li>
+              <li><a href="/pages/arandu-beleza.html">Catálogo de Comparsas</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 
           <li class="nav-item">
-            <a href="coordinacion.html" class="nav-link">Obras Maestras</a>
+            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
           </li>
 
           <li class="nav-item">
-            <a href="materiales.html" class="nav-link">Materiales</a>
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
           </li>
 
           <li class="nav-item">
-            <a href="entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
           </li>
 
           <li class="nav-item">
-            <a href="../index.html#contacto" class="nav-link">Contacto</a>
+            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
           </li>
         </ul>
       </nav>
 
       <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="../index.html" class="header-logo" title="Hugo Fernández Arte Creativo">
+      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
         <span class="brand-name">Hugo Fernández</span>
         <span class="brand-sub">Arte Creativo</span>
       </a>
@@ -92,11 +94,13 @@
       </header>
 
       <!-- ==========================================================================
-           BLOQUE 1: VESTUARIOS FEMENINOS (SCROLL VERTICAL INMERSIVO)
+           FEED VERTICAL INMERSIVO DE TRAJES (SCROLL SNAP MÓVIL) - FASE 13
+           Alimentado por SELECT * FROM trajes ORDER BY id DESC estricto sin filtros.
+           Todo traje insertado aparece de inmediato en el scroll público.
            ========================================================================== -->
-      <section class="trajes-section-wrapper" id="femeninos">
+      <section class="trajes-section-wrapper" id="feed-trajes-todos">
         <div class="section-category-header slide-up">
-          <h2 class="dorado-titulo">✦ Vestuarios Femeninos</h2>
+          <h2 class="dorado-titulo">✦ Catálogo Completo de Trajes</h2>
           <div class="category-line"></div>
         </div>
 
@@ -105,159 +109,37 @@
           <span>↕ Deslizá verticalmente para explorar trajes</span>
         </div>
 
-        <div class="feed-trajes-mobile immersive-scroll-container">
-
-          <!-- Traje Femenino 1 -->
-          <article class="tarjeta-feed immersive-traje-card reveal">
-            <div class="immersive-traje-img-box">
-              <img src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=1600&auto=format&fit=crop" 
-                   alt="El Ave Fénix Solar - Gran Bastonera de Comparsa" loading="lazy">
-            </div>
-            <div class="immersive-traje-overlay">
-              <div class="immersive-info">
-                <span class="immersive-badge">Gran Bastonera • 2025</span>
-                <h3 class="immersive-title">El Ave Fénix Solar</h3>
-                <p class="immersive-desc">
-                  3.20 metros de envergadura alada, plumaje ocre amazónico en gradiente continuo y corsé anatómico con 12.000 aplicaciones de strass checo y canutillos.
-                </p>
+        <div class="feed-trajes-mobile immersive-scroll-container" id="feed-principal">
+          {% if trajes %}
+            {% for traje in trajes %}
+            <article class="tarjeta-feed immersive-traje-card reveal visible delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ traje.id }}">
+              <div class="immersive-traje-img-box">
+                <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                     alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy">
               </div>
-              <div class="immersive-action">
-                <a href="traje-detalle.html?traje=fenix-solar" class="btn-dorado">
-                  Consultar Ficha Técnica →
-                </a>
+              <div class="immersive-traje-overlay">
+                <div class="immersive-info">
+                  <span class="immersive-badge">
+                    {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_obra_maestra %} • ★ Obra Maestra{% endif %}
+                  </span>
+                  <h3 class="immersive-title">{{ traje.comparsero }}</h3>
+                  <p class="immersive-desc">
+                    {{ traje.descripcion if traje.descripcion else (traje.materiales if traje.materiales else 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.') }}
+                  </p>
+                </div>
+                <div class="immersive-action">
+                  <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-dorado">
+                    Consultar Ficha Técnica →
+                  </a>
+                </div>
               </div>
+            </article>
+            {% endfor %}
+          {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--dorado-light);">
+              <p>No hay trajes registrados en este momento.</p>
             </div>
-          </article>
-
-          <!-- Traje Femenino 2 -->
-          <article class="tarjeta-feed immersive-traje-card reveal delay-1">
-            <div class="immersive-traje-img-box">
-              <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1600&auto=format&fit=crop" 
-                   alt="Diosa de las Aguas Doradas - Corona y Manto de Reina" loading="lazy">
-            </div>
-            <div class="immersive-traje-overlay">
-              <div class="immersive-info">
-                <span class="immersive-badge">Reina de Comparsa • 2025</span>
-                <h3 class="immersive-title">Diosa de las Aguas Doradas</h3>
-                <p class="immersive-desc">
-                  Orfebrería en fundición dorada con más de 9.000 cristales de refracción boreal y cascada de perlas de fantasía sobre malla metálica ligera.
-                </p>
-              </div>
-              <div class="immersive-action">
-                <a href="traje-detalle.html?traje=diosa-aguas" class="btn-dorado">
-                  Consultar Ficha Técnica →
-                </a>
-              </div>
-            </div>
-          </article>
-
-          <!-- Traje Femenino 3 -->
-          <article class="tarjeta-feed immersive-traje-card reveal delay-2">
-            <div class="immersive-traje-img-box">
-              <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=1600&auto=format&fit=crop" 
-                   alt="Sacerdotisa del Sol Naciente - Tocado Escultórico" loading="lazy">
-            </div>
-            <div class="immersive-traje-overlay">
-              <div class="immersive-info">
-                <span class="immersive-badge">Solista de Cuadro • 2023</span>
-                <h3 class="immersive-title">Sacerdotisa del Sol Naciente</h3>
-                <p class="immersive-desc">
-                  Tocado escultural de tres niveles elaborado en alambre acerado forrado con faisanes plateados de collar y microengarces refractarios.
-                </p>
-              </div>
-              <div class="immersive-action">
-                <a href="traje-detalle.html?traje=sacerdotisa-sol" class="btn-dorado">
-                  Consultar Ficha Técnica →
-                </a>
-              </div>
-            </div>
-          </article>
-
-        </div>
-      </section>
-
-      <!-- ==========================================================================
-           BLOQUE 2: VESTUARIOS MASCULINOS (SCROLL VERTICAL INMERSIVO)
-           ========================================================================== -->
-      <section class="trajes-section-wrapper" id="masculinos">
-        <div class="section-category-header slide-up">
-          <h2 class="dorado-titulo">✦ Vestuarios Masculinos</h2>
-          <div class="category-line"></div>
-        </div>
-
-        <!-- Indicador visual sutil para experiencia inmersiva móvil (Reels/Tinder) -->
-        <div class="mobile-feed-hint" aria-hidden="true">
-          <span>↕ Deslizá verticalmente para explorar trajes</span>
-        </div>
-
-        <div class="feed-trajes-mobile immersive-scroll-container">
-
-          <!-- Traje Masculino 1 -->
-          <article class="tarjeta-feed immersive-traje-card reveal">
-            <div class="immersive-traje-img-box">
-              <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop" 
-                   alt="Guerrero de las Profundidades - Armadura de Zafiro y Oro" loading="lazy">
-            </div>
-            <div class="immersive-traje-overlay">
-              <div class="immersive-info">
-                <span class="immersive-badge">Solista Masculino • 2024</span>
-                <h3 class="immersive-title">Guerrero de las Profundidades</h3>
-                <p class="immersive-desc">
-                  Coraza pectoral en termoformado espejado con garras de fundición dorada y espaldar alado con doble arco de plumas zafiro amortiguado ergonómicamente.
-                </p>
-              </div>
-              <div class="immersive-action">
-                <a href="traje-detalle.html?traje=guerrero-profundidades" class="btn-dorado">
-                  Consultar Ficha Técnica →
-                </a>
-              </div>
-            </div>
-          </article>
-
-          <!-- Traje Masculino 2 -->
-          <article class="tarjeta-feed immersive-traje-card reveal delay-1">
-            <div class="immersive-traje-img-box">
-              <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?q=80&w=1600&auto=format&fit=crop" 
-                   alt="Emperador Místico del Iberá - Bastonero Masculino" loading="lazy">
-            </div>
-            <div class="immersive-traje-overlay">
-              <div class="immersive-info">
-                <span class="immersive-badge">Gran Bastonero • 2024</span>
-                <h3 class="immersive-title">Emperador Místico del Iberá</h3>
-                <p class="immersive-desc">
-                  Espaldar radial soldado en TIG con distribución de carga lumbar, arnés anatómico de duraluminio y aplicaciones en cuero ecológico con gemas doradas.
-                </p>
-              </div>
-              <div class="immersive-action">
-                <a href="traje-detalle.html?traje=emperador-ibera" class="btn-dorado">
-                  Consultar Ficha Técnica →
-                </a>
-              </div>
-            </div>
-          </article>
-
-          <!-- Traje Masculino 3 -->
-          <article class="tarjeta-feed immersive-traje-card reveal delay-2">
-            <div class="immersive-traje-img-box">
-              <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1600&auto=format&fit=crop" 
-                   alt="Centinela de Fuego y Selva - Casco y Espaldar Alado" loading="lazy">
-            </div>
-            <div class="immersive-traje-overlay">
-              <div class="immersive-info">
-                <span class="immersive-badge">Dúo de Apertura • 2023</span>
-                <h3 class="immersive-title">Centinela de Fuego y Selva</h3>
-                <p class="immersive-desc">
-                  Casco ceremonial de visera alada con plumas de avestruz amazónico teñidas a temperatura y guanteletes articulados de acetato de alto impacto.
-                </p>
-              </div>
-              <div class="immersive-action">
-                <a href="traje-detalle.html?traje=centinela-fuego" class="btn-dorado">
-                  Consultar Ficha Técnica →
-                </a>
-              </div>
-            </div>
-          </article>
-
+          {% endif %}
         </div>
       </section>
 
@@ -277,11 +159,11 @@
       <div class="footer-col">
         <h4>Navegación</h4>
         <ul>
-          <li><a href="../index.html">Inicio</a></li>
-          <li><a href="trajes.html">Inspiración de Trajes</a></li>
-          <li><a href="arandu-beleza.html">Catálogo Comparsas</a></li>
-          <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
-          <li><a href="materiales.html">Catálogo de Materiales</a></li>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/trajes">Inspiración de Trajes</a></li>
+          <li><a href="/pages/arandu-beleza.html">Catálogo Comparsas</a></li>
+          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+          <li><a href="/pages/materiales.html">Catálogo de Materiales</a></li>
         </ul>
       </div>
 

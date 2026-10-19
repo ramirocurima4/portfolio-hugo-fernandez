@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo técnico de materiales de alta costura, orfebrería y plumaje utilizados por Hugo Fernández en vestuarios de carnaval.">
+  <title>Materiales y Materia Prima | Hugo Fernández Arte Creativo</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+  <link rel="stylesheet" href="../css/estilos.css">
+  <script src="/js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER STICKY (CON LOGO A LA DERECHA Y RUTAS RELATIVAS)
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="../index.html" class="nav-link">Inicio</a>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a href="trajes.html" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="trajes.html">Galería de Inspiración</a></li>
+              <li><a href="trajes.html#femeninos">Vestuarios Femeninos</a></li>
+              <li><a href="trajes.html#masculinos">Vestuarios Masculinos</a></li>
+              <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="coordinacion.html" class="nav-link">Obras Maestras</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="materiales.html" class="nav-link active">Materiales</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="entrevistas.html" class="nav-link">Entrevistas</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="../index.html#trayectoria" class="nav-link">Trayectoria</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="../index.html#contacto" class="nav-link">Contacto</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logo / Marca en la esquina superior derecha -->
+      <a href="../index.html" class="header-logo" title="Hugo Fernández Arte Creativo">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </a>
+
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <!-- Encabezado de la página -->
+      <header class="page-header slide-up">
+        <h1 class="dorado-titulo">Catálogo de Materiales</h1>
+        <div class="section-divider"></div>
+        <p>
+          La excelencia de un vestuario de carnaval reside en la pureza de sus componentes. 
+          Seleccionamos materias primas de la más alta calidad internacional para garantizar brillo, movimiento y resistencia en la pasarela.
+        </p>
+      </header>
+
+      <!-- ==========================================================================
+           GRILLA DE MATERIALES (Paso 3 - A)
+           - Nombre del material en texto dorado y negrita (font-weight: 700 o <strong>)
+           - Cantidad utilizada o descripción en texto blanco/gris mucho más fino (font-weight: 300)
+           ========================================================================== -->
+      <section class="materiales-grid" aria-label="Listado de Materiales">
+
+        <!-- Ítem 1 -->
+        <article class="material-card reveal delay-1">
+          <div class="material-header">
+            <h2 class="material-nombre">Plumas de Faisán de Collar</h2>
+            <span class="material-categoria">Plumaje Exótico</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad promedio por espaldar:</strong> 120 a 250 unidades seleccionadas
+            </p>
+            <p class="material-descripcion">
+              Importadas con puntas degradadas a mano y tratamiento antiflexión. Proporcionan la envergadura y majestuosidad a las coronaciones y alas superiores.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 2 -->
+        <article class="material-card reveal delay-2">
+          <div class="material-header">
+            <h2 class="material-nombre">Strass Cristal Checo Boreal</h2>
+            <span class="material-categoria">Pedrería & Brillo</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad promedio por traje:</strong> 8.000 a 15.000 cristales facetados
+            </p>
+            <p class="material-descripcion">
+              Cristales de alta refracción engarzados a mano uno por uno con pegamentos epoxídicos resistentes a la sudoración y vibración del desfile.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 3 -->
+        <article class="material-card reveal delay-3">
+          <div class="material-header">
+            <h2 class="material-nombre">Plumas Amazónicas Gigantes</h2>
+            <span class="material-categoria">Plumaje Real</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad promedio por traje:</strong> 300 a 600 plumas teñidas a temperatura
+            </p>
+            <p class="material-descripcion">
+              Plumaje denso y vaporoso con tinturas exclusivas formuladas en taller para resistir iluminación halógena y LED sin perder vivacidad de matiz.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 4 -->
+        <article class="material-card reveal delay-1">
+          <div class="material-header">
+            <h2 class="material-nombre">Estructura de Acero y Duraluminio</h2>
+            <span class="material-categoria">Herrería Escénica</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad / Dimensión:</strong> Chasis de 2.80m de apertura con 4.5 kg de peso total
+            </p>
+            <p class="material-descripcion">
+              Herrería artesanal soldada con precisión TIG, equilibrada mediante cálculo de centro de gravedad y forrada íntegramente en goma eva de alta densidad y terciopelo.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 5 -->
+        <article class="material-card reveal delay-2">
+          <div class="material-header">
+            <h2 class="material-nombre">Gemas Acrílicas Facetadas XL</h2>
+            <span class="material-categoria">Apliques & Orfebrería</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad promedio por traje:</strong> 350 a 600 gemas con base dorada
+            </p>
+            <p class="material-descripcion">
+              Piedras de alto relieve cortadas al diamante con engarce en garra de fundición metálica dorada para acentuar cinturones, brazaletes y pecheras.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 6 -->
+        <article class="material-card reveal delay-3">
+          <div class="material-header">
+            <h2 class="material-nombre">Canutillos y Mostacillas de Vidrio</h2>
+            <span class="material-categoria">Bordado Manual</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad estimada:</strong> Más de 20 kilogramos por comparsa completa
+            </p>
+            <p class="material-descripcion">
+              Microcuentas de vidrio calibrado originarias de Bohemia, ensartadas con hilo de nylon siliconado sobre entretelas reforzadas con punto francés.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 7 -->
+        <article class="material-card reveal delay-1">
+          <div class="material-header">
+            <h2 class="material-nombre">Terciopelo de Seda y Lamé Dorado</h2>
+            <span class="material-categoria">Textiles Nobles</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Metraje utilizado:</strong> 4 a 8 metros lineales por indumentaria
+            </p>
+            <p class="material-descripcion">
+              Tejidos de trama densa con tratamiento elastizado para permitir la libertad total de movimiento y pasos de baile sobre la calzada sin desgarros.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 8 -->
+        <article class="material-card reveal delay-2">
+          <div class="material-header">
+            <h2 class="material-nombre">Acetato Espejado Termoformado</h2>
+            <span class="material-categoria">Efectos Especiales</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Superficie aplicada:</strong> 6 láminas de alto impacto por juego de alas
+            </p>
+            <p class="material-descripcion">
+              Piezas moldeadas por calor a mano para generar corazas futuristas, casquetes y relieves reflectivos que multiplican los haces de los reflectores.
+            </p>
+          </div>
+        </article>
+
+        <!-- Ítem 9 -->
+        <article class="material-card reveal delay-3">
+          <div class="material-header">
+            <h2 class="material-nombre">Lentejuelas Francesas Planas e Irisadas</h2>
+            <span class="material-categoria">Paillettes de Lujo</span>
+          </div>
+          <div class="material-info">
+            <p class="material-cantidad">
+              <strong>Cantidad promedio:</strong> 25.000 piezas individuales cosidas a mano
+            </p>
+            <p class="material-descripcion">
+              Lentejuelas importadas con micropigmentación perlada que generan destellos multicolores ante la refracción de luces en movimiento.
+            </p>
+          </div>
+        </article>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER PROFESIONAL
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-name">Hugo Fernández</div>
+        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="arandu-beleza.html">Arandú Beleza</a></li>
+          <li><a href="materiales.html">Catálogo de Materiales</a></li>
+          <li><a href="entrevistas.html">Notas y Entrevistas</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto & Redes</h4>
+        <ul>
+          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
+          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
+          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
+          <li><span>Corrientes, Argentina</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
+      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
+    </div>
+  </footer>
+
+</body>
+</html>

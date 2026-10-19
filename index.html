@@ -40,25 +40,31 @@
               <li><a href="pages/trajes.html#femeninos">Vestuarios Femeninos</a></li>
               <li><a href="pages/trajes.html#masculinos">Vestuarios Masculinos</a></li>
               <li><a href="pages/coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
             </ul>
           </li>
 
-          <!-- Desplegable: Comparsas -->
+          <!-- Desplegable: Comparsas (Dinámico desde SQLite con Jinja) -->
           <li class="nav-item dropdown">
-            <a href="pages/arandu-beleza.html" class="nav-link">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="pages/arandu-beleza.html">Arandú Beleza (Corrientes)</a></li>
-              <li><a href="#trayectoria">Samba Total (Corrientes)</a></li>
-              <li><a href="#trayectoria">Panambí (San Roque)</a></li>
-              <li><a href="#trayectoria">Marabú & Amistad (Chaco)</a></li>
+              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 
           <!-- Enlace a Obras Maestras -->
           <li class="nav-item">
             <a href="pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          </li>
+
+          <!-- Enlace a Comunidad de Comparseros (FASE 14) -->
+          <li class="nav-item">
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
           </li>
 
           <!-- Enlace a Materiales -->

@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/static/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
   <script src="/static/js/main.js" defer></script>
-  <script src="../js/main.js" defer></script>
 </head>
 <body>
 
@@ -37,7 +36,8 @@
             <ul class="dropdown-menu">
               <li><a href="/trajes">Galería de Inspiración</a></li>
               <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
-              <li><a href="/pages/arandu-beleza.html">Catálogo Completo</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
             </ul>
           </li>
 
@@ -47,8 +47,9 @@
             </a>
             <ul class="dropdown-menu">
               <li><a href="/pages/arandu-beleza.html">Catálogo de Comparsas</a></li>
-              <li><a href="/#sapucay">Comparsa Sapucay</a></li>
-              <li><a href="/#ara-bera">Comparsa Ará Berá</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 
@@ -57,15 +58,15 @@
           </li>
 
           <li class="nav-item">
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
+          </li>
+
+          <li class="nav-item">
             <a href="/pages/materiales.html" class="nav-link">Materiales</a>
           </li>
 
           <li class="nav-item">
             <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
           </li>
         </ul>
       </nav>
@@ -93,9 +94,9 @@
       </header>
 
       <!-- ==========================================================================
-           FEED VERTICAL INMERSIVO DE TRAJES (SCROLL SNAP MÓVIL) - FASE 12
-           Alimentado por SELECT * FROM trajes ORDER BY id DESC absoluto sin filtros.
-           Cualquier traje o comparsa nueva agregada aparece de inmediato.
+           FEED VERTICAL INMERSIVO DE TRAJES (SCROLL SNAP MÓVIL) - FASE 13
+           Alimentado por SELECT * FROM trajes ORDER BY id DESC estricto sin filtros.
+           Todo traje insertado aparece de inmediato en el scroll público.
            ========================================================================== -->
       <section class="trajes-section-wrapper" id="feed-trajes-todos">
         <div class="section-category-header slide-up">
@@ -118,14 +119,16 @@
               </div>
               <div class="immersive-traje-overlay">
                 <div class="immersive-info">
-                  <span class="immersive-badge">{{ traje.genero }} • {{ traje.comparsa }}</span>
+                  <span class="immersive-badge">
+                    {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_obra_maestra %} • ★ Obra Maestra{% endif %}
+                  </span>
                   <h3 class="immersive-title">{{ traje.comparsero }}</h3>
                   <p class="immersive-desc">
                     {{ traje.descripcion if traje.descripcion else (traje.materiales if traje.materiales else 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.') }}
                   </p>
                 </div>
                 <div class="immersive-action">
-                  <a href="/traje/{{ traje.id }}" class="btn-dorado">
+                  <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-dorado">
                     Consultar Ficha Técnica →
                   </a>
                 </div>

@@ -6,6 +6,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initStickyHeader();
+  initCarnavalCountdown();
   initIntersectionObserver();
   initMobileMenu();
   cargarTrajes();
@@ -471,21 +472,18 @@ function hidratarFichaDetalle(traje) {
     }
   }
 
-  // FASE 12: Galería de fotos dinámica si el traje cuenta con múltiples fotos
-  if (Array.isArray(traje.fotos) && traje.fotos.length > 1) {
+  // FASE 13: Galería de fotos dinámica con todas las fotos del traje
+  if (Array.isArray(traje.fotos) && traje.fotos.length > 0) {
     const thumbsContainer = document.getElementById('gallery-thumbs-container') || document.querySelector('.gallery-thumbs');
     if (thumbsContainer) {
-      const fotosSecundarias = traje.fotos.filter(f => !f.es_principal);
-      if (fotosSecundarias.length > 0) {
-        thumbsContainer.innerHTML = fotosSecundarias.map(f => `
-          <div class="gallery-thumb-item" title="Click para ampliar detalle">
-            <img src="${escapeHTML(resolverRutaImagen(f.ruta_imagen))}" 
-                 alt="${escapeHTML(f.titulo || 'Detalle')}" loading="lazy">
-            <span class="thumb-caption">${escapeHTML(f.titulo || 'Detalle')}</span>
-          </div>
-        `).join('');
-        initTrajeGalleryThumbs();
-      }
+      thumbsContainer.innerHTML = traje.fotos.map(f => `
+        <div class="gallery-thumb-item" title="Click para ampliar detalle">
+          <img src="${escapeHTML(resolverRutaImagen(f.ruta_imagen))}" 
+               alt="${escapeHTML(f.titulo || 'Detalle')}" loading="lazy">
+          <span class="thumb-caption">${escapeHTML(f.titulo || (f.es_principal ? 'Vista Principal' : 'Detalle'))}</span>
+        </div>
+      `).join('');
+      initTrajeGalleryThumbs();
     }
   }
 
@@ -496,7 +494,7 @@ function hidratarFichaDetalle(traje) {
 }
 
 /**
- * FASE 12: Carga dinámica y sin filtros hardcodeados del Feed Vertical Inmersivo (Scroll Snap)
+ * FASE 13: Carga dinámica y sin filtros hardcodeados del Feed Vertical Inmersivo (Scroll Snap)
  * Selecciona los contenedores .feed-trajes-mobile y los alimenta con todos los trajes registrados en SQLite.
  */
 async function cargarTrajesFeedMobile() {
@@ -510,7 +508,6 @@ async function cargarTrajesFeedMobile() {
     if (!Array.isArray(trajes) || trajes.length === 0) return;
 
     feedContainers.forEach(container => {
-      // Reemplaza contenido si solo tiene tarjetas de ejemplo estáticas
       const hasStaticPlaceholders = container.querySelectorAll('a[href*="fenix-solar"], a[href*="guerrero-profundidades"]').length > 0;
       if (hasStaticPlaceholders || container.children.length === 0) {
         container.innerHTML = '';
@@ -523,6 +520,7 @@ async function cargarTrajesFeedMobile() {
           const comparsero = escapeHTML(traje.comparsero || 'Traje de Carnaval');
           const comparsa = escapeHTML(traje.comparsa || 'Comparsa');
           const genero = escapeHTML(traje.genero || 'Oficial');
+          const obraBadge = traje.es_obra_maestra ? ' • ★ Obra Maestra' : '';
           const desc = escapeHTML(traje.descripcion || traje.materiales || 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.');
 
           card.innerHTML = `
@@ -531,7 +529,7 @@ async function cargarTrajesFeedMobile() {
             </div>
             <div class="immersive-traje-overlay">
               <div class="immersive-info">
-                <span class="immersive-badge">${genero} • ${comparsa}</span>
+                <span class="immersive-badge">${genero} • ${comparsa}${obraBadge}</span>
                 <h3 class="immersive-title">${comparsero}</h3>
                 <p class="immersive-desc">${desc}</p>
               </div>
@@ -552,20 +550,26 @@ async function cargarTrajesFeedMobile() {
 }
 
 /**
- * Interactividad en la Galería del Traje (pages/traje-detalle.html)
- * Al hacer clic en cualquiera de las 4 miniaturas, la imagen principal se actualiza
+ * Interactividad en la Galería del Traje (templates/traje-detalle.html)
+ * Al hacer clic en cualquiera de las miniaturas, la imagen principal y su etiqueta se actualizan
  * dinámicamente con una transición suave.
  */
 function initTrajeGalleryThumbs() {
   const mainImage = document.querySelector('.gallery-main img');
-  const thumbItems = document.querySelectorAll('.gallery-thumb-item img');
+  const badgeTxt = document.getElementById('gallery-badge-txt');
+  const thumbCards = document.querySelectorAll('.gallery-thumb-item');
 
-  if (!mainImage || !thumbItems.length) return;
+  if (!mainImage || !thumbCards.length) return;
 
-  thumbItems.forEach(thumb => {
-    thumb.addEventListener('click', () => {
+  thumbCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const thumb = card.querySelector('img');
+      const caption = card.querySelector('.thumb-caption');
+      if (!thumb) return;
+
       const newSrc = thumb.getAttribute('src');
       const newAlt = thumb.getAttribute('alt');
+      const newTitle = caption ? caption.textContent.trim() : newAlt;
 
       if (!newSrc || mainImage.getAttribute('src') === newSrc) return;
 
@@ -575,6 +579,7 @@ function initTrajeGalleryThumbs() {
       setTimeout(() => {
         mainImage.setAttribute('src', newSrc);
         if (newAlt) mainImage.setAttribute('alt', newAlt);
+        if (badgeTxt && newTitle) badgeTxt.textContent = newTitle;
         mainImage.style.opacity = '1';
         mainImage.style.transform = 'scale(1)';
       }, 180);
@@ -791,4 +796,86 @@ async function cargarComentariosDeTraje(trajeId) {
     `;
   }
 }
+
+/**
+ * ============================================================================
+ * FASE 14 (MÓDULO 3: LIBRE ALBEDRÍO UX - DECISIÓN AUTÓNOMA DOCUMENTADA)
+ * ============================================================================
+ * Mejoras Autónomas implementadas para potenciar la inmersión del "Carnaval Correntino":
+ * 1. Contador Regresivo en Tiempo Real en el Header (`initCarnavalCountdown`):
+ *    Calcula dinámicamente el tiempo restante para la noche inaugural de los
+ *    Carnavales Oficiales de Corrientes en el Corsódromo "Nolo Alías" (último
+ *    viernes de enero de la próxima edición) e inyecta una barra superior
+ *    no destructiva con acceso directo a `/comunidad/subir`.
+ * 2. Animación CSS de "Brillo / Purpurina" (`destelloPurpurinaCarnaval` en `estilos.css`):
+ *    Efecto especular diagonal sobre las tarjetas `.coordinacion-card` y
+ *    `.obra-maestra-glitter` que simula el reflejo de los cristales boreales
+ *    bajo los reflectores del corsódromo.
+ * 3. Metadatos Open Graph (OG) Enriquecidos + Botón WhatsApp (`traje-detalle.html`):
+ *    Renderizado SSR de etiquetas `og:title`, `og:description`, `og:image`,
+ *    `og:site_name` y `og:type` para que al compartir cualquier traje por
+ *    WhatsApp se previsualice automáticamente su foto, figura y comparsa.
+ */
+function initCarnavalCountdown() {
+  const header = document.querySelector('.site-header');
+  if (!header || document.querySelector('.carnaval-countdown-bar')) return;
+
+  // Determinar la fecha del próximo Carnaval Correntino (finales de enero, 22:00 hs ARG)
+  const obtenerFechaProximoCarnaval = () => {
+    const ahora = new Date();
+    let anioObjetivo = ahora.getFullYear();
+    // Noche inaugural estimada: 30 de enero a las 22:00 hs (Corsódromo Nolo Alías)
+    let fechaCarnaval = new Date(anioObjetivo, 0, 30, 22, 0, 0);
+    if (ahora >= fechaCarnaval) {
+      anioObjetivo += 1;
+      fechaCarnaval = new Date(anioObjetivo, 0, 30, 22, 0, 0);
+    }
+    return { fecha: fechaCarnaval, anio: anioObjetivo };
+  };
+
+  const { fecha: targetDate, anio: edicionAnio } = obtenerFechaProximoCarnaval();
+
+  const bar = document.createElement('div');
+  bar.className = 'carnaval-countdown-bar';
+  bar.setAttribute('aria-label', 'Cuenta regresiva para el próximo Carnaval Correntino');
+
+  bar.innerHTML = `
+    <span class="carnaval-countdown-label">
+      <span>🎭</span> Rumbo al Carnaval de Corrientes ${edicionAnio} (Nolo Alías):
+    </span>
+    <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+      <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+      <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+      <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+      <span class="countdown-unit"><span id="cd-seg">00</span><small>s</small></span>
+    </div>
+    <a href="/comunidad/subir" class="carnaval-countdown-cta">
+      ✨ Subí tu Traje
+    </a>
+  `;
+
+  header.insertBefore(bar, header.firstChild);
+
+  const diasEl = bar.querySelector('#cd-dias');
+  const horasEl = bar.querySelector('#cd-horas');
+  const minEl = bar.querySelector('#cd-min');
+  const segEl = bar.querySelector('#cd-seg');
+
+  const actualizarReloj = () => {
+    const diff = Math.max(0, targetDate.getTime() - Date.now());
+    const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const min = Math.floor((diff / 1000 / 60) % 60);
+    const seg = Math.floor((diff / 1000) % 60);
+
+    if (diasEl) diasEl.textContent = String(dias).padStart(2, '0');
+    if (horasEl) horasEl.textContent = String(horas).padStart(2, '0');
+    if (minEl) minEl.textContent = String(min).padStart(2, '0');
+    if (segEl) segEl.textContent = String(seg).padStart(2, '0');
+  };
+
+  actualizarReloj();
+  setInterval(actualizarReloj, 1000);
+}
+
 

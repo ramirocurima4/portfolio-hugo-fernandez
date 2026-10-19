@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Colección de Obras Maestras y trajes insignia de alta costura coordinados y realizados de manera independiente por Hugo Fernández.">
   <title>Obras Maestras | Hugo Fernández Coordinación Independiente</title>
+  <link rel="stylesheet" href="/static/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
-  <script src="../js/main.js" defer></script>
+  <script src="/static/js/main.js" defer></script>
 </head>
 <body>
 
@@ -25,52 +26,53 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="../index.html" class="nav-link">Inicio</a>
+            <a href="/" class="nav-link">Inicio</a>
           </li>
           
           <li class="nav-item dropdown">
-            <a href="trajes.html" class="nav-link">
+            <a href="/trajes" class="nav-link">
               Trajes <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="trajes.html">Galería de Inspiración</a></li>
-              <li><a href="trajes.html#femeninos">Vestuarios Femeninos</a></li>
-              <li><a href="trajes.html#masculinos">Vestuarios Masculinos</a></li>
-              <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/trajes">Galería de Inspiración</a></li>
+              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a href="#" class="nav-link">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="arandu-beleza.html">Arandú Beleza</a></li>
-              <li><a href="../index.html#sapucay">Comparsa Sapucay</a></li>
-              <li><a href="../index.html#ara-bera">Comparsa Ará Berá</a></li>
+              <li><a href="/pages/arandu-beleza.html">Catálogo de Comparsas</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 
           <li class="nav-item">
-            <a href="coordinacion.html" class="nav-link active">Obras Maestras</a>
+            <a href="/pages/coordinacion.html" class="nav-link active">Obras Maestras</a>
           </li>
 
           <li class="nav-item">
-            <a href="materiales.html" class="nav-link">Materiales</a>
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
           </li>
 
           <li class="nav-item">
-            <a href="entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
           </li>
 
           <li class="nav-item">
-            <a href="../index.html#contacto" class="nav-link">Contacto</a>
+            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
           </li>
         </ul>
       </nav>
 
       <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="../index.html" class="header-logo" title="Hugo Fernández Arte Creativo">
+      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
         <span class="brand-name">Hugo Fernández</span>
         <span class="brand-sub">Arte Creativo</span>
       </a>
@@ -93,124 +95,42 @@
       </header>
 
       <!-- ==========================================================================
-           PASO 3: GRILLA DE MINIATURAS CON TRATAMIENTO ULTRA-PREMIUM (.coordinacion-grid)
+           GRILLA DE OBRAS MAESTRAS (.coordinacion-grid) - FASE 13 & FASE 14 (MÓDULO 3)
+           Alimentada por SELECT * FROM trajes WHERE estado = 'publicado' AND es_obra_maestra = 1
+           Incluye clase .obra-maestra-glitter con animación CSS autónoma de brillo/purpurina
+           que simula el destello de los cristales boreales bajo los reflectores del corsódromo.
            ========================================================================== -->
       <section class="coordinacion-grid" aria-label="Catálogo de Obras Maestras">
-
-        <!-- Obra Maestra 1 -->
-        <article class="coordinacion-card reveal delay-1">
-          <span class="badge-masterpiece">Obra Maestra</span>
-          <div class="comparsero-thumb">
-            <img src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=800&auto=format&fit=crop" 
-                 alt="Obra Maestra - El Ave Fénix Solar" loading="lazy">
-          </div>
-          <div class="coordinacion-body">
-            <div>
-              <p class="coordinacion-highlight">✦ 3.20m de Apertura • 450 Plumas Amazónicas</p>
-              <h2 class="comparsero-title">El Ave Fénix Solar</h2>
-              <p class="comparsero-subtitle">Coordinación & Realización Integral | 1º Premio Oficial</p>
+        {% if trajes %}
+          {% for traje in trajes %}
+          <article class="coordinacion-card obra-maestra-glitter reveal visible delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ traje.id }}">
+            <span class="badge-masterpiece">✦ Obra Maestra</span>
+            <div class="comparsero-thumb">
+              <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                   alt="Obra Maestra - {{ traje.comparsero }}" loading="lazy">
             </div>
-            <a href="traje-detalle.html?traje=fenix-solar" class="btn-ver-ficha">
-              Ver Ficha del Traje <span class="arrow-icon">→</span>
-            </a>
-          </div>
-        </article>
-
-        <!-- Obra Maestra 2 -->
-        <article class="coordinacion-card reveal delay-2">
-          <span class="badge-masterpiece">Obra Maestra</span>
-          <div class="comparsero-thumb">
-            <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop" 
-                 alt="Obra Maestra - Guerrero de las Profundidades" loading="lazy">
-          </div>
-          <div class="coordinacion-body">
-            <div>
-              <p class="coordinacion-highlight">✦ Termoformado Espejado • Herrería Liviana</p>
-              <h2 class="comparsero-title">Guerrero de las Profundidades</h2>
-              <p class="comparsero-subtitle">Coordinación & Realización Integral | Solista de Oro</p>
+            <div class="coordinacion-body">
+              <div>
+                <p class="coordinacion-highlight">
+                  ✦ {{ traje.herreria_estructura if traje.herreria_estructura else traje.comparsa }} • {{ traje.genero }}
+                </p>
+                <h2 class="comparsero-title">{{ traje.comparsero }}</h2>
+                <p class="comparsero-subtitle">
+                  {{ traje.comparsa }} | {{ traje.diseno_original if traje.diseno_original else 'Coordinación & Realización Integral' }}
+                </p>
+              </div>
+              <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-ver-ficha">
+                Ver Ficha del Traje <span class="arrow-icon">→</span>
+              </a>
             </div>
-            <a href="traje-detalle.html?traje=guerrero-profundidades" class="btn-ver-ficha">
-              Ver Ficha del Traje <span class="arrow-icon">→</span>
-            </a>
+          </article>
+          {% endfor %}
+        {% else %}
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; color: var(--dorado-brillo); background: rgba(10, 25, 47, 0.6); border: 1px solid rgba(191, 149, 63, 0.3); border-radius: 12px;">
+            <p style="font-size: 1.15rem; margin-bottom: 0.5rem;">✦ Aún no hay trajes destacados en la sección de Obras Maestras.</p>
+            <p style="font-size: 0.9rem; color: var(--texto-gris-medio);">Podés destacar cualquier traje marcando la casilla "Destacar en Obras Maestras" desde el Panel de Administración.</p>
           </div>
-        </article>
-
-        <!-- Obra Maestra 3 -->
-        <article class="coordinacion-card reveal delay-3">
-          <span class="badge-masterpiece">Obra Maestra</span>
-          <div class="comparsero-thumb">
-            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop" 
-                 alt="Obra Maestra - Diosa de las Aguas Doradas" loading="lazy">
-          </div>
-          <div class="coordinacion-body">
-            <div>
-              <p class="coordinacion-highlight">✦ 9.000 Cristales Checos • Orfebrería Manual</p>
-              <h2 class="comparsero-title">Diosa de las Aguas Doradas</h2>
-              <p class="comparsero-subtitle">Coordinación & Realización Integral | Corona de Reina</p>
-            </div>
-            <a href="traje-detalle.html?traje=diosa-aguas" class="btn-ver-ficha">
-              Ver Ficha del Traje <span class="arrow-icon">→</span>
-            </a>
-          </div>
-        </article>
-
-        <!-- Obra Maestra 4 -->
-        <article class="coordinacion-card reveal delay-1">
-          <span class="badge-masterpiece">Obra Maestra</span>
-          <div class="comparsero-thumb">
-            <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?q=80&w=800&auto=format&fit=crop" 
-                 alt="Obra Maestra - Emperador Místico del Iberá" loading="lazy">
-          </div>
-          <div class="coordinacion-body">
-            <div>
-              <p class="coordinacion-highlight">✦ Espaldar Radial • Herrería Artística TIG</p>
-              <h2 class="comparsero-title">Emperador Místico del Iberá</h2>
-              <p class="comparsero-subtitle">Coordinación & Realización Integral | Gran Bastonero</p>
-            </div>
-            <a href="traje-detalle.html?traje=emperador-ibera" class="btn-ver-ficha">
-              Ver Ficha del Traje <span class="arrow-icon">→</span>
-            </a>
-          </div>
-        </article>
-
-        <!-- Obra Maestra 5 -->
-        <article class="coordinacion-card reveal delay-2">
-          <span class="badge-masterpiece">Obra Maestra</span>
-          <div class="comparsero-thumb">
-            <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=800&auto=format&fit=crop" 
-                 alt="Obra Maestra - Corona del Sol Naciente" loading="lazy">
-          </div>
-          <div class="coordinacion-body">
-            <div>
-              <p class="coordinacion-highlight">✦ Tocado Escultórico • Faisanes de Collar</p>
-              <h2 class="comparsero-title">Sacerdotisa del Sol Naciente</h2>
-              <p class="comparsero-subtitle">Coordinación & Realización Integral | Solista Femenina</p>
-            </div>
-            <a href="traje-detalle.html?traje=sacerdotisa-sol" class="btn-ver-ficha">
-              Ver Ficha del Traje <span class="arrow-icon">→</span>
-            </a>
-          </div>
-        </article>
-
-        <!-- Obra Maestra 6 -->
-        <article class="coordinacion-card reveal delay-3">
-          <span class="badge-masterpiece">Obra Maestra</span>
-          <div class="comparsero-thumb">
-            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop" 
-                 alt="Obra Maestra - Centinela de Fuego y Selva" loading="lazy">
-          </div>
-          <div class="coordinacion-body">
-            <div>
-              <p class="coordinacion-highlight">✦ 4.2 kg Peso Total • Sistema Amortiguado</p>
-              <h2 class="comparsero-title">Centinela de Fuego y Selva</h2>
-              <p class="comparsero-subtitle">Coordinación & Realización Integral | Dúo Destacado</p>
-            </div>
-            <a href="traje-detalle.html?traje=centinela-fuego" class="btn-ver-ficha">
-              Ver Ficha del Traje <span class="arrow-icon">→</span>
-            </a>
-          </div>
-        </article>
-
+        {% endif %}
       </section>
 
     </div>
@@ -229,11 +149,12 @@
       <div class="footer-col">
         <h4>Navegación</h4>
         <ul>
-          <li><a href="../index.html">Inicio</a></li>
-          <li><a href="arandu-beleza.html">Galería Arandú Beleza</a></li>
-          <li><a href="coordinacion.html">✦ Obras Maestras</a></li>
-          <li><a href="materiales.html">Catálogo de Materiales</a></li>
-          <li><a href="entrevistas.html">Notas y Entrevistas</a></li>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/trajes">Inspiración de Trajes</a></li>
+          <li><a href="/pages/arandu-beleza.html">Catálogo Comparsas</a></li>
+          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+          <li><a href="/pages/materiales.html">Catálogo de Materiales</a></li>
+          <li><a href="/pages/entrevistas.html">Notas y Entrevistas</a></li>
         </ul>
       </div>
 

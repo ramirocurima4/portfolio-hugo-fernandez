@@ -2,7 +2,53 @@
 
 ## Estado Actual del Proyecto
 - **Fecha de Actualización:** Octubre 2026
-- **Directiva Vigente:** Fase 12 - Expansión de Base de Datos, Galería Dinámica y Fix de Filtros.
+- **Directiva Vigente:** Fase 14 - Módulo Social (Comunidad & Moderación), Seed de Datos del Carnaval Correntino y Mejoras Autónomas de UX.
+
+---
+
+### Fase 14: Módulo Social, Seed de Datos y Mejoras Autónomas de Carnaval
+**Estado:** COMPLETADA ✅
+**Hito Registrado:** Comunidad de Comparseros (`/comunidad/subir`), Bandeja de Moderación (`estado='pendiente'/'publicado'`), Script `seed.py` con 6 Comparsas Correntinas, Vista Genérica `/comparsa/<nombre_comparsa>` y 3 Mejoras Autónomas de UX.
+
+#### Enfoque Arquitectural:
+1. **Módulo 1: Comunidad de Comparseros y Moderación (`database.py`, `app.py`, `templates/comunidad_subir.html`, `templates/admin.html`):**
+   - **Esquema SQLite (`database.py`):** Adición de la columna `estado VARCHAR DEFAULT 'pendiente'` en la tabla `trajes` con migración automática en `init_db()` (preservando los registros previos en `'publicado'`).
+   - **Subida Pública de Comunidad (`GET/POST /comunidad/subir`):** Nueva plantilla `templates/comunidad_subir.html` donde cualquier comparsero puede postular su traje, historia, créditos de diseño/herrería, materiales y múltiples fotografías (`fotos_traje`). Todo envío comunitario se guarda estrictamente con `estado = 'pendiente'`.
+   - **Bandeja de Moderación en Panel Admin (`templates/admin.html`):** Nueva sección destacada con el bucle `{% for traje in trajes_pendientes %}` y botones de decisión:
+     - **"Aprobar"** (`POST/PUT /api/trajes/aprobar/<id>` y `/admin/aprobar/<id>`): Ejecuta `UPDATE trajes SET estado = 'publicado' WHERE id = ?` y transfiere el traje inmediatamente al catálogo público.
+     - **"Rechazar"** (`DELETE/POST /api/trajes/rechazar/<id>` y `/admin/rechazar/<id>`): Elimina el registro pendiente y sus fotografías asociadas.
+   - **Filtro Público Estricto:** El feed público (`/trajes`, `/api/trajes`), la colección de Obras Maestras (`/obras-maestras`, `/api/trajes/obras-maestras`) y las páginas de comparsas (`/comparsa/<nombre_comparsa>`) consultan exclusivamente `SELECT * FROM trajes WHERE estado = 'publicado'`.
+2. **Módulo 2: Páginas de Comparsas y Seed de Datos Automático (`seed.py`, `app.py`, `templates/comparsa.html`):**
+   - **Script Independiente `seed.py`:** Script ejecutable en la raíz del proyecto que conecta a `carnaval.db` e inyecta 6 trajes realistas del Carnaval de Corrientes con `estado = 'publicado'`, créditos de herrería, diseño original, materiales de alta costura, descripciones ricas y galería en `fotos_traje`, cubriendo las 6 agrupaciones emblemáticas: **Arandú Beleza**, **Sapucay**, **Ará Berá**, **Samba Total**, **Copacabana** e **Imperio Bahiano**.
+   - **Vista Genérica `GET /comparsa/<nombre_comparsa>`:** Renderiza `templates/comparsa.html` mostrando el título dinámico, apodo histórico ("La Verde y Blanca", "El Gallo", "El Rayo", "La Aplanadora del Ritmo", "La Decana", "La Fuerza Bahiana"), colores e historia de la agrupación, junto con la grilla filtrada de trajes publicados de esa comparsa y barra de navegación rápida entre agrupaciones.
+3. **Módulo 3: Libre Albedrío UX - Mejoras No Destructivas del Carnaval Correntino (`css/estilos.css`, `js/main.js`, `templates/traje-detalle.html`, `templates/coordinacion.html`):**
+   - **Mejora Autónoma #1 (Contador Regresivo del Carnaval Correntino):** Función `initCarnavalCountdown()` en `js/main.js` y barra `.carnaval-countdown-bar` en el header que muestra en tiempo real los días, horas, minutos y segundos hasta la noche inaugural en el Corsódromo "Nolo Alías", acompañada de un CTA directo a `/comunidad/subir`.
+   - **Mejora Autónoma #2 (Brillo / Purpurina en Obras Maestras):** Animación CSS GPU-accelerated (`@keyframes destelloPurpurinaCarnaval` y `@keyframes pulsoInsigniaObraMaestra`) en `.coordinacion-card` y `.obra-maestra-glitter` que recrea el destello especular del strass boreal bajo los reflectores del corsódromo.
+   - **Mejora Autónoma #3 (Open Graph Enriquecido + Botón WhatsApp):** Metadatos Open Graph completos (`og:type`, `og:site_name`, `og:locale`, `og:title`, `og:description`, `og:image`, `og:image:alt`, `og:url`) y botón nativo **"📲 Compartir en WhatsApp"** en `templates/traje-detalle.html`.
+
+---
+
+### Fase 13: Arquitectura Definitiva (Galería Dinámica, Edición, Obras Maestras y Fix de Feed)
+**Estado:** COMPLETADA ✅
+**Hito Registrado:** Ciclo CRUD Completo, Filtro de Obras Maestras (`es_obra_maestra = 1`), Galería Múltiple y Eliminación de Jinja Crudo
+
+#### Enfoque Arquitectural:
+- **Actualización Estructural de Base de Datos (`database.py` & `carnaval.db`):**
+  - Consolidación de columnas extendidas en tabla `trajes`: `descripcion` (TEXT), `diseno_original` (TEXT), `herreria_estructura` (TEXT) y `es_obra_maestra` (`BOOLEAN DEFAULT 0`), con migración dinámica en caliente (`PRAGMA table_info`).
+  - Tabla `fotos_traje` (`id` PK, `traje_id` FK con `ON DELETE CASCADE`, `ruta_imagen`, `titulo`, `es_principal` BOOLEAN) sincronizada automáticamente con la portada de cada traje.
+- **Fix del Feed "Scroll Snap", Obras Maestras y Enlaces SSR (`app.py`, `templates/trajes.html`, `templates/coordinacion.html`):**
+  - **Feed Vertical de Trajes (`/trajes`, `/pages/trajes.html`):** Consulta estricta `SELECT * FROM trajes ORDER BY id DESC` sin filtros hardcodeados por comparsa; todo traje insertado aparece inmediatamente en el scroll público.
+  - **Sección Obras Maestras (`/obras-maestras`, `/coordinacion`, `/pages/coordinacion.html`):** Renderización SSR con filtro estricto `SELECT * FROM trajes WHERE es_obra_maestra = 1 ORDER BY id DESC`.
+  - **Corrección de Enlaces y Prevención de Jinja Crudo:** Estandarización del endpoint `detalle_traje` (`/traje/<int:id>`) y uso de `url_for('detalle_traje', id=traje.id)` en todas las plantillas, redirigiendo cualquier petición heredada a `/pages/traje-detalle.html` hacia el motor SSR de Flask.
+- **Backend CRUD Completo (`app.py`):**
+  - `POST /api/trajes`: Procesamiento de `descripcion`, `diseno_original`, `herreria_estructura`, booleano `es_obra_maestra` (checkbox) y subida múltiple de imágenes en `fotos_traje`.
+  - `GET /admin/editar/<int:id>`: Renderizado del formulario administrativo pre-poblado con todos los metadatos y fotografías actuales del traje.
+  - `POST/PUT /api/trajes/editar/<int:id>`: Actualización (`UPDATE`) de textos, estado de Obra Maestra, edición de títulos de fotos, cambio de portada (`es_principal`), eliminación selectiva de fotos existentes y adición de nuevas imágenes.
+  - `DELETE /api/trajes/<int:id>`: Eliminación integral de trajes, sus fotografías en `fotos_traje` y comentarios asociados.
+- **Actualización del Dashboard Administrativo (`templates/admin.html`, `pages/admin.html`, `admin.html`):**
+  - Incorporación de campos de Descripción, Diseño Original, Herrería/Estructura y `<input type="checkbox" name="es_obra_maestra">` ("Destacar en Obras Maestras").
+  - Interfaz de selección múltiple de archivos (`<input type="file" name="fotos" multiple>`) con previsualización instantánea, edición de títulos individuales y selector de portada.
+  - Tabla de **Lista de Trajes Cargados (Dashboard)** con botón **"Editar"** (`/admin/editar/<id>`) junto al botón **"Eliminar"**.
 
 ---
 

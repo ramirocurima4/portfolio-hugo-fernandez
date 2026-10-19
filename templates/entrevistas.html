@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Entrevistas de televisión, cobertura de prensa y notas audiovisuales a Hugo Fernández sobre el arte del vestuario de carnaval.">
+  <title>Prensa y Entrevistas | Hugo Fernández Arte Creativo</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+  <link rel="stylesheet" href="../css/estilos.css">
+  <script src="/js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER STICKY (CON LOGO A LA DERECHA Y RUTAS RELATIVAS)
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/" class="nav-link">Inicio</a>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Galería de Inspiración</a></li>
+              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a href="/pages/arandu-beleza.html" class="nav-link">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+          </li>
+
+          <!-- Enlace activo de la sección actual -->
+          <li class="nav-item">
+            <a href="/pages/entrevistas.html" class="nav-link active">Entrevistas</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logo / Marca en la esquina superior derecha -->
+      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </a>
+
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <!-- Encabezado de la página -->
+      <header class="page-header slide-up">
+        <span class="hero-badge" style="margin-bottom: 0.8rem;">Archivo Audiovisual & Prensa</span>
+        <h1 class="dorado-titulo">Hugo en los Medios & Videos de Taller</h1>
+        <div class="section-divider"></div>
+        <p>
+          Cobertura periodística, notas audiovisuales y registros reales en pasarela y taller donde Hugo Fernández comparte los secretos del armado de estructuras, plumaje y alta costura del Carnaval Correntino.
+        </p>
+      </header>
+
+      <!-- ==========================================================================
+           GRILLA DE ENTREVISTAS Y VIDEOS REALES (/assets/videos/)
+           Renderizados con <video controls width="100%"> de forma responsiva
+           ========================================================================== -->
+      <section class="entrevistas-grid" aria-label="Notas audiovisuales y entrevistas">
+
+        <!-- Video 1: Entrevista Principal -->
+        <article class="entrevista-card reveal delay-1">
+          <div class="video-responsive-container">
+            <video controls width="100%" preload="metadata" poster="/assets/img/hugo-taller.jpg">
+              <source src="/assets/videos/entrevista.mp4" type="video/mp4">
+              <source src="/assets/video/entrevista.mp4" type="video/mp4">
+              Tu navegador no soporta la reproducción de video HTML5.
+            </video>
+          </div>
+          <div class="entrevista-body">
+            <div class="entrevista-meta">
+              <span class="entrevista-medio">Especial Prensa Corrientes</span>
+              <span class="entrevista-fecha">Temporada Oficial</span>
+            </div>
+            <h2 class="entrevista-titulo">Entrevista Exclusiva: Los Secretos del Taller y el Armado de Espaldares</h2>
+            <p class="entrevista-desc">
+              Un recorrido íntimo por el taller de Hugo Fernández revelando el proceso de equilibrado de herrería, coordinación de equipo y engarce de miles de cristales para las noches de competencia.
+            </p>
+          </div>
+        </article>
+
+        <!-- Video 2: Solista Valentina - Pasarela & Detalle 1 -->
+        <article class="entrevista-card reveal delay-2">
+          <div class="video-responsive-container">
+            <video controls width="100%" preload="metadata">
+              <source src="/assets/videos/Solista_Valentina-vid1.mp4" type="video/mp4">
+              <source src="/assets/video/Solista_Valentina-vid1.mp4" type="video/mp4">
+              Tu navegador no soporta la reproducción de video HTML5.
+            </video>
+          </div>
+          <div class="entrevista-body">
+            <div class="entrevista-meta">
+              <span class="entrevista-medio">Registro en Vivo • Corsódromo</span>
+              <span class="entrevista-fecha">Edición Reciente</span>
+            </div>
+            <h2 class="entrevista-titulo">Solista Valentina (Parte I): Despliegue Escénico y Movimiento</h2>
+            <p class="entrevista-desc">
+              Demostración real en movimiento del balance ergonómico de arnés, articulación de espaldar y refracción lumínica de cristales checos en pleno desfile.
+            </p>
+          </div>
+        </article>
+
+        <!-- Video 3: Solista Valentina - Pasarela & Detalle 2 -->
+        <article class="entrevista-card reveal delay-3">
+          <div class="video-responsive-container">
+            <video controls width="100%" preload="metadata">
+              <source src="/assets/videos/Solista_Valentina-vid2.mp4" type="video/mp4">
+              <source src="/assets/video/Solista_Valentina-vid2.mp4" type="video/mp4">
+              Tu navegador no soporta la reproducción de video HTML5.
+            </video>
+          </div>
+          <div class="entrevista-body">
+            <div class="entrevista-meta">
+              <span class="entrevista-medio">Cámara en Calzada</span>
+              <span class="entrevista-fecha">Carnaval Correntino</span>
+            </div>
+            <h2 class="entrevista-titulo">Solista Valentina (Parte II): Plumaje Amazónico y Terminaciones</h2>
+            <p class="entrevista-desc">
+              Primeros planos de la estructura dorsal liviana y la respuesta dinámica del plumaje seleccionado frente al ritmo de batería.
+            </p>
+          </div>
+        </article>
+
+        <!-- Video 4: Solista Valentina - Backstage & Prueba Final -->
+        <article class="entrevista-card reveal delay-1">
+          <div class="video-responsive-container">
+            <video controls width="100%" preload="metadata">
+              <source src="/assets/videos/Solista_Valentina-vid3.mp4" type="video/mp4">
+              <source src="/assets/video/Solista_Valentina-vid3.mp4" type="video/mp4">
+              Tu navegador no soporta la reproducción de video HTML5.
+            </video>
+          </div>
+          <div class="entrevista-body">
+            <div class="entrevista-meta">
+              <span class="entrevista-medio">Backstage & Montaje</span>
+              <span class="entrevista-fecha">Taller Hugo Fernández</span>
+            </div>
+            <h2 class="entrevista-titulo">Solista Valentina (Parte III): Detrás de Escena y Calce Final</h2>
+            <p class="entrevista-desc">
+              Verificación técnica de sujeción, comodidad de corselete y destello de pedrería antes de salir a la calzada del corsódromo.
+            </p>
+          </div>
+        </article>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER PROFESIONAL
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-name">Hugo Fernández</div>
+        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="arandu-beleza.html">Arandú Beleza</a></li>
+          <li><a href="materiales.html">Catálogo de Materiales</a></li>
+          <li><a href="entrevistas.html">Notas y Entrevistas</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto & Redes</h4>
+        <ul>
+          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
+          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
+          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
+          <li><span>Corrientes, Argentina</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
+      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
+    </div>
+  </footer>
+
+</body>
+</html>
