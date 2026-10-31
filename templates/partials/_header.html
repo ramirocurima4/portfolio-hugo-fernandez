@@ -1,0 +1,65 @@
+{#- ==========================================================================
+    CABECERA GLOBAL: contador "Rumbo al Carnaval" + píldora flotante de navegación.
+    Las rutas de administración permanecen 100% invisibles en el frontend público.
+    IDs/clases que main.js necesita: .site-header, .carnaval-countdown-bar, #cd-dias/#cd-horas/#cd-min/#cd-seg,
+    .mobile-toggle, .main-nav, .dropdown
+    ========================================================================== -#}
+<a href="#contenido" class="sr-only">Saltar al contenido</a>
+<header class="site-header" id="site-header">
+  <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+    <span class="carnaval-countdown-label"><span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías)</span>
+    <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+      <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+      <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+      <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+      <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+    </div>
+    <a href="/comunidad/subir" class="carnaval-countdown-cta">✨ Subí tu traje</a>
+  </div>
+
+  <div class="header-container">
+    <a href="/" class="header-logo" title="Hugo Fernández">
+      <span class="brand-mark" aria-hidden="true">HF</span>
+      <span class="brand-text">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="/" class="nav-link {% if nav_active == 'inicio' %}active{% endif %}">Inicio</a></li>
+
+        <li class="nav-item dropdown">
+          <a href="/comparsas" class="nav-link {% if nav_active == 'comparsas' %}active{% endif %}">Comparsas <span class="dropdown-icon">▼</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/comparsas">Catálogo de Comparsas</a></li>
+            {% for comparsa in comparsas_unicas %}
+            <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a href="/trajes" class="nav-link {% if nav_active == 'trajes' %}active{% endif %}">Trajes <span class="dropdown-icon">▼</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/trajes">Todos los Trajes</a></li>
+            <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+            <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+            <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+            <li><a href="/destaques">✦ Obras Destacadas</a></li>
+            <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            <li><a href="/materiales">✦ Materiales &amp; Técnicas</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item"><a href="/comunidad/subir" class="nav-link {% if nav_active == 'comunidad' %}active{% endif %}">Comunidad</a></li>
+        <li class="nav-item"><a href="/entrevistas" class="nav-link {% if nav_active == 'entrevistas' %}active{% endif %}">Entrevistas</a></li>
+        {% if ATELIER_ENABLED %}<li class="nav-item"><a href="/atelier" class="nav-link {% if nav_active == 'atelier' %}active{% endif %}">Atelier</a></li>{% endif %}
+        <li class="nav-item"><a href="#contacto" class="nav-link">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>

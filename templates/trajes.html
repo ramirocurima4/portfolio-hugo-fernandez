@@ -15,6 +15,21 @@
        HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
        ========================================================================== -->
   <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
     <div class="header-container">
       
       <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
@@ -23,38 +38,39 @@
         <span></span>
       </button>
 
+      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
       <nav class="main-nav" aria-label="Navegación principal">
         <ul class="nav-list">
           <li class="nav-item">
             <a href="/" class="nav-link">Inicio</a>
           </li>
           
+          <!-- Desplegable: Comparsas -->
           <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link active">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Galería de Inspiración</a></li>
-              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a href="/pages/arandu-beleza.html" class="nav-link">
+            <a href="/comparsas" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="/pages/arandu-beleza.html">Catálogo de Comparsas</a></li>
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
               {% for comparsa in comparsas_unicas %}
               <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
               {% endfor %}
             </ul>
           </li>
 
-          <li class="nav-item">
-            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          <!-- Desplegable: Trajes -->
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link active">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
           </li>
 
           <li class="nav-item">
@@ -62,11 +78,11 @@
           </li>
 
           <li class="nav-item">
-            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+            <a href="/entrevistas" class="nav-link">Entrevistas</a>
           </li>
 
           <li class="nav-item">
-            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/#contacto" class="nav-link">Contacto</a>
           </li>
         </ul>
       </nav>
@@ -104,23 +120,86 @@
           <div class="category-line"></div>
         </div>
 
+        <!-- Filtros Inclusivos de Género y Categoría (Fase 14 UX) -->
+        <div class="trajes-filter-bar-container slide-up" style="margin: 1.5rem 0 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;">
+          <div class="trajes-filter-bar" role="group" aria-label="Filtrar trajes por género" style="display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;">
+            <a href="/trajes?genero=todos" 
+               class="trajes-filter-btn {% if not genero_activo or genero_activo in ['todos', 'all'] %}active{% endif %}" 
+               data-filter="todos" 
+               role="button" 
+               aria-pressed="{% if not genero_activo or genero_activo in ['todos', 'all'] %}true{% else %}false{% endif %}">
+              ✦ Todos
+            </a>
+            <a href="/trajes?genero=Femenino" 
+               class="trajes-filter-btn {% if genero_activo == 'Femenino' %}active{% endif %}" 
+               data-filter="Femenino" 
+               role="button" 
+               aria-pressed="{% if genero_activo == 'Femenino' %}true{% else %}false{% endif %}">
+              👑 Femenino
+            </a>
+            <a href="/trajes?genero=Masculino" 
+               class="trajes-filter-btn {% if genero_activo == 'Masculino' %}active{% endif %}" 
+               data-filter="Masculino" 
+               role="button" 
+               aria-pressed="{% if genero_activo == 'Masculino' %}true{% else %}false{% endif %}">
+              🛡️ Masculino
+            </a>
+            <a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero" 
+               class="trajes-filter-btn {% if genero_activo == 'Unisex / Sin Género' %}active{% endif %}" 
+               data-filter="Unisex / Sin Género" 
+               role="button" 
+               aria-pressed="{% if genero_activo == 'Unisex / Sin Género' %}true{% else %}false{% endif %}">
+              ✨ Unisex / Sin Género
+            </a>
+          </div>
+          <span class="trajes-filter-counter" id="trajes-filter-count" style="font-size: 0.82rem; color: #94a3b8; font-family: 'Julius Sans One', sans-serif;">
+            {{ trajes|length }} {% if trajes|length == 1 %}obra exhibida{% else %}obras exhibidas{% endif %}
+          </span>
+        </div>
+
         <!-- Indicador visual sutil para experiencia inmersiva móvil (Reels/Tinder) -->
         <div class="mobile-feed-hint" aria-hidden="true">
           <span>↕ Deslizá verticalmente para explorar trajes</span>
         </div>
 
+        <div id="trajes-empty-filter" style="display: none; width: 100%; max-width: 600px; margin: 1.5rem auto; text-align: center; padding: 3rem 1.5rem; color: #E6D5B8; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(230, 213, 184, 0.2); border-radius: 12px;">
+          <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">✦ No se encontraron trajes para esta categoría.</p>
+          <span style="font-size: 0.85rem; color: #94a3b8;">Probá seleccionando "Todos" o subí tu traje desde la comunidad.</span>
+        </div>
+
         <div class="feed-trajes-mobile immersive-scroll-container" id="feed-principal">
-          {% if trajes %}
-            {% for traje in trajes %}
-            <article class="tarjeta-feed immersive-traje-card reveal visible delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ traje.id }}">
+          {% set lista_trajes = todos_los_trajes if todos_los_trajes else trajes %}
+          {% if lista_trajes %}
+            {% for traje in lista_trajes %}
+            <article class="tarjeta-feed immersive-traje-card reveal visible delay-{{ (loop.index0 % 3) + 1 }}" 
+                     data-id="{{ traje.id }}" 
+                     data-genero="{{ traje.genero }}"
+                     style="{% if genero_activo and genero_activo != 'todos' and not coincide_genero(traje.genero, genero_activo) %}display: none;{% endif %}">
               <div class="immersive-traje-img-box">
-                <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
-                     alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy">
+                {% if traje.foto_url | es_video %}
+                  <video controls width="100%" class="destaque-video-player" style="height: 100%; object-fit: cover;" preload="metadata">
+                    <source src="{{ traje.foto_url | media_url }}" type="video/mp4">
+                  </video>
+                {% elif traje.enlace_boceto %}
+                  <div class="ba-slider-container" data-ba-slider style="height: 100%;">
+                    <img src="{{ traje.foto_url | media_url }}" alt="Después: {{ traje.comparsero }}" class="ba-img ba-after-img" loading="lazy">
+                    <div class="ba-before-wrapper">
+                      <img src="{{ traje.enlace_boceto | media_url }}" alt="Antes: Boceto {{ traje.comparsero }}" class="ba-img ba-before-img" loading="lazy">
+                    </div>
+                    <span class="ba-badge ba-badge-before">Antes</span>
+                    <span class="ba-badge ba-badge-after">Después</span>
+                    <div class="ba-divider"><div class="ba-handle"><span>↔</span></div></div>
+                    <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
+                  </div>
+                {% else %}
+                  <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                       alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy">
+                {% endif %}
               </div>
               <div class="immersive-traje-overlay">
                 <div class="immersive-info">
                   <span class="immersive-badge">
-                    {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_obra_maestra %} • ★ Obra Maestra{% endif %}
+                    {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_destaque or traje.es_obra_maestra %} • ★ Destaque{% endif %}
                   </span>
                   <h3 class="immersive-title">{{ traje.comparsero }}</h3>
                   <p class="immersive-desc">
@@ -128,7 +207,7 @@
                   </p>
                 </div>
                 <div class="immersive-action">
-                  <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-dorado">
+                  <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-hero-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                     Consultar Ficha Técnica →
                   </a>
                 </div>
@@ -147,40 +226,34 @@
   </main>
 
   <!-- ==========================================================================
-       FOOTER PROFESIONAL
+       5. FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
        ========================================================================== -->
   <footer class="site-footer">
     <div class="footer-container">
-      <div class="footer-brand">
-        <div class="brand-name">Hugo Fernández</div>
-        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      
+      <!-- Superior: Botones limpios de Contacto Directo -->
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
       </div>
 
-      <div class="footer-col">
-        <h4>Navegación</h4>
-        <ul>
-          <li><a href="/">Inicio</a></li>
-          <li><a href="/trajes">Inspiración de Trajes</a></li>
-          <li><a href="/pages/arandu-beleza.html">Catálogo Comparsas</a></li>
-          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-          <li><a href="/pages/materiales.html">Catálogo de Materiales</a></li>
-        </ul>
-      </div>
+      <!-- Medio: Aviso Legal -->
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
 
-      <div class="footer-col">
-        <h4>Contacto & Redes</h4>
-        <ul>
-          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
-          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
-          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
-          <li><span>Corrientes, Argentina</span></li>
-        </ul>
-      </div>
-    </div>
+      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
 
-    <div class="footer-bottom">
-      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
-      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
     </div>
   </footer>
 

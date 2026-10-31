@@ -17,6 +17,9 @@ __pycache__/
 
 # Archivos de entorno y configuración local
 .env
+.env*
+llave-google.json
+*.json.key
 *.log
 
 # IDEs y editores

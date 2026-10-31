@@ -1,0 +1,115 @@
+/* ==========================================================================
+   TOKENS — Sistema de diseño "Medianoche de Telón"
+   --------------------------------------------------------------------------
+   Única fuente de verdad de color, tipografía, espaciado y movimiento.
+   Cualquier módulo nuevo (p. ej. Atelier Horacio Gómez) debe consumir SOLO
+   estas variables; así el rediseño de una paleta se hace en un solo archivo.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Vacío y tinta: el escenario antes de que se abra el telón ────────── */
+  --void:        #03040a;
+  --ink:         #060916;
+  --ink-2:       #0a0f26;
+  --ink-3:       #101842;
+  --ink-4:       #17215a;
+
+  /* ── Azules de alta costura ───────────────────────────────────────────── */
+  --ultramar:    #3040ff;   /* azul eléctrico: el protagonista               */
+  --cobalto:     #1f2fd8;
+  --zafiro:      #0f1d78;
+  --lapislazuli: #1a2a9e;
+
+  /* ── Neones sutiles (se usan en dosis pequeñas, siempre como luz) ─────── */
+  --rio:         #5ef2e0;   /* cian Paraná                                    */
+  --orquidea:    #9d6cff;   /* violeta de terciopelo                          */
+  --fucsia:      #ff4fa3;   /* chispa de purpurina; solo acentos mínimos      */
+
+  /* ── Herencia: champán y oro viejo (el pasado artesanal) ──────────────── */
+  --champan:     #ead9b6;
+  --champan-hi:  #f7ecd0;
+  --oro:         #c9a75e;
+
+  /* ── Texto ────────────────────────────────────────────────────────────── */
+  --perla:       #eef0ff;
+  --niebla:      #aab2d4;
+  --bruma:       #6d759c;
+
+  /* ── Superficies de vidrio ────────────────────────────────────────────── */
+  --glass:        rgba(14, 20, 52, 0.46);
+  --glass-strong: rgba(10, 15, 40, 0.72);
+  --glass-hi:     rgba(130, 150, 255, 0.07);
+  --linea:        rgba(176, 190, 255, 0.12);
+  --linea-fuerte: rgba(176, 190, 255, 0.24);
+  --brillo:       rgba(255, 255, 255, 0.06);
+
+  /* ── Estados ──────────────────────────────────────────────────────────── */
+  --ok:    #3ddc97;
+  --warn:  #ffb454;
+  --error: #ff5d73;
+
+  /* ── Gradientes líquidos ──────────────────────────────────────────────── */
+  --grad-licuado: linear-gradient(115deg, var(--ultramar) 0%, var(--orquidea) 48%, var(--rio) 100%);
+  --grad-aurora:  radial-gradient(120% 90% at 20% 0%, rgba(48, 64, 255, .55), transparent 60%),
+                  radial-gradient(90% 80% at 90% 20%, rgba(157, 108, 255, .38), transparent 55%),
+                  radial-gradient(80% 70% at 60% 100%, rgba(94, 242, 224, .22), transparent 60%);
+  --grad-champan: linear-gradient(115deg, #fbf1d6 0%, var(--champan) 35%, var(--oro) 70%, var(--champan-hi) 100%);
+  --grad-borde:   linear-gradient(135deg, rgba(176,190,255,.45), rgba(176,190,255,.06) 40%, rgba(94,242,224,.28));
+
+  /* ── Tipografía ───────────────────────────────────────────────────────── */
+  --f-display: "Fraunces", "Cormorant Garamond", "Times New Roman", serif;
+  --f-label:   "Syne", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-script:  "Dancing Script", "Brush Script MT", cursive;
+
+  --t-xs:   clamp(.72rem, .70rem + .1vw, .78rem);
+  --t-sm:   clamp(.84rem, .82rem + .1vw, .92rem);
+  --t-base: clamp(1rem, .96rem + .2vw, 1.0625rem);
+  --t-lg:   clamp(1.15rem, 1.05rem + .5vw, 1.4rem);
+  --t-xl:   clamp(1.6rem, 1.3rem + 1.4vw, 2.4rem);
+  --t-2xl:  clamp(2.2rem, 1.6rem + 3vw, 4rem);
+  --t-hero: clamp(2.7rem, 1.2rem + 6.4vw, 7.2rem);
+
+  /* ── Espaciado / formas ───────────────────────────────────────────────── */
+  --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.5rem;
+  --s-6: 2rem;   --s-7: 3rem;  --s-8: 4.5rem; --s-9: 7rem;
+  --r-sm: 10px; --r-md: 18px; --r-lg: 28px; --r-xl: 44px; --r-pill: 999px;
+  --wrap: min(1240px, 100% - clamp(2rem, 6vw, 5rem));
+  --header-h: 84px;
+
+  /* ── Sombras con luz de color ─────────────────────────────────────────── */
+  --sombra-1: 0 10px 30px -12px rgba(0, 0, 0, .65);
+  --sombra-2: 0 30px 80px -30px rgba(0, 0, 0, .8), 0 0 0 1px var(--linea);
+  --luz-azul: 0 0 60px -10px rgba(48, 64, 255, .55);
+  --luz-rio:  0 0 50px -12px rgba(94, 242, 224, .5);
+
+  /* ── Movimiento ───────────────────────────────────────────────────────── */
+  --ease-out:    cubic-bezier(.16, 1, .3, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --d-fast: .25s; --d-med: .6s; --d-slow: 1.1s;
+
+  /* ── ALIAS LEGADOS ────────────────────────────────────────────────────────
+     Plantillas/JS antiguos aún referencian estos nombres en estilos en línea.
+     Se remapean a la nueva paleta para que nada se vea roto ni "dorado viejo". */
+  --azul-noche:       var(--ink);
+  --dorado-solido:    var(--champan);
+  --dorado-brillo:    var(--champan-hi);
+  --dorado-light:     var(--champan-hi);
+  --dorado:           var(--champan);
+  --dorado-border:    rgba(234, 217, 182, .28);
+  --champagne:        var(--champan);
+  --champagne-light:  var(--champan-hi);
+  --champagne-border: rgba(234, 217, 182, .28);
+  --champagne-glow:   rgba(234, 217, 182, .14);
+  --texto-gris-claro: #c3c9e6;
+  --texto-gris-medio: var(--niebla);
+  --text-main:        var(--perla);
+  --text-muted:       var(--niebla);
+}
+
+@media (max-width: 760px) {
+  :root { --header-h: 68px; }
+}

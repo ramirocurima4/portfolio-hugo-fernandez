@@ -7,6 +7,133 @@
   <title>Prensa y Entrevistas | Hugo Fernández Arte Creativo</title>
   <link rel="stylesheet" href="/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
+  <style>
+    /* Estilos Glassmorphism para Tarjetas de Artículos Escritos */
+    .entrevista-card-articulo {
+      background: rgba(11, 21, 40, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(230, 213, 184, 0.28);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      transition: all 0.35s ease;
+      position: relative;
+    }
+
+    .entrevista-card-articulo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #E6D5B8, transparent);
+      opacity: 0.8;
+    }
+
+    .entrevista-card-articulo:hover {
+      transform: translateY(-5px);
+      border-color: #E6D5B8;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 22px rgba(230, 213, 184, 0.2);
+    }
+
+    .articulo-card-inner {
+      padding: 2.2rem 1.8rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    .articulo-badge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .articulo-plataforma-pill {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0.35rem 0.85rem;
+      background: rgba(230, 213, 184, 0.14);
+      border: 1px solid rgba(230, 213, 184, 0.4);
+      border-radius: 20px;
+      color: #E6D5B8;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .articulo-formato-tag {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .articulo-titulo {
+      font-family: 'Julius Sans One', serif;
+      font-size: 1.3rem;
+      line-height: 1.45;
+      color: #ffffff;
+      margin: 0 0 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .articulo-extracto {
+      font-size: 0.94rem;
+      line-height: 1.65;
+      color: #cbd5e1;
+      margin-bottom: 2rem;
+      flex-grow: 1;
+    }
+
+    .articulo-card-footer {
+      margin-top: auto;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(230, 213, 184, 0.16);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .btn-leer-entrevista {
+      background: linear-gradient(135deg, #E6D5B8 0%, #d4af37 100%);
+      color: #040911 !important;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.5px;
+      padding: 0.7rem 1.45rem;
+      border-radius: 30px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(230, 213, 184, 0.25);
+    }
+
+    .btn-leer-entrevista:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(230, 213, 184, 0.5);
+      background: linear-gradient(135deg, #ffffff 0%, #E6D5B8 100%);
+      color: #000000 !important;
+    }
+  </style>
   <script src="/js/main.js" defer></script>
 </head>
 <body>
@@ -15,6 +142,21 @@
        HEADER STICKY (CON LOGO A LA DERECHA Y RUTAS RELATIVAS)
        ========================================================================== -->
   <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
     <div class="header-container">
       
       <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
@@ -23,38 +165,39 @@
         <span></span>
       </button>
 
+      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
       <nav class="main-nav" aria-label="Navegación principal">
         <ul class="nav-list">
           <li class="nav-item">
             <a href="/" class="nav-link">Inicio</a>
           </li>
           
+          <!-- Desplegable: Comparsas -->
           <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Galería de Inspiración</a></li>
-              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a href="/pages/arandu-beleza.html" class="nav-link">
+            <a href="/comparsas" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
               {% for comparsa in comparsas_unicas %}
               <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
               {% endfor %}
             </ul>
           </li>
 
-          <li class="nav-item">
-            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          <!-- Desplegable: Trajes -->
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
           </li>
 
           <li class="nav-item">
@@ -62,12 +205,11 @@
           </li>
 
           <li class="nav-item">
-            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+            <a href="/entrevistas" class="nav-link active">Entrevistas</a>
           </li>
 
-          <!-- Enlace activo de la sección actual -->
           <li class="nav-item">
-            <a href="/pages/entrevistas.html" class="nav-link active">Entrevistas</a>
+            <a href="/#contacto" class="nav-link">Contacto</a>
           </li>
         </ul>
       </nav>
@@ -95,94 +237,81 @@
       </header>
 
       <!-- ==========================================================================
-           GRILLA DE ENTREVISTAS Y VIDEOS REALES (/assets/videos/)
-           Renderizados con <video controls width="100%"> de forma responsiva
+           GRILLA HÍBRIDA DE ENTREVISTAS (VIDEOS CON IFRAME & ARTÍCULOS GLASSMORPHISM)
            ========================================================================== -->
-      <section class="entrevistas-grid" aria-label="Notas audiovisuales y entrevistas">
+      <section class="entrevistas-grid" aria-label="Notas audiovisuales y artículos de prensa">
 
-        <!-- Video 1: Entrevista Principal -->
-        <article class="entrevista-card reveal delay-1">
-          <div class="video-responsive-container">
-            <video controls width="100%" preload="metadata" poster="/assets/img/hugo-taller.jpg">
-              <source src="/assets/videos/entrevista.mp4" type="video/mp4">
-              <source src="/assets/video/entrevista.mp4" type="video/mp4">
-              Tu navegador no soporta la reproducción de video HTML5.
-            </video>
-          </div>
-          <div class="entrevista-body">
-            <div class="entrevista-meta">
-              <span class="entrevista-medio">Especial Prensa Corrientes</span>
-              <span class="entrevista-fecha">Temporada Oficial</span>
-            </div>
-            <h2 class="entrevista-titulo">Entrevista Exclusiva: Los Secretos del Taller y el Armado de Espaldares</h2>
-            <p class="entrevista-desc">
-              Un recorrido íntimo por el taller de Hugo Fernández revelando el proceso de equilibrado de herrería, coordinación de equipo y engarce de miles de cristales para las noches de competencia.
-            </p>
-          </div>
-        </article>
+        {% if entrevistas %}
+          {% for e in entrevistas %}
+            {% set url_destino = e.url_enlace or e.enlace_youtube_o_diario %}
+            {% set es_video = (e.tipo_medio == 'video') or (not e.tipo_medio and (url_destino | es_youtube or url_destino | es_video)) %}
 
-        <!-- Video 2: Solista Valentina - Pasarela & Detalle 1 -->
-        <article class="entrevista-card reveal delay-2">
-          <div class="video-responsive-container">
-            <video controls width="100%" preload="metadata">
-              <source src="/assets/videos/Solista_Valentina-vid1.mp4" type="video/mp4">
-              <source src="/assets/video/Solista_Valentina-vid1.mp4" type="video/mp4">
-              Tu navegador no soporta la reproducción de video HTML5.
-            </video>
-          </div>
-          <div class="entrevista-body">
-            <div class="entrevista-meta">
-              <span class="entrevista-medio">Registro en Vivo • Corsódromo</span>
-              <span class="entrevista-fecha">Edición Reciente</span>
-            </div>
-            <h2 class="entrevista-titulo">Solista Valentina (Parte I): Despliegue Escénico y Movimiento</h2>
-            <p class="entrevista-desc">
-              Demostración real en movimiento del balance ergonómico de arnés, articulación de espaldar y refracción lumínica de cristales checos en pleno desfile.
-            </p>
-          </div>
-        </article>
+            {% if es_video %}
+              <!-- TARJETA FORMATO VIDEO / AUDIOVISUAL (CON IFRAME RESPONSIVO) -->
+              <article class="entrevista-card reveal delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ e.id }}" data-tipo="video">
+                <div class="video-responsive-container">
+                  <iframe src="{{ url_destino | adaptar_url_video }}" 
+                          title="{{ e.titulo }}" 
+                          frameborder="0" 
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                          allowfullscreen 
+                          loading="lazy">
+                  </iframe>
+                </div>
+                <div class="entrevista-body">
+                  <div class="entrevista-meta">
+                    <span class="entrevista-medio">
+                      {% if e.plataforma == 'Instagram' %}📸 Instagram
+                      {% elif e.plataforma == 'YouTube' %}▶ YouTube
+                      {% elif e.plataforma == 'Podcast' %}🎙️ Podcast
+                      {% elif e.plataforma == 'Taller' %}✂️ Taller
+                      {% else %}📺 {{ e.plataforma or e.medio or 'Audiovisual' }}
+                      {% endif %}
+                    </span>
+                    <span class="entrevista-fecha">{{ e.fecha }}</span>
+                  </div>
+                  <h2 class="entrevista-titulo">{{ e.titulo }}</h2>
+                  {% if e.descripcion %}
+                  <p class="entrevista-desc">
+                    {{ e.descripcion }}
+                  </p>
+                  {% endif %}
+                </div>
+              </article>
+            {% else %}
+              <!-- TARJETA GLASSMORPHISM FORMATO ARTÍCULO ESCRITO -->
+              <article class="entrevista-card-articulo reveal delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ e.id }}" data-tipo="articulo">
+                <div class="articulo-card-inner">
+                  <div class="articulo-badge-header">
+                    <span class="articulo-plataforma-pill">
+                      📰 {{ e.plataforma or e.medio or 'Prensa' }}
+                    </span>
+                    <span class="articulo-formato-tag">Artículo Escrito</span>
+                  </div>
 
-        <!-- Video 3: Solista Valentina - Pasarela & Detalle 2 -->
-        <article class="entrevista-card reveal delay-3">
-          <div class="video-responsive-container">
-            <video controls width="100%" preload="metadata">
-              <source src="/assets/videos/Solista_Valentina-vid2.mp4" type="video/mp4">
-              <source src="/assets/video/Solista_Valentina-vid2.mp4" type="video/mp4">
-              Tu navegador no soporta la reproducción de video HTML5.
-            </video>
-          </div>
-          <div class="entrevista-body">
-            <div class="entrevista-meta">
-              <span class="entrevista-medio">Cámara en Calzada</span>
-              <span class="entrevista-fecha">Carnaval Correntino</span>
-            </div>
-            <h2 class="entrevista-titulo">Solista Valentina (Parte II): Plumaje Amazónico y Terminaciones</h2>
-            <p class="entrevista-desc">
-              Primeros planos de la estructura dorsal liviana y la respuesta dinámica del plumaje seleccionado frente al ritmo de batería.
-            </p>
-          </div>
-        </article>
+                  <h2 class="articulo-titulo">{{ e.titulo }}</h2>
 
-        <!-- Video 4: Solista Valentina - Backstage & Prueba Final -->
-        <article class="entrevista-card reveal delay-1">
-          <div class="video-responsive-container">
-            <video controls width="100%" preload="metadata">
-              <source src="/assets/videos/Solista_Valentina-vid3.mp4" type="video/mp4">
-              <source src="/assets/video/Solista_Valentina-vid3.mp4" type="video/mp4">
-              Tu navegador no soporta la reproducción de video HTML5.
-            </video>
+                  {% if e.descripcion %}
+                  <p class="articulo-extracto">{{ e.descripcion }}</p>
+                  {% endif %}
+
+                  <div class="articulo-card-footer">
+                    <span class="entrevista-fecha" style="font-size: 0.8rem; color: #94a3b8;">📅 {{ e.fecha }}</span>
+                    <a href="{{ url_destino }}" target="_blank" rel="noopener noreferrer" class="btn-leer-entrevista">
+                      <span>Leer Entrevista</span>
+                      <span style="font-size: 1.1rem; line-height: 1;">↗</span>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(230, 213, 184, 0.2); border-radius: 12px;">
+            <p style="font-size: 1.1rem; color: #E6D5B8; margin-bottom: 0.5rem;">✦ No hay entrevistas publicadas aún.</p>
+            <span style="font-size: 0.85rem; color: #94a3b8;">Las coberturas y videos de taller agregados desde el CMS aparecerán aquí automáticamente.</span>
           </div>
-          <div class="entrevista-body">
-            <div class="entrevista-meta">
-              <span class="entrevista-medio">Backstage & Montaje</span>
-              <span class="entrevista-fecha">Taller Hugo Fernández</span>
-            </div>
-            <h2 class="entrevista-titulo">Solista Valentina (Parte III): Detrás de Escena y Calce Final</h2>
-            <p class="entrevista-desc">
-              Verificación técnica de sujeción, comodidad de corselete y destello de pedrería antes de salir a la calzada del corsódromo.
-            </p>
-          </div>
-        </article>
+        {% endif %}
 
       </section>
 
@@ -190,39 +319,34 @@
   </main>
 
   <!-- ==========================================================================
-       FOOTER PROFESIONAL
+       FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
        ========================================================================== -->
   <footer class="site-footer">
     <div class="footer-container">
-      <div class="footer-brand">
-        <div class="brand-name">Hugo Fernández</div>
-        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      
+      <!-- Superior: Botones limpios de Contacto Directo -->
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
       </div>
 
-      <div class="footer-col">
-        <h4>Navegación</h4>
-        <ul>
-          <li><a href="../index.html">Inicio</a></li>
-          <li><a href="arandu-beleza.html">Arandú Beleza</a></li>
-          <li><a href="materiales.html">Catálogo de Materiales</a></li>
-          <li><a href="entrevistas.html">Notas y Entrevistas</a></li>
-        </ul>
-      </div>
+      <!-- Medio: Aviso Legal -->
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
 
-      <div class="footer-col">
-        <h4>Contacto & Redes</h4>
-        <ul>
-          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
-          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
-          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
-          <li><span>Corrientes, Argentina</span></li>
-        </ul>
-      </div>
-    </div>
+      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
 
-    <div class="footer-bottom">
-      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
-      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
     </div>
   </footer>
 

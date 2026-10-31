@@ -5,10 +5,16 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.__MAIN_JS_INITIALIZED__) return;
+  window.__MAIN_JS_INITIALIZED__ = true;
+
   initStickyHeader();
   initCarnavalCountdown();
   initIntersectionObserver();
   initMobileMenu();
+  initTrayectoriaInteractiva();
+  initModalPerfilTecnico();
+  initFiltrosGaleriaTrajes();
   cargarTrajes();
   cargarTrajesFeedMobile();
   initTrajeGalleryThumbs();
@@ -106,12 +112,49 @@ function escapeHTML(str) {
 }
 
 /**
+ * Normaliza cadenas de género o categoría eliminando acentos y convirtiendo a minúsculas
+ */
+function normalizarGeneroTexto(texto) {
+  if (!texto) return '';
+  return String(texto)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+/**
+ * Evalúa si el género de un traje coincide con el filtro activo (Femenino, Masculino, Unisex / Sin Género, Todos)
+ */
+function coincideFiltroGenero(generoTraje, filtroActivo) {
+  const f = normalizarGeneroTexto(filtroActivo);
+  if (!f || f === 'all' || f === 'todos') return true;
+  const g = normalizarGeneroTexto(generoTraje);
+  if (f.includes('unisex') || f.includes('sin genero')) {
+    return g.includes('unisex') || g.includes('sin genero');
+  }
+  if (f.includes('femenin')) {
+    return g.includes('femenin');
+  }
+  if (f.includes('masculin')) {
+    return g.includes('masculin');
+  }
+  return g === f;
+}
+
+/**
  * PASO 1: Carga asíncrona de trajes desde la API REST (SQLite / Flask)
  * Selecciona el contenedor .grilla-miniaturas, lo vacía e hidrata dinámicamente.
+ * Respeta las grillas SSR (.comparseros-grid) que ya fueron renderizadas por Jinja2.
  */
 async function cargarTrajes() {
-  const gridContainer = document.querySelector('.grilla-miniaturas, .comparseros-grid');
+  const gridContainer = document.querySelector('.grilla-miniaturas');
   if (!gridContainer) return;
+
+  // Si ya fue renderizado por SSR con tarjetas reales, no sobrescribir
+  if (gridContainer.children.length > 0 && gridContainer.querySelector('.comparsero-card')) {
+    return;
+  }
 
   // Estado visual de carga elegante
   gridContainer.innerHTML = `
@@ -210,11 +253,42 @@ function renderizarGrillaMiniaturas(trajes) {
     const safeComparsa = escapeHTML(traje.comparsa || 'Comparsa Oficial');
     const safeGenero = escapeHTML(traje.genero || 'Unisex');
 
+    const isVideo = safeFoto.toLowerCase().includes('.mp4') || safeFoto.toLowerCase().includes('/video');
+    const hasBoceto = traje.enlace_boceto && String(traje.enlace_boceto).trim().length > 0;
+    const safeBoceto = hasBoceto ? escapeHTML(resolverRutaImagen(traje.enlace_boceto)) : '';
+
+    let mediaHtml = '';
+    if (isVideo) {
+      mediaHtml = `
+        <video controls width="100%" class="destaque-video-player" style="height: 100%; object-fit: cover;" preload="metadata">
+          <source src="${safeFoto}" type="video/mp4">
+        </video>
+      `;
+    } else if (hasBoceto) {
+      mediaHtml = `
+        <div class="ba-slider-container" data-ba-slider style="height: 100%;">
+          <img src="${safeFoto}" alt="Después: ${safeComparsero}" class="ba-img ba-after-img" loading="lazy">
+          <div class="ba-before-wrapper">
+            <img src="${safeBoceto}" alt="Antes: Boceto ${safeComparsero}" class="ba-img ba-before-img" loading="lazy">
+          </div>
+          <span class="ba-badge ba-badge-before">Antes</span>
+          <span class="ba-badge ba-badge-after">Después</span>
+          <div class="ba-divider"><div class="ba-handle"><span>↔</span></div></div>
+          <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
+        </div>
+      `;
+    } else {
+      mediaHtml = `<img src="${safeFoto}" alt="${safeComparsero}" loading="lazy">`;
+    }
+
+    const isDestaque = traje.es_destaque || traje.es_obra_maestra;
+    const destaqueBadge = isDestaque ? ' • ★ Destaque' : '';
+
     // FASE 8: Enlace y redirección a la ruta SSR /traje/${traje.id}
     card.innerHTML = `
       <div class="comparsero-thumb tarjeta-thumb">
-        <span class="comparsero-badge tarjeta-badge">${safeGenero} • ${safeComparsa}</span>
-        <img src="${safeFoto}" alt="${safeComparsero}" loading="lazy">
+        <span class="comparsero-badge tarjeta-badge">${safeGenero} • ${safeComparsa}${destaqueBadge}</span>
+        ${mediaHtml}
       </div>
       <div class="comparsero-body tarjeta-body">
         <div>
@@ -244,7 +318,7 @@ function renderizarGrillaMiniaturas(trajes) {
     }
 
     card.addEventListener('click', (e) => {
-      if (!e.target.closest('a')) {
+      if (!e.target.closest('a') && !e.target.closest('input') && !e.target.closest('video')) {
         navegarADetalle();
         window.location.href = `/traje/${traje.id}`;
       }
@@ -252,6 +326,8 @@ function renderizarGrillaMiniaturas(trajes) {
 
     gridContainer.appendChild(card);
   });
+
+  initImageComparison();
 }
 
 /**
@@ -264,9 +340,9 @@ function aplicarFiltrosYRenderizar() {
   const categoria = catalogoTrajesState.categoriaActiva.toLowerCase();
 
   const filtrados = catalogoTrajesState.todos.filter(traje => {
-    // Coincidencia por categoría de botón (Todos / Femenino / Masculino)
+    // Coincidencia por categoría de botón (Todos / Femenino / Masculino / Unisex / Sin Género)
     const generoTraje = (traje.genero || '').toLowerCase();
-    const coincideCategoria = (categoria === 'all' || generoTraje === categoria);
+    const coincideCategoria = coincideFiltroGenero(generoTraje, categoria);
 
     // Coincidencia por búsqueda de texto
     const comparsero = (traje.comparsero || '').toLowerCase();
@@ -323,7 +399,7 @@ function initFilterAndSearchListeners() {
     }
   }
 
-  // Pestañas de filtrado (Todos / Femeninos / Masculinos)
+  // Pestañas de filtrado (Todos / Femenino / Masculino / Unisex / Sin Género)
   filterButtons.forEach(button => {
     if (!button.dataset.listenerBound) {
       button.dataset.listenerBound = 'true';
@@ -335,6 +411,84 @@ function initFilterAndSearchListeners() {
       });
     }
   });
+}
+
+/**
+ * Filtros Inclusivos en la Galería Pública de Trajes (/trajes)
+ * Permite alternar dinámicamente entre Todos, Femenino, Masculino y Unisex / Sin Género
+ * sin recargar o manteniendo sincronizado el parámetro ?genero= en la URL.
+ */
+function initFiltrosGaleriaTrajes() {
+  const filterBtns = document.querySelectorAll('.trajes-filter-btn');
+  const feedContainer = document.getElementById('feed-principal');
+  if (!filterBtns.length || !feedContainer) return;
+
+  const emptyMsg = document.getElementById('trajes-empty-filter');
+  const countBadge = document.getElementById('trajes-filter-count');
+
+  const aplicarFiltroDOM = (filtroSeleccionado, actualizarURL = true) => {
+    const cards = Array.from(feedContainer.querySelectorAll('.immersive-traje-card, .tarjeta-feed'));
+    let visibles = 0;
+
+    cards.forEach((card) => {
+      const generoCard = card.getAttribute('data-genero') || card.dataset.genero || '';
+      const esVisible = coincideFiltroGenero(generoCard, filtroSeleccionado);
+      if (esVisible) {
+        card.style.display = '';
+        card.classList.remove('is-filtered-out');
+        visibles += 1;
+      } else {
+        card.style.display = 'none';
+        card.classList.add('is-filtered-out');
+      }
+    });
+
+    filterBtns.forEach(btn => {
+      const btnFilter = btn.getAttribute('data-filter') || 'todos';
+      const isActive = normalizarGeneroTexto(btnFilter) === normalizarGeneroTexto(filtroSeleccionado);
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    if (countBadge) {
+      countBadge.textContent = `${visibles} ${visibles === 1 ? 'obra' : 'obras'}`;
+    }
+
+    if (emptyMsg) {
+      emptyMsg.style.display = visibles === 0 ? 'block' : 'none';
+    }
+
+    if (actualizarURL && window.history && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      const norm = normalizarGeneroTexto(filtroSeleccionado);
+      if (!norm || norm === 'todos' || norm === 'all') {
+        url.searchParams.delete('genero');
+      } else {
+        url.searchParams.set('genero', filtroSeleccionado);
+      }
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  filterBtns.forEach(btn => {
+    if (!btn.dataset.filterBound) {
+      btn.dataset.filterBound = 'true';
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const filtro = btn.getAttribute('data-filter') || 'todos';
+        aplicarFiltroDOM(filtro, true);
+      });
+    }
+  });
+
+  // Aplicar filtro inicial si viene en la URL (?genero=...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const generoParam = urlParams.get('genero');
+  if (generoParam) {
+    aplicarFiltroDOM(generoParam, false);
+  } else {
+    aplicarFiltroDOM('todos', false);
+  }
 }
 
 /**
@@ -422,17 +576,17 @@ function hidratarFichaDetalle(traje) {
     imagenEl.alt = `${traje.comparsero} (${traje.comparsa})`;
   }
 
-  // Inyecta la cadena de materiales en el desglose técnico reemplazando los placeholders
+  // Inyecta la cadena de materiales en el desglose técnico como píldoras horizontales minimalistas
   if (materialesEl && traje.materiales) {
     materialesEl.innerHTML = '';
     const cleanMateriales = traje.materiales.replace(/\.$/, '');
     const listaMateriales = cleanMateriales.split(',').map(m => m.trim()).filter(Boolean);
 
-    materialesEl.innerHTML = listaMateriales.map((item, idx) => `
-      <div class="material-tag reveal visible delay-${(idx % 3) + 1}">
-        <span class="tag-label">✦ Material</span>
-        <span class="tag-quantity">${escapeHTML(item)}</span>
-      </div>
+    materialesEl.innerHTML = listaMateriales.map((item) => `
+      <span class="material-pill">
+        <span class="tag-bullet">✦</span>
+        <span class="tag-name">${escapeHTML(item)}</span>
+      </span>
     `).join('');
   }
 
@@ -515,17 +669,47 @@ async function cargarTrajesFeedMobile() {
           const card = document.createElement('article');
           card.className = `tarjeta-feed immersive-traje-card reveal visible delay-${(idx % 3) + 1}`;
           card.setAttribute('data-id', traje.id);
+          card.setAttribute('data-genero', traje.genero || 'Femenino');
 
           const foto = escapeHTML(resolverRutaImagen(traje.foto_url || ''));
           const comparsero = escapeHTML(traje.comparsero || 'Traje de Carnaval');
           const comparsa = escapeHTML(traje.comparsa || 'Comparsa');
           const genero = escapeHTML(traje.genero || 'Oficial');
-          const obraBadge = traje.es_obra_maestra ? ' • ★ Obra Maestra' : '';
+          const isDestaque = traje.es_destaque || traje.es_obra_maestra;
+          const obraBadge = isDestaque ? ' • ★ Destaque' : '';
           const desc = escapeHTML(traje.descripcion || traje.materiales || 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.');
+
+          const isVideo = foto.toLowerCase().includes('.mp4') || foto.toLowerCase().includes('/video');
+          const hasBoceto = traje.enlace_boceto && String(traje.enlace_boceto).trim().length > 0;
+          const safeBoceto = hasBoceto ? escapeHTML(resolverRutaImagen(traje.enlace_boceto)) : '';
+
+          let feedMediaHtml = '';
+          if (isVideo) {
+            feedMediaHtml = `
+              <video controls width="100%" class="destaque-video-player" style="height: 100%; object-fit: cover;" preload="metadata">
+                <source src="${foto}" type="video/mp4">
+              </video>
+            `;
+          } else if (hasBoceto) {
+            feedMediaHtml = `
+              <div class="ba-slider-container" data-ba-slider style="height: 100%;">
+                <img src="${foto}" alt="Después: ${comparsero}" class="ba-img ba-after-img" loading="lazy">
+                <div class="ba-before-wrapper">
+                  <img src="${safeBoceto}" alt="Antes: Boceto ${comparsero}" class="ba-img ba-before-img" loading="lazy">
+                </div>
+                <span class="ba-badge ba-badge-before">Antes</span>
+                <span class="ba-badge ba-badge-after">Después</span>
+                <div class="ba-divider"><div class="ba-handle"><span>↔</span></div></div>
+                <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
+              </div>
+            `;
+          } else {
+            feedMediaHtml = `<img src="${foto}" alt="${comparsero} - ${comparsa}" loading="lazy">`;
+          }
 
           card.innerHTML = `
             <div class="immersive-traje-img-box">
-              <img src="${foto}" alt="${comparsero} - ${comparsa}" loading="lazy">
+              ${feedMediaHtml}
             </div>
             <div class="immersive-traje-overlay">
               <div class="immersive-info">
@@ -534,7 +718,7 @@ async function cargarTrajesFeedMobile() {
                 <p class="immersive-desc">${desc}</p>
               </div>
               <div class="immersive-action">
-                <a href="/traje/${traje.id}" class="btn-dorado">
+                <a href="/traje/${traje.id}" class="btn-hero-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                   Consultar Ficha Técnica →
                 </a>
               </div>
@@ -542,6 +726,7 @@ async function cargarTrajesFeedMobile() {
           `;
           container.appendChild(card);
         });
+        initImageComparison();
       }
     });
   } catch (err) {
@@ -629,47 +814,52 @@ function initMobileMenu() {
 }
 
 /**
- * FASE 4: Vidriera Interactiva - Slider Boceto vs Realidad
- * Control interactivo de revelado de imágenes superpuestas
- * con soporte fluido para cursor/mouse drag y gestos táctiles móviles.
+ * Vidriera Interactiva - Slider Boceto (Antes) vs Traje (Después)
+ * Control interactivo con clip-path y soporte fluido para cursor, mouse drag y touch móvil.
  */
 function initImageComparison() {
-  const container = document.querySelector('.image-comparison-container');
-  const slider = document.querySelector('.comparison-range-slider');
-  const overlay = document.querySelector('.comparison-after');
-  const divider = document.querySelector('.comparison-divider');
+  // Manejo de todos los sliders Antes / Después ([data-ba-slider] y .ba-slider-container)
+  const sliders = document.querySelectorAll('[data-ba-slider], .ba-slider-container');
+  sliders.forEach(container => {
+    const range = container.querySelector('.ba-range-input, input[type="range"]');
+    const beforeWrapper = container.querySelector('.ba-before-wrapper');
+    const divider = container.querySelector('.ba-divider');
 
-  if (!container || !slider || !overlay || !divider) return;
+    const update = (val) => {
+      const clamped = Math.max(0, Math.min(100, parseFloat(val) || 50));
+      container.style.setProperty('--ba-pos', `${clamped}%`);
+      if (beforeWrapper) {
+        beforeWrapper.style.clipPath = `polygon(0 0, ${clamped}% 0, ${clamped}% 100%, 0 100%)`;
+        beforeWrapper.style.webkitClipPath = `polygon(0 0, ${clamped}% 0, ${clamped}% 100%, 0 100%)`;
+      }
+      if (divider) {
+        divider.style.left = `${clamped}%`;
+      }
+    };
 
-  const updateComparison = (value) => {
-    const clampedValue = Math.max(0, Math.min(100, parseFloat(value) || 50));
-    overlay.style.width = `${clampedValue}%`;
-    divider.style.left = `${clampedValue}%`;
-  };
-
-  // Escucha reactiva continua durante el desplazamiento
-  slider.addEventListener('input', (e) => {
-    updateComparison(e.target.value);
-  });
-
-  slider.addEventListener('change', (e) => {
-    updateComparison(e.target.value);
-  });
-
-  // Inicializar al 50%
-  updateComparison(slider.value || 50);
-
-  // Sincronización del ancho de imagen interna para compatibilidad total de escalado
-  const innerImg = overlay.querySelector('img');
-  const syncInnerImageWidth = () => {
-    if (innerImg && container) {
-      innerImg.style.width = `${container.offsetWidth}px`;
+    if (range) {
+      range.addEventListener('input', (e) => update(e.target.value));
+      range.addEventListener('change', (e) => update(e.target.value));
+      update(range.value || 50);
     }
-  };
+  });
 
-  window.addEventListener('resize', syncInnerImageWidth, { passive: true });
-  // Sincronización inicial luego del renderizado
-  setTimeout(syncInnerImageWidth, 50);
+  // Compatibilidad con contenedor individual legado
+  const legacyContainer = document.querySelector('.image-comparison-container');
+  const legacySlider = document.querySelector('.comparison-range-slider');
+  const legacyOverlay = document.querySelector('.comparison-after');
+  const legacyDivider = document.querySelector('.comparison-divider');
+
+  if (legacyContainer && legacySlider && legacyOverlay && legacyDivider) {
+    const updateLegacy = (value) => {
+      const clampedValue = Math.max(0, Math.min(100, parseFloat(value) || 50));
+      legacyOverlay.style.width = `${clampedValue}%`;
+      legacyDivider.style.left = `${clampedValue}%`;
+    };
+    legacySlider.addEventListener('input', (e) => updateLegacy(e.target.value));
+    legacySlider.addEventListener('change', (e) => updateLegacy(e.target.value));
+    updateLegacy(legacySlider.value || 50);
+  }
 }
 
 /**
@@ -818,55 +1008,62 @@ async function cargarComentariosDeTraje(trajeId) {
  */
 function initCarnavalCountdown() {
   const header = document.querySelector('.site-header');
-  if (!header || document.querySelector('.carnaval-countdown-bar')) return;
+  if (!header) return;
 
-  // Determinar la fecha del próximo Carnaval Correntino (finales de enero, 22:00 hs ARG)
+  // Determinar la fecha de la noche inaugural de Carnaval en el Corsódromo Nolo Alías 2027
   const obtenerFechaProximoCarnaval = () => {
     const ahora = new Date();
-    let anioObjetivo = ahora.getFullYear();
-    // Noche inaugural estimada: 30 de enero a las 22:00 hs (Corsódromo Nolo Alías)
-    let fechaCarnaval = new Date(anioObjetivo, 0, 30, 22, 0, 0);
-    if (ahora >= fechaCarnaval) {
+    // Noche inaugural Nolo Alías 2027: 29 de Enero de 2027 a las 22:00 hs (GMT-3)
+    let anioObjetivo = Math.max(2027, ahora.getFullYear());
+    let fechaCarnaval = new Date(`${anioObjetivo}-01-29T22:00:00-03:00`);
+    if (isNaN(fechaCarnaval.getTime())) {
+      fechaCarnaval = new Date(anioObjetivo, 0, 29, 22, 0, 0);
+    }
+    if (ahora.getTime() >= fechaCarnaval.getTime()) {
       anioObjetivo += 1;
-      fechaCarnaval = new Date(anioObjetivo, 0, 30, 22, 0, 0);
+      fechaCarnaval = new Date(`${anioObjetivo}-01-29T22:00:00-03:00`);
+      if (isNaN(fechaCarnaval.getTime())) {
+        fechaCarnaval = new Date(anioObjetivo, 0, 29, 22, 0, 0);
+      }
     }
     return { fecha: fechaCarnaval, anio: anioObjetivo };
   };
 
   const { fecha: targetDate, anio: edicionAnio } = obtenerFechaProximoCarnaval();
 
-  const bar = document.createElement('div');
-  bar.className = 'carnaval-countdown-bar';
-  bar.setAttribute('aria-label', 'Cuenta regresiva para el próximo Carnaval Correntino');
-
-  bar.innerHTML = `
-    <span class="carnaval-countdown-label">
-      <span>🎭</span> Rumbo al Carnaval de Corrientes ${edicionAnio} (Nolo Alías):
-    </span>
-    <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-      <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-      <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-      <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-      <span class="countdown-unit"><span id="cd-seg">00</span><small>s</small></span>
-    </div>
-    <a href="/comunidad/subir" class="carnaval-countdown-cta">
-      ✨ Subí tu Traje
-    </a>
-  `;
-
-  header.insertBefore(bar, header.firstChild);
-
-  const diasEl = bar.querySelector('#cd-dias');
-  const horasEl = bar.querySelector('#cd-horas');
-  const minEl = bar.querySelector('#cd-min');
-  const segEl = bar.querySelector('#cd-seg');
+  let bar = document.querySelector('.carnaval-countdown-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'carnaval-countdown-bar';
+    bar.setAttribute('aria-label', 'Cuenta regresiva para el próximo Carnaval Correntino');
+    bar.innerHTML = `
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes ${edicionAnio} (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>s</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    `;
+    header.insertBefore(bar, header.firstChild);
+  }
 
   const actualizarReloj = () => {
     const diff = Math.max(0, targetDate.getTime() - Date.now());
     const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const min = Math.floor((diff / 1000 / 60) % 60);
+    const min = Math.floor((diff / (1000 * 60)) % 60);
     const seg = Math.floor((diff / 1000) % 60);
+
+    const diasEl = document.getElementById('cd-dias') || bar.querySelector('#cd-dias');
+    const horasEl = document.getElementById('cd-horas') || bar.querySelector('#cd-horas');
+    const minEl = document.getElementById('cd-min') || bar.querySelector('#cd-min');
+    const segEl = document.getElementById('cd-seg') || bar.querySelector('#cd-seg');
 
     if (diasEl) diasEl.textContent = String(dias).padStart(2, '0');
     if (horasEl) horasEl.textContent = String(horas).padStart(2, '0');
@@ -877,5 +1074,249 @@ function initCarnavalCountdown() {
   actualizarReloj();
   setInterval(actualizarReloj, 1000);
 }
+
+/**
+ * Carrusel de Trayectoria en el Carnaval (Multi-Vista Responsiva)
+ * - Muestra 3 comparsas por vista en pantallas grandes (> 960px), 2 en tablets (641-960px) y 1 en móviles (<= 640px).
+ * - Ordenado desde la consulta SQL de más reciente/actual a más antigua.
+ * - Flechas de navegación Anterior / Siguiente (#btn-tray-prev, #btn-tray-next), indicador dinámico y modal Glassmorphism.
+ */
+function initTrayectoriaInteractiva() {
+  const container = document.getElementById('trayectoria-container') || document.querySelector('.trayectoria-slider-container');
+  if (!container) return;
+
+  const slides = Array.from(container.querySelectorAll('.comparsa-btn-card, .trayectoria-slide, .comparsa-compact-card'));
+  if (!slides.length) return;
+
+  const prevBtn = document.getElementById('btn-tray-prev');
+  const nextBtn = document.getElementById('btn-tray-next');
+  const indicator = document.getElementById('tray-indicator');
+
+  let currentIndex = 0;
+  const totalSlides = slides.length;
+
+  function getItemsPerView() {
+    if (window.innerWidth > 960) return Math.min(3, totalSlides);
+    if (window.innerWidth > 640) return Math.min(2, totalSlides);
+    return 1;
+  }
+
+  function renderSlide(index) {
+    const itemsPerView = getItemsPerView();
+    const maxStartIndex = Math.max(0, totalSlides - itemsPerView);
+
+    if (index < 0) index = 0;
+    if (index > maxStartIndex) index = maxStartIndex;
+    currentIndex = index;
+
+    slides.forEach((slide, idx) => {
+      const isVisible = idx >= currentIndex && idx < currentIndex + itemsPerView;
+      if (isVisible) {
+        slide.style.display = 'flex';
+        slide.classList.add('active');
+        slide.setAttribute('aria-hidden', 'false');
+      } else {
+        slide.style.display = 'none';
+        slide.classList.remove('active');
+        slide.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    if (indicator) {
+      if (itemsPerView > 1) {
+        const endIdx = Math.min(currentIndex + itemsPerView, totalSlides);
+        indicator.textContent = `${currentIndex + 1} – ${endIdx} de ${totalSlides}`;
+      } else {
+        indicator.textContent = `${currentIndex + 1} de ${totalSlides}`;
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.disabled = (currentIndex <= 0);
+      prevBtn.setAttribute('aria-disabled', String(currentIndex <= 0));
+    }
+    if (nextBtn) {
+      nextBtn.disabled = (currentIndex >= maxStartIndex);
+      nextBtn.setAttribute('aria-disabled', String(currentIndex >= maxStartIndex));
+    }
+  }
+
+  if (prevBtn && !prevBtn.dataset.listenerBound) {
+    prevBtn.dataset.listenerBound = 'true';
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentIndex > 0) {
+        renderSlide(currentIndex - 1);
+      }
+    });
+  }
+
+  if (nextBtn && !nextBtn.dataset.listenerBound) {
+    nextBtn.dataset.listenerBound = 'true';
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const maxStartIndex = Math.max(0, totalSlides - getItemsPerView());
+      if (currentIndex < maxStartIndex) {
+        renderSlide(currentIndex + 1);
+      }
+    });
+  }
+
+  // Recalcular vista cuando cambia el tamaño de pantalla (Mobile / Tablet / Desktop 3 columnas)
+  window.addEventListener('resize', () => {
+    renderSlide(currentIndex);
+  }, { passive: true });
+
+  // Soporte de gestos táctiles (Swipe) en dispositivos móviles
+  let touchStartX = 0;
+  let touchEndX = 0;
+  container.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  container.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    const maxStartIndex = Math.max(0, totalSlides - getItemsPerView());
+    if (Math.abs(diff) > 40) {
+      if (diff > 0 && currentIndex < maxStartIndex) {
+        renderSlide(currentIndex + 1);
+      } else if (diff < 0 && currentIndex > 0) {
+        renderSlide(currentIndex - 1);
+      }
+    }
+  }, { passive: true });
+
+  // Render inicial mostrando las primeras 3 comparsas en escritorio (de más reciente/actual a más antigua)
+  renderSlide(0);
+
+  // Modal Glassmorphism de Comparsa
+  const modal = document.getElementById('modal-comparsa');
+  if (!modal) return;
+
+  const closeBtn = document.getElementById('modal-comparsa-close');
+  const cerrarBtn = document.getElementById('modal-btn-cerrar');
+  const titleEl = document.getElementById('modal-comp-title');
+  const badgeEl = document.getElementById('modal-comp-badge');
+  const ciudadEl = document.getElementById('modal-comp-ciudad');
+  const rolEl = document.getElementById('modal-comp-rol');
+  const descEl = document.getElementById('modal-comp-desc');
+  const linkEl = document.getElementById('modal-comp-link');
+
+  function abrirModal(card) {
+    const nombre = card.dataset.nombre || 'Comparsa';
+    const anios = card.dataset.anios ? ` • ${card.dataset.anios}` : '';
+    const ciudad = (card.dataset.ciudad || '') + anios;
+    const rol = card.dataset.rol || 'Dirección Técnica';
+    const desc = card.dataset.desc || '';
+
+    if (titleEl) titleEl.textContent = nombre;
+    if (badgeEl) badgeEl.textContent = card.dataset.anios || 'Trayectoria';
+    if (ciudadEl) ciudadEl.textContent = ciudad;
+    if (rolEl) rolEl.textContent = rol;
+    if (descEl) descEl.textContent = desc;
+
+    if (linkEl) {
+      linkEl.href = `/comparsa/${encodeURIComponent(nombre)}`;
+    }
+
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarModal() {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  slides.forEach(card => {
+    if (!card.dataset.modalBound) {
+      card.dataset.modalBound = 'true';
+      card.addEventListener('click', () => abrirModal(card));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          abrirModal(card);
+        }
+      });
+    }
+  });
+
+  if (closeBtn && !closeBtn.dataset.listenerBound) {
+    closeBtn.dataset.listenerBound = 'true';
+    closeBtn.addEventListener('click', cerrarModal);
+  }
+  if (cerrarBtn && !cerrarBtn.dataset.listenerBound) {
+    cerrarBtn.dataset.listenerBound = 'true';
+    cerrarBtn.addEventListener('click', cerrarModal);
+  }
+
+  if (!modal.dataset.listenerBound) {
+    modal.dataset.listenerBound = 'true';
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) cerrarModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      cerrarModal();
+    }
+    // Navegación con teclado si el modal está cerrado
+    if (!modal.classList.contains('active')) {
+      const maxStartIndex = Math.max(0, totalSlides - getItemsPerView());
+      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        renderSlide(currentIndex - 1);
+      } else if (e.key === 'ArrowRight' && currentIndex < maxStartIndex) {
+        renderSlide(currentIndex + 1);
+      }
+    }
+  });
+}
+
+/**
+ * Modal Glassmorphism para Perfil Técnico & Aptitudes Completas del CV
+ */
+function initModalPerfilTecnico() {
+  const btnAbrir = document.getElementById('btn-perfil-tecnico') || document.getElementById('btn-abrir-perfil-tecnico');
+  const modal = document.getElementById('modal-perfil-tecnico');
+  if (!btnAbrir || !modal) return;
+
+  const closeBtn = document.getElementById('modal-perfil-close');
+  const cerrarBtn = document.getElementById('modal-perfil-btn-cerrar');
+
+  function abrirModal() {
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarModal() {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  btnAbrir.addEventListener('click', (e) => {
+    e.preventDefault();
+    abrirModal();
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', cerrarModal);
+  if (cerrarBtn) cerrarBtn.addEventListener('click', cerrarModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) cerrarModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      cerrarModal();
+    }
+  });
+}
+
 
 

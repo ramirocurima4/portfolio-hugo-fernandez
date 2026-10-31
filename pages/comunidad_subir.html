@@ -15,6 +15,21 @@
        HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
        ========================================================================== -->
   <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
     <div class="header-container">
       
       <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
@@ -23,38 +38,39 @@
         <span></span>
       </button>
 
+      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
       <nav class="main-nav" aria-label="Navegación principal">
         <ul class="nav-list">
           <li class="nav-item">
             <a href="/" class="nav-link">Inicio</a>
           </li>
           
+          <!-- Desplegable: Comparsas -->
           <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Galería de Inspiración</a></li>
-              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a href="/pages/arandu-beleza.html" class="nav-link">
+            <a href="/comparsas" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
               {% for comparsa in comparsas_unicas %}
               <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
               {% endfor %}
             </ul>
           </li>
 
-          <li class="nav-item">
-            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          <!-- Desplegable: Trajes -->
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
           </li>
 
           <li class="nav-item">
@@ -62,11 +78,11 @@
           </li>
 
           <li class="nav-item">
-            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+            <a href="/entrevistas" class="nav-link">Entrevistas</a>
           </li>
 
           <li class="nav-item">
-            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/#contacto" class="nav-link">Contacto</a>
           </li>
         </ul>
       </nav>
@@ -162,7 +178,7 @@
               <select id="genero" name="genero" required>
                 <option value="Femenino">Femenino</option>
                 <option value="Masculino">Masculino</option>
-                <option value="Unisex / Especial">Unisex / Especial</option>
+                <option value="Unisex / Sin Género">Unisex / Sin Género</option>
               </select>
             </div>
 
@@ -199,9 +215,9 @@
               <label for="fotos-comunidad"><span>📸</span> Fotografías del Traje (Podés seleccionar múltiples imágenes) *</label>
               <div class="comunidad-upload-zone">
                 <p class="upload-zone-title">📂 Elegí una o varias fotos de tu traje en pasarela o taller</p>
-                <input type="file" id="fotos-comunidad" name="fotos" accept="image/*" multiple required>
+                <input type="file" id="fotos-comunidad" name="fotos" accept="image/*,video/mp4" multiple required>
                 <p class="upload-zone-hint">
-                  Formatos soportados: JPG, PNG, WEBP. La primera imagen (o la que marques como portada) será la foto principal de tu ficha.
+                  Formatos soportados: JPG, PNG, WEBP, MP4 (máximo 6 archivos en total, hasta 20MB por archivo). La primera imagen será la portada de tu ficha.
                 </p>
               </div>
               <div id="comunidad-preview-grid" class="comunidad-preview-grid"></div>
@@ -221,51 +237,123 @@
     </div>
   </main>
 
+  <!-- ==========================================================================
+       5. FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
+       ========================================================================== -->
   <footer class="site-footer">
     <div class="footer-container">
-      <div class="footer-brand">
-        <div class="brand-name">Hugo Fernández</div>
-        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      
+      <!-- Superior: Botones limpios de Contacto Directo -->
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
       </div>
 
-      <div class="footer-col">
-        <h4>Comparsas del Carnaval</h4>
-        <ul>
-          <li><a href="/comparsa/Arandú Beleza">Arandú Beleza</a></li>
-          <li><a href="/comparsa/Sapucay">Sapucay</a></li>
-          <li><a href="/comparsa/Ará Berá">Ará Berá</a></li>
-          <li><a href="/comparsa/Samba Total">Samba Total</a></li>
-          <li><a href="/comparsa/Copacabana">Copacabana</a></li>
-          <li><a href="/comparsa/Imperio Bahiano">Imperio Bahiano</a></li>
-        </ul>
-      </div>
+      <!-- Medio: Aviso Legal -->
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
 
-      <div class="footer-col">
-        <h4>Navegación</h4>
-        <ul>
-          <li><a href="/">Inicio</a></li>
-          <li><a href="/trajes">Feed de Trajes</a></li>
-          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-          <li><a href="/comunidad/subir">Comunidad Comparsera</a></li>
-        </ul>
-      </div>
-    </div>
+      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
 
-    <div class="footer-bottom">
-      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
-      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
     </div>
   </footer>
 
   <script>
+    // Alerta estilizada Toast para Comunidad
+    function mostrarAlertaComunidad(mensaje, tipo = 'error') {
+      let toast = document.getElementById('comunidad-toast-alert');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'comunidad-toast-alert';
+        toast.style.cssText = `
+          position: fixed;
+          top: 24px;
+          right: 24px;
+          z-index: 99999;
+          max-width: 440px;
+          padding: 1rem 1.4rem;
+          border-radius: 12px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 0.92rem;
+          font-weight: 500;
+          line-height: 1.45;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.65);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: translateY(-20px);
+          opacity: 0;
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        `;
+        document.body.appendChild(toast);
+      }
+
+      if (tipo === 'error') {
+        toast.style.background = 'rgba(180, 25, 35, 0.94)';
+        toast.style.border = '1px solid rgba(255, 120, 120, 0.45)';
+        toast.style.color = '#ffffff';
+      } else {
+        toast.style.background = 'rgba(11, 21, 40, 0.95)';
+        toast.style.border = '1px solid #E6D5B8';
+        toast.style.color = '#E6D5B8';
+      }
+
+      toast.innerHTML = `<span style="font-size: 1.3rem;">⚠️</span> <div>${mensaje}</div>`;
+      toast.style.transform = 'translateY(0)';
+      toast.style.opacity = '1';
+
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.style.transform = 'translateY(-20px)';
+        toast.style.opacity = '0';
+      }, 5500);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const inputFotos = document.getElementById('fotos-comunidad');
       const previewGrid = document.getElementById('comunidad-preview-grid');
       if (!inputFotos || !previewGrid) return;
 
       inputFotos.addEventListener('change', () => {
-        previewGrid.innerHTML = '';
         const files = Array.from(inputFotos.files || []);
+        if (!files.length) return;
+
+        // BLINDAJE 1: Máximo 6 archivos en total
+        if (files.length > 6) {
+          mostrarAlertaComunidad(`⚠️ Límite de archivos excedido: Seleccionaste ${files.length} archivos. El máximo permitido por traje es de 6 archivos.`, 'error');
+          inputFotos.value = '';
+          previewGrid.innerHTML = '';
+          return;
+        }
+
+        // BLINDAJE 2: Máximo 20MB por archivo individual
+        const MAX_BYTES = 20 * 1024 * 1024; // 20MB
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
+          if (f.size > MAX_BYTES) {
+            const tamanoMB = (f.size / (1024 * 1024)).toFixed(1);
+            mostrarAlertaComunidad(`⚠️ Archivo demasiado pesado: "${f.name}" pesa ${tamanoMB}MB y supera el límite de 20MB por archivo. Por favor seleccioná un archivo más liviano.`, 'error');
+            inputFotos.value = '';
+            previewGrid.innerHTML = '';
+            return;
+          }
+        }
+
+        // Renderizar previews si pasa todas las validaciones
+        previewGrid.innerHTML = '';
         files.forEach((file, idx) => {
           const item = document.createElement('div');
           item.className = 'comunidad-preview-item';

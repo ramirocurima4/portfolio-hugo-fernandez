@@ -15,6 +15,21 @@
        HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
        ========================================================================== -->
   <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
     <div class="header-container">
       
       <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
@@ -29,32 +44,32 @@
             <a href="/" class="nav-link">Inicio</a>
           </li>
           
+          <!-- Desplegable: Comparsas -->
+          <li class="nav-item dropdown">
+            <a href="/comparsas" class="nav-link active">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
+              {% for c in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=c) }}">{{ c }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <!-- Desplegable: Trajes -->
           <li class="nav-item dropdown">
             <a href="/trajes" class="nav-link">
               Trajes <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="/trajes">Galería de Inspiración</a></li>
-              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
               <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
             </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a href="/pages/arandu-beleza.html" class="nav-link active">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/pages/arandu-beleza.html">Catálogo Interactivo</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
           </li>
 
           <li class="nav-item">
@@ -62,11 +77,11 @@
           </li>
 
           <li class="nav-item">
-            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+            <a href="/entrevistas" class="nav-link">Entrevistas</a>
           </li>
 
           <li class="nav-item">
-            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/#contacto" class="nav-link">Contacto</a>
           </li>
         </ul>
       </nav>
@@ -84,7 +99,7 @@
 
       <!-- Selector Rápido de Agrupaciones del Carnaval Correntino -->
       <nav class="comparsas-pills-nav slide-up" aria-label="Cambiar de comparsa">
-        <a href="/pages/arandu-beleza.html" class="comparsa-pill">✦ Todas</a>
+        <a href="/comparsas" class="comparsa-pill">✦ Todas</a>
         {% for comparsa in comparsas_unicas %}
         <a href="{{ url_for('vista_comparsa', nombre=comparsa) }}" 
            class="comparsa-pill {% if comparsa|lower == nombre_comparsa|lower %}active{% endif %}">
@@ -151,45 +166,35 @@
           <h3>¿Desfilaste en {{ nombre_comparsa }}?</h3>
           <p>Sumá tu traje, boceto y fotografías al archivo vivo del Carnaval Correntino.</p>
         </div>
-        <a href="/comunidad/subir" class="btn-dorado">✨ Subir mi Traje a la Comunidad</a>
       </section>
 
     </div>
   </main>
 
+  <!-- ==========================================================================
+       PIE DE PÁGINA PROFESIONAL
+       ========================================================================== -->
   <footer class="site-footer">
     <div class="footer-container">
-      <div class="footer-brand">
-        <div class="brand-name">Hugo Fernández</div>
-        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
       </div>
 
-      <div class="footer-col">
-        <h4>Comparsas del Carnaval</h4>
-        <ul>
-          <li><a href="/comparsa/Arandú Beleza">Arandú Beleza</a></li>
-          <li><a href="/comparsa/Sapucay">Sapucay</a></li>
-          <li><a href="/comparsa/Ará Berá">Ará Berá</a></li>
-          <li><a href="/comparsa/Samba Total">Samba Total</a></li>
-          <li><a href="/comparsa/Copacabana">Copacabana</a></li>
-          <li><a href="/comparsa/Imperio Bahiano">Imperio Bahiano</a></li>
-        </ul>
-      </div>
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
 
-      <div class="footer-col">
-        <h4>Navegación</h4>
-        <ul>
-          <li><a href="/">Inicio</a></li>
-          <li><a href="/trajes">Inspiración de Trajes</a></li>
-          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-          <li><a href="/comunidad/subir">Comunidad Comparsera</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
-      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
     </div>
   </footer>
 

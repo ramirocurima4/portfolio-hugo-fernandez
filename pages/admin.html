@@ -6,18 +6,27 @@
   <title>{% if traje_editar %}Editar Traje #{{ traje_editar.id }} | {% endif %}Dashboard de Gestión & CMS | Hugo Fernández Arte Creativo</title>
   <link rel="stylesheet" href="/static/css/estilos.css">
   <link rel="stylesheet" href="../css/estilos.css">
+  <!-- Integración Chart.js CDN para Métricas y Gráficos del Dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-dark: #0a0a0a;
-      --card-bg: #0a192f;
-      --card-bg-subtle: #0f2240;
-      --dorado: #BF953F;
-      --dorado-light: #FCF6BA;
-      --dorado-border: rgba(191, 149, 63, 0.35);
-      --text-main: #ffffff;
+      --bg-dark: #040911;
+      --card-bg: #070e1b;
+      --card-bg-subtle: #0b1528;
+      --champagne: #E6D5B8;
+      --champagne-light: #F4EAD9;
+      --champagne-border: rgba(230, 213, 184, 0.25);
+      --champagne-glow: rgba(230, 213, 184, 0.15);
+      --dorado: #E6D5B8;
+      --dorado-light: #F4EAD9;
+      --dorado-border: rgba(230, 213, 184, 0.25);
+      --glass-bg: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --red-btn: #e63946;
       --red-hover: #c1121f;
+      --sidebar-width: 260px;
     }
 
     body {
@@ -283,7 +292,8 @@
       font-size: 16px;
     }
 
-    /* Checkbox Destacar en Obras Maestras (FASE 13) */
+    /* Checkbox Destacar en Sección Destaques */
+    .destaque-checkbox-card,
     .obra-maestra-checkbox-card {
       background: linear-gradient(135deg, rgba(191, 149, 63, 0.14), rgba(10, 25, 47, 0.85));
       border: 1px solid var(--dorado);
@@ -694,62 +704,1283 @@
       }
     }
 
-    @media (max-width: 480px) {
-      .admin-nav-actions {
+    /* =========================================================================
+       ESTILOS SAAS DASHBOARD (SIDEBAR, KPIS, GRÁFICOS Y MOBILE FIRST)
+       ========================================================================= */
+    .saas-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+      background-color: var(--bg-dark);
+    }
+
+    /* Sidebar Desktop */
+    .saas-sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background: #060c18;
+      border-right: 1px solid var(--champagne-border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 900;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid rgba(230, 213, 184, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-brand-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-sparkle {
+      color: var(--champagne);
+      font-size: 1.3rem;
+    }
+
+    .brand-names {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name-main {
+      font-family: 'Julius Sans One', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--champagne);
+      letter-spacing: 1px;
+    }
+
+    .brand-name-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .sidebar-close-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      line-height: 1;
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 1.25rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      overflow-y: auto;
+    }
+
+    .sidebar-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .sidebar-menu-item:hover {
+      background: rgba(230, 213, 184, 0.08);
+      color: var(--champagne);
+    }
+
+    .sidebar-menu-item.active {
+      background: rgba(230, 213, 184, 0.15);
+      color: #ffffff;
+      border-left: 3px solid var(--champagne);
+      font-weight: 600;
+    }
+
+    .sidebar-badge-pendientes {
+      margin-left: auto;
+      background: #f59e0b;
+      color: #040911;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
+
+    .sidebar-badge-warn {
+      margin-left: auto;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
+
+    .sidebar-bottom-actions {
+      padding: 1.25rem 1rem;
+      border-top: 1px solid rgba(230, 213, 184, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-btn-util {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s;
+    }
+
+    .sidebar-btn-util:hover {
+      color: var(--champagne);
+      border-color: var(--champagne-border);
+      background: rgba(230, 213, 184, 0.08);
+    }
+
+    .sidebar-btn-logout:hover {
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Content Area */
+    .saas-content-area {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+    }
+
+    .saas-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.75rem;
+      background: rgba(6, 12, 24, 0.88);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--champagne-border);
+      position: sticky;
+      top: 0;
+      z-index: 800;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hamburger-menu-btn {
+      display: none;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--champagne-border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 4px;
+      width: 40px;
+      height: 40px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ham-line {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background-color: var(--champagne);
+      border-radius: 2px;
+    }
+
+    .topbar-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .crumb-root {
+      color: var(--text-muted);
+    }
+
+    .crumb-separator {
+      color: rgba(230, 213, 184, 0.4);
+    }
+
+    .crumb-current {
+      color: var(--champagne);
+      font-weight: 600;
+      font-family: 'Julius Sans One', sans-serif;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-indicator-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-badge-ok {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+
+    .kpi-badge-warn {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+
+    .kpi-badge-error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #f87171;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .topbar-link-public {
+      color: var(--champagne);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid var(--champagne-border);
+      transition: all 0.2s;
+    }
+
+    .topbar-link-public:hover {
+      background: rgba(230, 213, 184, 0.1);
+      color: #ffffff;
+    }
+
+    .saas-main {
+      padding: 1.75rem;
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0 auto;
+    }
+
+    .saas-tab-pane {
+      display: none;
+    }
+
+    .saas-tab-pane.active-pane {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* KPI Cards (4 Tarjetas Horizontales con Glassmorphism) */
+    .kpi-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(230, 213, 184, 0.25);
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(230, 213, 184, 0.45);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kpi-icon-pill {
+      font-size: 1.15rem;
+      background: rgba(230, 213, 184, 0.1);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .kpi-main-val {
+      font-size: 1.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'Julius Sans One', sans-serif;
+    }
+
+    .kpi-footer-note {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    /* Middle Visuals: Chart + Quick Stats */
+    .dashboard-middle-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .chart-glass-panel,
+    .actions-glass-panel,
+    .table-glass-panel {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.35rem;
+    }
+
+    .panel-header-clean {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-title-champagne {
+      font-family: 'Julius Sans One', sans-serif;
+      font-size: 1.1rem;
+      color: var(--champagne);
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-sub-muted {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0.25rem 0 0 0;
+    }
+
+    .panel-badge-champagne {
+      background: rgba(230, 213, 184, 0.1);
+      border: 1px solid var(--champagne-border);
+      color: var(--champagne);
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .chart-canvas-wrapper {
+      position: relative;
+      height: 270px;
+      width: 100%;
+    }
+
+    .quick-stats-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quick-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+      font-size: 0.88rem;
+    }
+
+    .qs-label {
+      color: var(--text-muted);
+    }
+
+    .qs-val {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .text-champagne {
+      color: var(--champagne) !important;
+    }
+
+    .quick-buttons-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .btn-quick-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--champagne);
+      color: #040911;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-quick-action:hover {
+      background: var(--champagne-light);
+    }
+
+    .btn-quick-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--champagne-border);
+      color: var(--champagne);
+    }
+
+    .btn-quick-secondary:hover {
+      background: rgba(230, 213, 184, 0.1);
+      color: #ffffff;
+    }
+
+    /* Tables Row */
+    .dashboard-tables-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .table-container-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .saas-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      text-align: left;
+    }
+
+    .saas-table th {
+      padding: 0.75rem 0.85rem;
+      color: var(--champagne);
+      font-family: 'Julius Sans One', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(230, 213, 184, 0.15);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .saas-table td {
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    .saas-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .td-thumb-cell {
+      width: 48px;
+    }
+
+    .saas-table-thumb {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid rgba(230, 213, 184, 0.3);
+      display: block;
+    }
+
+    .td-name-cell strong {
+      display: block;
+      color: #ffffff;
+      font-size: 0.88rem;
+    }
+
+    .badge-table-destaque {
+      display: inline-block;
+      margin-top: 3px;
+      background: rgba(230, 213, 184, 0.15);
+      color: var(--champagne);
+      border: 1px solid var(--champagne-border);
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .td-date-cell {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .td-actions-cell {
+      white-space: nowrap;
+    }
+
+    .btn-saas-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-saas-edit {
+      background: rgba(230, 213, 184, 0.12);
+      border: 1px solid var(--champagne-border);
+      color: var(--champagne);
+      margin-right: 0.35rem;
+    }
+
+    .btn-saas-edit:hover {
+      background: var(--champagne);
+      color: #040911;
+    }
+
+    .btn-saas-view {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+    }
+
+    .btn-saas-view:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .badge-module-pill {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .td-error-msg {
+      font-family: monospace;
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .clean-empty-status {
+      text-align: center;
+      padding: 2.2rem 1rem;
+    }
+
+    .empty-status-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .link-champagne-btn {
+      background: transparent;
+      border: none;
+      color: var(--champagne);
+      font-size: 0.82rem;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .link-champagne-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile First Breakpoints */
+    @media (max-width: 992px) {
+      .saas-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 1100;
+        transform: translateX(-100%);
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.85);
+      }
+
+      .saas-sidebar.sidebar-open {
+        transform: translateX(0);
+      }
+
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(4, 9, 17, 0.75);
+        backdrop-filter: blur(5px);
+        z-index: 1050;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .sidebar-close-btn {
+        display: block;
+      }
+
+      .hamburger-menu-btn {
+        display: flex;
+      }
+
+      .dashboard-middle-grid,
+      .dashboard-tables-grid {
         grid-template-columns: 1fr;
       }
+
+      .saas-main {
+        padding: 1.25rem 0.9rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .kpi-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .saas-topbar {
+        padding: 0.85rem 1rem;
+      }
+    }
+
+    /* Mobile-First Touch & Thumb Optimization */
+    @media (max-width: 768px) {
+      .form-control,
+      .saas-topbar-action,
+      .btn-submit-luxury,
+      .btn-dorado,
+      .btn-action-view,
+      .btn-action-edit,
+      .btn-action-delete,
+      .sidebar-menu-item {
+        min-height: 48px;
+        font-size: 16px;
+      }
+      .multi-upload-dropzone {
+        padding: 2.2rem 1.2rem;
+        border-width: 2px;
+        touch-action: manipulation;
+      }
+      .saas-mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: rgba(4, 9, 17, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(230, 213, 184, 0.25);
+        z-index: 1000;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.72rem;
+        flex: 1;
+        height: 100%;
+        position: relative;
+        transition: color 0.2s ease;
+      }
+      .mobile-nav-item .nav-icon {
+        font-size: 1.25rem;
+        margin-bottom: 2px;
+      }
+      .mobile-nav-item.active,
+      .mobile-nav-item:hover {
+        color: #E6D5B8;
+      }
+      .mobile-nav-item .nav-badge {
+        position: absolute;
+        top: 6px;
+        right: calc(50% - 16px);
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: bold;
+        padding: 1px 5px;
+        border-radius: 999px;
+      }
+      .saas-main {
+        padding-bottom: 88px !important;
+      }
+    }
+    @media (min-width: 769px) {
+      .saas-mobile-bottom-nav {
+        display: none !important;
+      }
+    }
+
+    /* ======================================================================
+       ESTILOS PARA MODAL DE EDICIÓN & CONTROLES DE FILTRADO CMS
+       ====================================================================== */
+    .table-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .table-search-input {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(230, 213, 184, 0.2);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      color: #fff;
+      font-size: 0.88rem;
+    }
+    .table-search-input:focus {
+      outline: none;
+      border-color: var(--champagne);
+      box-shadow: 0 0 10px rgba(230, 213, 184, 0.2);
+    }
+    .table-select-filter {
+      background: #0b1526;
+      border: 1px solid rgba(230, 213, 184, 0.2);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .table-select-filter:focus {
+      outline: none;
+      border-color: var(--champagne);
+    }
+
+    /* Modal Glassmorphism de Edición */
+    .admin-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 10, 18, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .admin-modal-backdrop.active {
+      display: flex;
+      opacity: 1;
+    }
+    .admin-modal-dialog {
+      background: linear-gradient(135deg, rgba(11, 21, 38, 0.98), rgba(6, 12, 24, 0.98));
+      border: 1px solid var(--champagne-border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(230, 213, 184, 0.12);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      animation: adminModalIn 0.25s ease forwards;
+    }
+    @keyframes adminModalIn {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .admin-modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(230, 213, 184, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: rgba(11, 21, 38, 0.98);
+      z-index: 10;
+    }
+    .admin-modal-title {
+      font-family: 'Julius Sans One', sans-serif;
+      color: var(--champagne);
+      font-size: 1.25rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .admin-modal-close {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+    .admin-modal-close:hover {
+      color: #fff;
+      border-color: var(--champagne);
+      background: rgba(230, 213, 184, 0.1);
+    }
+    .admin-modal-body {
+      padding: 1.5rem;
+    }
+    .admin-modal-footer {
+      padding: 1.1rem 1.5rem;
+      border-top: 1px solid rgba(230, 213, 184, 0.12);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      background: rgba(6, 12, 24, 0.95);
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
 
-  <!-- Barra Superior del Administrador -->
-  <header class="admin-navbar">
-    <div class="admin-brand">
-      <span class="admin-logo-text">Hugo Fernández</span>
-      <span class="admin-role-badge">CMS & Moderación (FASE 14)</span>
-    </div>
-    <div class="admin-nav-actions">
-      <a href="#bandeja-moderacion" class="btn-admin-nav" style="border-color: #f39c12; color: #f9ca24;">
-        <span>🛡️</span> Bandeja de Moderación ({{ trajes_pendientes|length if trajes_pendientes else 0 }})
-      </a>
-      <a href="/comunidad/subir" class="btn-admin-nav" target="_blank">
-        <span>📸</span> Subir (Comunidad)
-      </a>
-      <a href="/trajes" class="btn-admin-nav" target="_blank">
-        <span>🎭</span> Ver Feed Trajes
-      </a>
-      <a href="/pages/coordinacion.html" class="btn-admin-nav" target="_blank">
-        <span>✦</span> Ver Obras Maestras
-      </a>
-      <a href="/" class="btn-admin-nav">
-        <span>🏠</span> Volver al Sitio
-      </a>
-      <a href="/logout" class="btn-admin-nav" style="border-color: rgba(230, 57, 70, 0.4); color: #ff6b6b;">
-        <span>🔒</span> Cerrar Sesión
-      </a>
-    </div>
-  </header>
+  <!-- Layout SaaS Principal: Sidebar + Contenido -->
+  <div class="saas-layout">
 
-  <!-- Contenido Principal -->
-  <main class="admin-main">
-    
-    <div class="admin-title-area">
-      <div>
-        <h1>{% if traje_editar %}Editar Traje #{{ traje_editar.id }}{% else %}Panel de Administración (CMS){% endif %}</h1>
-        <p>Gestión integral del catálogo de vestuarios, Obras Maestras, galería fotográfica múltiple y moderación.</p>
+    <!-- Backdrop Oscuro para Móvil -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- Menú Lateral (Sidebar) -->
+    <aside class="saas-sidebar" id="saas-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand-box">
+          <span class="brand-sparkle">✦</span>
+          <div class="brand-names">
+            <span class="brand-name-main">Hugo Fernández</span>
+            <span class="brand-name-sub">Dashboard & CMS</span>
+          </div>
+        </div>
+        <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Cerrar menú lateral">✕</button>
       </div>
-      {% if traje_editar %}
-      <a href="/admin" class="btn-admin-nav" style="border-color: var(--dorado); background: rgba(191, 149, 63, 0.15);">
-        <span>←</span> Cancelar edición y crear nuevo traje
-      </a>
-      {% endif %}
-    </div>
 
-    <!-- Notificación Toast Dinámica -->
-    <div id="admin-toast" class="status-toast" role="alert"></div>
+      <nav class="sidebar-menu">
+        <a href="#seccion-dashboard" class="sidebar-menu-item active" data-tab="seccion-dashboard">
+          <span class="menu-icon">📊</span>
+          <span class="menu-text">Dashboard (Inicio)</span>
+        </a>
+        <a href="#seccion-subir" class="sidebar-menu-item" data-tab="seccion-subir">
+          <span class="menu-icon">✨</span>
+          <span class="menu-text">Subir Nuevo Traje</span>
+        </a>
+        <a href="#seccion-catalogo" class="sidebar-menu-item" data-tab="seccion-catalogo">
+          <span class="menu-icon">🎭</span>
+          <span class="menu-text">Gestionar Catálogo</span>
+        </a>
+        <a href="#seccion-moderacion" class="sidebar-menu-item" data-tab="seccion-moderacion">
+          <span class="menu-icon">🛡️</span>
+          <span class="menu-text">Moderación Comunidad</span>
+          {% if trajes_pendientes and trajes_pendientes|length > 0 %}
+            <span class="sidebar-badge-pendientes" id="badge-sidebar-pendientes" title="Pendientes de moderación">{{ trajes_pendientes|length }}</span>
+          {% endif %}
+        </a>
+        <a href="#seccion-entrevistas" class="sidebar-menu-item" data-tab="seccion-entrevistas">
+          <span class="menu-icon">🎙️</span>
+          <span class="menu-text">Entrevistas & Prensa</span>
+        </a>
+        <a href="#seccion-errores" class="sidebar-menu-item" data-tab="seccion-errores">
+          <span class="menu-icon">⚠️</span>
+          <span class="menu-text">Registro de Errores</span>
+          {% if metricas and metricas.ultimos_errores and metricas.ultimos_errores|length > 0 %}
+            <span class="sidebar-badge-warn">{{ metricas.ultimos_errores|length }}</span>
+          {% endif %}
+        </a>
+      </nav>
 
-    <div class="dashboard-layout">
+      <div class="sidebar-bottom-actions">
+        <a href="/" target="_blank" rel="noopener noreferrer" class="sidebar-btn-util">
+          <span>🌐</span> Ver Sitio Web ↗
+        </a>
+        <a href="/logout" class="sidebar-btn-util sidebar-btn-logout">
+          <span>🔒</span> Cerrar Sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Área de Contenido a la Derecha -->
+    <div class="saas-content-area">
+
+      <!-- Topbar Header -->
+      <header class="saas-topbar">
+        <div class="topbar-left">
+          <!-- Botón Menú Hamburguesa en Mobile -->
+          <button type="button" class="hamburger-menu-btn" id="hamburger-menu-btn" aria-label="Abrir menú de navegación" aria-expanded="false">
+            <span class="ham-line"></span>
+            <span class="ham-line"></span>
+            <span class="ham-line"></span>
+          </button>
+          <div class="topbar-breadcrumb">
+            <span class="crumb-root">Panel Admin</span>
+            <span class="crumb-separator">/</span>
+            <span class="crumb-current" id="topbar-crumb-title">Dashboard</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          {% if metricas and metricas.estado_sistema %}
+            <div class="status-indicator-badge {{ metricas.estado_sistema.badge_class }}">
+              <span class="status-dot"></span>
+              <span>{{ metricas.estado_sistema.texto }}</span>
+            </div>
+          {% endif %}
+          <a href="/" target="_blank" rel="noopener noreferrer" class="topbar-link-public">
+            <span>Ver Sitio ↗</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Contenido Principal -->
+      <main class="saas-main">
+        
+        <!-- Notificación Toast Dinámica -->
+        <div id="admin-toast" class="status-toast" role="alert"></div>
+
+        <!-- ======================================================================
+             1. SECCIÓN DASHBOARD (INICIO: KPIS, CHART.JS, TABLAS RECIENTES)
+             ====================================================================== -->
+        <section id="seccion-dashboard" class="saas-tab-pane active-pane" aria-label="Dashboard Principal">
+          
+          <!-- KPI Cards (4 Tarjetas Horizontales con Glassmorphism y Champagne) -->
+          <div class="kpi-cards-grid">
+            
+            <!-- KPI 1: Visitas Totales -->
+            <div class="kpi-card glass-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Visitas Totales</span>
+                <div class="kpi-icon-pill">👁️</div>
+              </div>
+              <div class="kpi-main-val">{{ metricas.visitas_totales if metricas else 0 }}</div>
+              <div class="kpi-footer-note">Calculadas desde SQLite (@app.before_request)</div>
+            </div>
+
+            <!-- KPI 2: Trajes en Catálogo -->
+            <div class="kpi-card glass-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Trajes en Catálogo</span>
+                <div class="kpi-icon-pill">🎭</div>
+              </div>
+              <div class="kpi-main-val">{{ metricas.trajes_total if metricas else (trajes|length if trajes else 0) }}</div>
+              <div class="kpi-footer-note">Obras publicadas y en exhibición activa</div>
+            </div>
+
+            <!-- KPI 3: Destaques Activos -->
+            <div class="kpi-card glass-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Destaques Activos</span>
+                <div class="kpi-icon-pill">✦</div>
+              </div>
+              <div class="kpi-main-val">{{ metricas.destaques_total if metricas else 0 }}</div>
+              <div class="kpi-footer-note">Selección exclusiva para la sección de inicio</div>
+            </div>
+
+            <!-- KPI 4: Estado del Sistema -->
+            <div class="kpi-card glass-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Estado del Sistema</span>
+                <div class="kpi-icon-pill">☁️</div>
+              </div>
+              <div class="kpi-main-val">
+                <span class="status-indicator-badge {{ metricas.estado_sistema.badge_class if metricas else 'kpi-badge-ok' }}" style="font-size: 1.02rem; padding: 0.25rem 0.75rem;">
+                  {{ metricas.estado_sistema.texto if metricas else 'Drive OK' }}
+                </span>
+              </div>
+              <div class="kpi-footer-note">{{ metricas.estado_sistema.detalle if metricas else 'Google Drive conectado' }}</div>
+            </div>
+
+          </div>
+
+          <!-- Fila Intermedia: Gráfico Chart.js (Doughnut) + Resumen -->
+          <div class="dashboard-middle-grid">
+            
+            <div class="chart-glass-panel glass-card">
+              <div class="panel-header-clean">
+                <div>
+                  <h3 class="panel-title-champagne">Distribución por Comparsa</h3>
+                  <p class="panel-sub-muted">Gráfico de anillos con la cantidad de trajes catalogados</p>
+                </div>
+                <span class="panel-badge-champagne">Chart.js</span>
+              </div>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartComparsas" role="img" aria-label="Distribución de trajes por comparsa"></canvas>
+              </div>
+            </div>
+
+            <div class="actions-glass-panel glass-card">
+              <div class="panel-header-clean">
+                <div>
+                  <h3 class="panel-title-champagne">Resumen del Taller</h3>
+                  <p class="panel-sub-muted">Métricas clave & Cloud Drive</p>
+                </div>
+              </div>
+              <div class="quick-stats-list">
+                <div class="quick-stat-row">
+                  <span class="qs-label">Almacenamiento Cloud:</span>
+                  <span class="qs-val">ID: 19-8ply...</span>
+                </div>
+                <div class="quick-stat-row" style="cursor: pointer;" data-nav="seccion-moderacion" title="Ir a la Bandeja de Moderación">
+                  <span class="qs-label">Bandeja de Moderación:</span>
+                  <span class="qs-val text-champagne">{{ trajes_pendientes|length if trajes_pendientes else 0 }} pendiente(s) ➔</span>
+                </div>
+                <div class="quick-stat-row">
+                  <span class="qs-label">Incidencias Recientes:</span>
+                  <span class="qs-val">{{ metricas.ultimos_errores|length if metricas and metricas.ultimos_errores else 0 }} en 24h</span>
+                </div>
+                <div class="quick-stat-row">
+                  <span class="qs-label">Seguridad .env:</span>
+                  <span class="qs-val text-champagne">ADMIN_PASSWORD Activo</span>
+                </div>
+              </div>
+              <div class="quick-buttons-row">
+                <button type="button" class="btn-quick-action" data-nav="seccion-subir">
+                  <span>+</span> Subir Nuevo Traje
+                </button>
+                <button type="button" class="btn-quick-action btn-quick-secondary" data-nav="seccion-catalogo">
+                  <span>🎭</span> Gestionar Catálogo
+                </button>
+                <button type="button" class="btn-quick-action btn-quick-secondary" data-nav="seccion-moderacion" style="border-color: rgba(245, 158, 11, 0.4); color: #f59e0b;">
+                  <span>🛡️</span> Bandeja de Moderación ({{ trajes_pendientes|length if trajes_pendientes else 0 }})
+                </button>
+                <button type="button" class="btn-quick-action btn-quick-secondary" data-nav="seccion-entrevistas">
+                  <span>🎙️</span> Gestor de Entrevistas
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Fila Inferior: Tablas Recientes (Últimos 5 Trajes + Últimos 3 Errores) -->
+          <div class="dashboard-tables-grid">
+            
+            <!-- Tabla 1: Últimos 5 Trajes Subidos -->
+            <div class="table-glass-panel glass-card">
+              <div class="panel-header-clean">
+                <div>
+                  <h3 class="panel-title-champagne">Últimos 5 Trajes Subidos</h3>
+                  <p class="panel-sub-muted">Registro reciente de vestuarios en el catálogo</p>
+                </div>
+                <button type="button" class="link-champagne-btn" data-nav="seccion-catalogo">Ver todos →</button>
+              </div>
+              <div class="table-container-responsive">
+                <table class="saas-table">
+                  <thead>
+                    <tr>
+                      <th>Foto</th>
+                      <th>Nombre / Comparsero</th>
+                      <th>Comparsa</th>
+                      <th>Fecha de Carga</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if metricas and metricas.ultimos_trajes %}
+                      {% for t in metricas.ultimos_trajes %}
+                        <tr>
+                          <td class="td-thumb-cell">
+                            <img src="{{ (t.foto or t.foto_url) | media_url }}" alt="{{ t.nombre }}" class="saas-table-thumb" loading="lazy">
+                          </td>
+                          <td class="td-name-cell">
+                            <strong>{{ t.nombre }}</strong>
+                            {% if t.es_destaque %}
+                              <span class="badge-table-destaque">✦ Destaque</span>
+                            {% endif %}
+                          </td>
+                          <td>{{ t.comparsa }}</td>
+                          <td class="td-date-cell">{{ t.fecha_creacion or 'Reciente' }}</td>
+                          <td class="td-actions-cell">
+                            <a href="/admin/editar/{{ t.id }}" class="btn-saas-action btn-saas-edit" title="Editar este traje">
+                              ✏️ Editar
+                            </a>
+                            <a href="/traje/{{ t.id }}" target="_blank" class="btn-saas-action btn-saas-view" title="Ver en catálogo">
+                              👁️ Ver
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr><td colspan="5" class="td-empty-text">No hay trajes cargados aún.</td></tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tabla 2: Últimos 3 Errores Registrados -->
+            <div class="table-glass-panel glass-card">
+              <div class="panel-header-clean">
+                <div>
+                  <h3 class="panel-title-champagne">Últimos 3 Errores Registrados</h3>
+                  <p class="panel-sub-muted">Monitoreo de incidencias en subidas y Google Drive</p>
+                </div>
+                <button type="button" class="link-champagne-btn" data-nav="seccion-errores">Ver historial →</button>
+              </div>
+              <div class="table-container-responsive">
+                {% if metricas and metricas.ultimos_errores and metricas.ultimos_errores|length > 0 %}
+                  <table class="saas-table table-errors-theme">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Módulo</th>
+                        <th>Mensaje de Error</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for err in metricas.ultimos_errores %}
+                        <tr>
+                          <td class="td-date-cell">{{ err.fecha }}</td>
+                          <td><span class="badge-module-pill">{{ err.modulo }}</span></td>
+                          <td class="td-error-msg" title="{{ err.mensaje_error }}">
+                            {{ err.mensaje_error[:70] }}{% if err.mensaje_error|length > 70 %}...{% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="clean-empty-status">
+                    <span class="empty-status-check">✓</span>
+                    <h4 style="color: #ffffff; margin-bottom: 0.35rem;">Sin errores registrados</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">Todos los servicios de Google Drive y base de datos operan con normalidad.</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ======================================================================
+             2. SECCIÓN SUBIR NUEVO TRAJE / EDITAR TRAJE (FORMULARIO CMS)
+             ====================================================================== -->
+        <section id="seccion-subir" class="saas-tab-pane" aria-label="Subir o Editar Traje">
+          <div class="admin-title-area" style="margin-bottom: 1.5rem;">
+            <div>
+              <h1 style="font-family: 'Julius Sans One', sans-serif; color: var(--champagne); font-size: 1.5rem; margin-bottom: 0.35rem;">
+                {% if traje_editar %}Editar Traje #{{ traje_editar.id }}{% else %}Cargar Nuevo Traje al Catálogo{% endif %}
+              </h1>
+              <p style="color: var(--text-muted); font-size: 0.88rem;">
+                Subida directa de imágenes y videos a Google Drive y persistencia en base de datos SQLite.
+              </p>
+            </div>
+            {% if traje_editar %}
+              <a href="/admin#seccion-subir" class="btn-admin-nav" style="border-color: var(--champagne); background: rgba(230, 213, 184, 0.15); color: var(--champagne);">
+                <span>←</span> Cancelar edición y crear nuevo traje
+              </a>
+            {% endif %}
+          </div>
 
       <!-- ======================================================================
            SECCIÓN A: FORMULARIO DE CREACIÓN / EDICIÓN DE TRAJE (FASE 13)
@@ -829,7 +2060,7 @@
                 <select id="genero" name="genero" class="form-control" required>
                   <option value="Femenino" {% if not traje_editar or traje_editar.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
                   <option value="Masculino" {% if traje_editar and traje_editar.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
-                  <option value="Unisex / Especial" {% if traje_editar and traje_editar.genero not in ['Femenino', 'Masculino'] %}selected{% endif %}>Unisex / Especial</option>
+                  <option value="Unisex / Sin Género" {% if traje_editar and traje_editar.genero not in ['Femenino', 'Masculino'] %}selected{% endif %}>Unisex / Sin Género</option>
                 </select>
               </div>
 
@@ -859,19 +2090,41 @@
                        placeholder="Ej: Carlos Tito Gómez (3.8 kg duraluminio)">
               </div>
 
-              <!-- Checkbox Obra Maestra (FASE 13 Paso 4) -->
+              <!-- Checkbox Mostrar en Destaques -->
               <div class="form-group" style="justify-content: flex-end;">
-                <label class="obra-maestra-checkbox-card" for="es_obra_maestra">
+                <label class="obra-maestra-checkbox-card" for="es_destaque">
                   <input type="checkbox" 
-                         id="es_obra_maestra" 
-                         name="es_obra_maestra" 
+                         id="es_destaque" 
+                         name="es_destaque" 
                          value="1"
-                         {% if traje_editar and traje_editar.es_obra_maestra %}checked{% endif %}>
+                         {% if traje_editar and (traje_editar.es_destaque or traje_editar.es_obra_maestra) %}checked{% endif %}>
                   <div class="obra-maestra-label-content">
-                    <span class="obra-maestra-label-title">★ Destacar en Obras Maestras</span>
-                    <span class="obra-maestra-label-sub">Muestra este traje en la colección exclusiva de Obras Maestras.</span>
+                    <span class="obra-maestra-label-title">★ Mostrar en la sección Destaques</span>
+                    <span class="obra-maestra-label-sub">Muestra este traje en la sección destacada de la página principal.</span>
                   </div>
                 </label>
+              </div>
+
+              <!-- Foto del Boceto (Opcional - Comparación Antes / Después) -->
+              <div class="form-group full-width">
+                <label for="boceto" class="form-label">
+                  <span>✏️</span> Foto del Boceto (Opcional - Comparación Antes / Después)
+                </label>
+                <input type="file" 
+                       id="boceto" 
+                       name="boceto" 
+                       accept="image/*" 
+                       class="form-control">
+                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  Si subís una imagen del boceto de diseño, se habilitará el slider visual interactivo (Antes / Después) en el catálogo.
+                </span>
+                {% if traje_editar and traje_editar.enlace_boceto %}
+                <div class="boceto-preview-admin" style="margin-top: 0.6rem; display: flex; align-items: center; gap: 0.85rem; background: rgba(255, 255, 255, 0.05); padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                  <img src="{{ traje_editar.enlace_boceto | media_url }}" alt="Boceto actual" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--dorado-border);">
+                  <span style="font-size: 0.82rem; color: #cbd5e1;">Boceto actual guardado en Google Drive. Seleccioná otro archivo si querés reemplazarlo.</span>
+                  <input type="hidden" name="enlace_boceto" value="{{ traje_editar.enlace_boceto }}">
+                </div>
+                {% endif %}
               </div>
 
               <!-- Descripción de la Obra -->
@@ -956,18 +2209,18 @@
 
                 <div class="multi-upload-dropzone">
                   <p style="margin: 0 0 0.7rem; color: var(--dorado-light); font-weight: 600;">
-                    📂 Seleccioná una o múltiples imágenes simultáneamente desde tu dispositivo
+                    📂 Seleccioná una o múltiples imágenes o videos (.mp4) simultáneamente
                   </p>
                   <input type="file" 
                          id="input-fotos-multiple" 
                          name="fotos" 
-                         accept="image/*" 
+                         accept="image/*,video/mp4" 
                          multiple 
                          class="form-control" 
                          style="max-width: 520px; margin: 0 auto; cursor: pointer;"
                          {% if not traje_editar %}required{% endif %}>
                   <p style="margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
-                    Podés elegir varios archivos a la vez manteniendo presionada la tecla <strong>Ctrl</strong> o <strong>Shift</strong>. Luego personalizá el título de cada foto y elegí cuál será la portada.
+                    Podés elegir hasta 6 archivos a la vez manteniendo presionada la tecla <strong>Ctrl</strong> o <strong>Shift</strong> (máximo 20MB por archivo). Los archivos se sincronizarán directamente con Google Drive.
                   </p>
                 </div>
 
@@ -997,244 +2250,759 @@
           </form>
         </div>
       </section>
+      <!-- FIN PESTAÑA 2: SUBIR / EDITAR -->
+    </section>
 
-      <!-- ======================================================================
-           FASE 14 (MÓDULO 1): BANDEJA DE MODERACIÓN (COMUNIDAD DE COMPARSEROS)
-           Muestra los trajes enviados en /comunidad/subir con estado = 'pendiente'
-           y permite Aprobar (UPDATE a 'publicado') o Rechazar (DELETE registro).
-           ====================================================================== -->
-      <section class="dashboard-card" id="bandeja-moderacion" aria-label="Bandeja de Moderación" style="border-color: rgba(243, 156, 18, 0.5);">
-        <div class="dashboard-card-header" style="background: linear-gradient(90deg, rgba(243, 156, 18, 0.14), rgba(15, 34, 64, 0.95));">
-          <h2>
-            <span>🛡️</span> Bandeja de Moderación (Comunidad de Comparseros)
-            <span style="font-size: 0.85rem; color: #f9ca24; font-weight: 600;">
-              (<span id="total-pendientes-admin">{{ trajes_pendientes|length if trajes_pendientes else 0 }}</span> pendientes de revisión)
-            </span>
-          </h2>
-          <a href="/comunidad/subir" class="btn-admin-nav" target="_blank" style="border-color: rgba(243, 156, 18, 0.5); color: #f9ca24;">
-            <span>📸</span> Ver Formulario Público (/comunidad/subir)
-          </a>
+    <!-- ======================================================================
+         3. SECCIÓN GESTIONAR CATÁLOGO (TABLA ROBUSTA CMS + EDICIÓN MODAL)
+         ====================================================================== -->
+    <section id="seccion-catalogo" class="saas-tab-pane" aria-label="Gestionar Catálogo">
+      
+      <div class="admin-title-area" style="margin-bottom: 1.5rem;">
+        <div>
+          <h1 style="font-family: 'Julius Sans One', sans-serif; color: var(--champagne); font-size: 1.5rem; margin-bottom: 0.35rem;">
+            Gestión de Catálogo de Trajes
+          </h1>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Administración completa de vestuarios publicados, edición modal interactiva y sincronización con Google Drive.
+          </p>
         </div>
+        <button type="button" class="btn-admin-nav" data-nav="seccion-subir" style="border-color: var(--champagne); color: var(--champagne); cursor: pointer;">
+          <span>+</span> Cargar Nuevo Traje
+        </button>
+      </div>
 
-        <div class="dashboard-card-body" style="padding: 1.2rem;">
-          <div class="admin-table-wrapper">
-            <table class="admin-table" id="tabla-moderacion-pendientes">
-              <thead>
-                <tr>
-                  <th style="width: 55px;">ID</th>
-                  <th style="width: 80px;">Portada</th>
-                  <th>Comparsero / Figura</th>
-                  <th>Comparsa & Género</th>
-                  <th>Descripción & Materiales</th>
-                  <th>Estado</th>
-                  <th style="width: 300px; text-align: center;">Decisión de Moderación</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-trajes-pendientes">
-                {% for traje in trajes_pendientes %}
-                <tr id="fila-pendiente-{{ traje.id }}">
-                  <td style="color: #f9ca24; font-weight: 700;">#{{ traje.id }}</td>
-                  <td>
-                    <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
-                         alt="{{ traje.comparsero }}" 
-                         class="traje-table-thumb">
-                  </td>
-                  <td>
-                    <strong style="color: #fff;">{{ traje.comparsero }}</strong>
-                    {% if traje.diseno_original %}
-                      <br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ {{ traje.diseno_original }}</span>
-                    {% endif %}
-                    <br><span style="font-size: 0.76rem; color: var(--dorado-light);">📸 {{ traje.fotos|length if traje.fotos else 1 }} foto(s) adjunta(s)</span>
-                  </td>
-                  <td>
-                    <span>{{ traje.comparsa }}</span><br>
-                    <span style="font-size: 0.78rem; color: var(--dorado-light);">{{ traje.genero }}</span>
-                  </td>
-                  <td style="max-width: 320px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
-                    {% if traje.descripcion %}
-                      <div style="color: #e2e8f0; margin-bottom: 0.25rem;">{{ traje.descripcion[:110] }}{% if traje.descripcion|length > 110 %}...{% endif %}</div>
-                    {% endif %}
-                    <div>💎 {{ traje.materiales[:90] }}{% if traje.materiales and traje.materiales|length > 90 %}...{% endif %}</div>
-                  </td>
-                  <td>
-                    <span class="badge-pendiente-table">⏳ {{ traje.estado|default('pendiente')|upper }}</span>
-                  </td>
-                  <td>
-                    <div class="acciones-cell">
-                      <button type="button"
-                              class="btn-approve-traje"
-                              data-id="{{ traje.id }}"
-                              data-nombre="{{ traje.comparsero }}"
-                              onclick="aprobarTrajeModeracion({{ traje.id }}, this.getAttribute('data-nombre'))"
-                              title="Aprobar y publicar en el catálogo">
-                        <span>✅</span> Aprobar
-                      </button>
-                      <button type="button"
-                              class="btn-delete-traje"
-                              data-id="{{ traje.id }}"
-                              data-nombre="{{ traje.comparsero }}"
-                              onclick="rechazarTrajeModeracion({{ traje.id }}, this.getAttribute('data-nombre'))"
-                              title="Rechazar y eliminar registro">
-                        <span>❌</span> Rechazar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+      <div class="dashboard-layout">
+
+        <!-- TABLA DE DATOS ROBUSTA DEL CATÁLOGO -->
+        <section class="dashboard-card" aria-label="Lista de trajes cargados">
+          <div class="dashboard-card-header">
+            <h2>
+              <span>🎭</span> Catálogo Oficial de Vestuarios (Hugo Fernández)
+              <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
+                (<span id="total-trajes-admin">{{ trajes|length if trajes else 0 }}</span> en catálogo)
+              </span>
+            </h2>
+            <button type="button" id="btn-recargar-trajes" class="btn-admin-nav" style="cursor: pointer;" onclick="cargarTrajesDashboard()">
+              <span>🔄</span> Actualizar Tabla
+            </button>
           </div>
-          <div id="pendientes-admin-vacio" class="admin-empty-state" style="display: {% if trajes_pendientes and trajes_pendientes|length > 0 %}none{% else %}block{% endif %};">
-            <p style="font-size: 1.05rem; color: var(--dorado-light); margin-bottom: 0.3rem;">✓ La Bandeja de Moderación está al día.</p>
-            <span style="font-size: 0.85rem;">No hay trajes pendientes de revisión en este momento. Cuando un comparsero suba su traje en <code>/comunidad/subir</code>, aparecerá aquí.</span>
+
+          <div class="dashboard-card-body" style="padding: 1.2rem;">
+            
+            <!-- Barra de Filtros y Búsqueda en Vivo -->
+            <div class="table-filter-bar">
+              <input type="text" id="busqueda-tabla-trajes" class="table-search-input" placeholder="🔍 Buscar por nombre, figura o comparsa...">
+              
+              <select id="filtro-comparsa-tabla" class="table-select-filter">
+                <option value="">✦ Todas las comparsas</option>
+                <option value="Arandú Beleza">Arandú Beleza</option>
+                <option value="Sapucay">Sapucay</option>
+                <option value="Ará Berá">Ará Berá</option>
+                <option value="Samba Total">Samba Total</option>
+                <option value="Copacabana">Copacabana</option>
+                <option value="Imperio Bahiano">Imperio Bahiano</option>
+                <option value="Panambí">Panambí</option>
+                <option value="Cordialísima">Cordialísima</option>
+                <option value="Marabú">Marabú</option>
+                <option value="Amistad">Amistad</option>
+                <option value="Perla Alma Sambera">Perla Alma Sambera</option>
+              </select>
+
+              <select id="filtro-genero-tabla" class="table-select-filter">
+                <option value="">✦ Todos los géneros</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Unisex / Sin Género">Unisex / Sin Género</option>
+              </select>
+
+              <select id="filtro-destaque-tabla" class="table-select-filter">
+                <option value="">✦ Todos los estados</option>
+                <option value="destaque">★ Solo Destaques</option>
+                <option value="general">Catálogo General</option>
+              </select>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table" id="tabla-trajes-admin">
+                <thead>
+                  <tr>
+                    <th style="width: 55px;">ID</th>
+                    <th style="width: 80px;">Portada</th>
+                    <th>Comparsero / Figura</th>
+                    <th>Comparsa & Género</th>
+                    <th>Destacado</th>
+                    <th>Galería</th>
+                    <th style="width: 260px; text-align: center;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-trajes-admin">
+                  {% if trajes %}
+                    {% for t in trajes %}
+                    <tr id="fila-traje-{{ t.id }}" 
+                        data-id="{{ t.id }}"
+                        data-nombre="{{ t.comparsero|lower }}"
+                        data-comparsa="{{ t.comparsa }}"
+                        data-genero="{{ t.genero }}"
+                        data-destaque="{{ 'destaque' if (t.es_destaque or t.es_obra_maestra) else 'general' }}">
+                      <td style="color: var(--dorado-light); font-weight: 600;">#{{ t.id }}</td>
+                      <td>
+                        <img src="{{ (t.foto_url or t.foto) | media_url }}" 
+                             alt="{{ t.comparsero }}" 
+                             class="traje-table-thumb"
+                             id="thumb-traje-{{ t.id }}"
+                             loading="lazy">
+                      </td>
+                      <td>
+                        <strong style="color: #fff;" id="nombre-traje-{{ t.id }}">{{ t.comparsero }}</strong>
+                        {% if t.diseno_original %}
+                          <br><span style="font-size: 0.78rem; color: var(--text-muted);" id="diseno-traje-{{ t.id }}">✏️ {{ t.diseno_original }}</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <span id="comparsa-traje-{{ t.id }}">{{ t.comparsa }}</span><br>
+                        <span style="font-size: 0.78rem; color: var(--dorado-light);" id="genero-traje-{{ t.id }}">{{ t.genero }}</span>
+                      </td>
+                      <td id="badge-destaque-td-{{ t.id }}">
+                        {% if t.es_destaque or t.es_obra_maestra %}
+                          <span class="badge-obra-table">★ Destaque</span>
+                        {% else %}
+                          <span class="badge-estandar-table">Catálogo General</span>
+                        {% endif %}
+                      </td>
+                      <td style="font-size: 0.82rem; color: var(--text-muted);">
+                        📸 {{ t.fotos|length if t.fotos else 1 }} foto(s)
+                      </td>
+                      <td>
+                        <div class="acciones-cell">
+                          <button type="button" 
+                                  class="btn-edit-traje" 
+                                  onclick="abrirModalEditarTraje({{ t.id }})" 
+                                  title="Editar este traje">
+                            <span>✏️</span> Editar
+                          </button>
+                          <button type="button" 
+                                  class="btn-delete-traje" 
+                                  data-id="{{ t.id }}"
+                                  data-nombre="{{ t.comparsero }}"
+                                  onclick="eliminarTrajeDashboard({{ t.id }}, this.getAttribute('data-nombre'))"
+                                  title="Eliminar este traje">
+                            <span>🗑️</span> Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+
+            <div id="trajes-admin-vacio" class="admin-empty-state" style="display: {% if trajes and trajes|length > 0 %}none{% else %}block{% endif %};">
+              <p style="font-size: 1.05rem; color: var(--dorado-light);">No hay trajes cargados todavía.</p>
+            </div>
+            
+            <div id="trajes-filtro-sin-resultados" class="admin-empty-state" style="display: none;">
+              <p style="font-size: 1.05rem; color: var(--dorado-light);">✦ Ningún traje coincide con el filtro de búsqueda.</p>
+            </div>
+
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- ======================================================================
-           SECCIÓN B: LISTA DE TRAJES CARGADOS EN EL DASHBOARD (FASE 13 Paso 4)
-           Incluye botón "Editar" (/admin/editar/<id>) junto al de "Eliminar"
-           ====================================================================== -->
-      <section class="dashboard-card" aria-label="Lista de trajes cargados">
-        <div class="dashboard-card-header">
-          <h2>
-            <span>🎭</span> Sección B: Lista de Trajes Publicados (Dashboard)
-            <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
-              (<span id="total-trajes-admin">{{ trajes|length if trajes else 0 }}</span> en catálogo)
-            </span>
-          </h2>
-          <button type="button" id="btn-recargar-trajes" class="btn-admin-nav" style="cursor: pointer;">
-            <span>🔄</span> Actualizar Catálogo
-          </button>
-        </div>
+      </div>
+    </section>
+    <!-- FIN PESTAÑA 3: GESTIONAR CATÁLOGO -->
 
-        <div class="dashboard-card-body" style="padding: 1.2rem;">
-          <div class="admin-table-wrapper">
-            <table class="admin-table" id="tabla-trajes-admin">
-              <thead>
-                <tr>
-                  <th style="width: 55px;">ID</th>
-                  <th style="width: 80px;">Portada</th>
-                  <th>Comparsero / Figura</th>
-                  <th>Comparsa & Género</th>
-                  <th>Destacado</th>
-                  <th>Galería</th>
-                  <th style="width: 300px; text-align: center;">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-trajes-admin">
-                {% if trajes %}
-                  {% for t in trajes %}
-                  <tr id="fila-traje-{{ t.id }}">
-                    <td style="color: var(--dorado-light); font-weight: 600;">#{{ t.id }}</td>
+    <!-- ======================================================================
+         4. SECCIÓN MODERACIÓN DE COMUNIDAD (BANDEJA SOCIAL & COMENTARIOS)
+         ====================================================================== -->
+    <section id="seccion-moderacion" class="saas-tab-pane" aria-label="Bandeja de Moderación">
+      
+      <div class="admin-title-area" style="margin-bottom: 1.5rem;">
+        <div>
+          <h1 style="font-family: 'Julius Sans One', sans-serif; color: var(--champagne); font-size: 1.5rem; margin-bottom: 0.35rem;">
+            Bandeja de Moderación (Comunidad & Comentarios)
+          </h1>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Aprobá o rechazá las postulaciones enviadas por comparseros desde /comunidad/subir y supervisá los comentarios públicos.
+          </p>
+        </div>
+        <a href="/comunidad/subir" class="btn-admin-nav" target="_blank" style="border-color: rgba(243, 156, 18, 0.6); color: #f9ca24;">
+          <span>📸</span> Ver Formulario Público (/comunidad/subir) ↗
+        </a>
+      </div>
+
+      <div class="dashboard-layout">
+
+        <!-- TARJETA 1: BANDEJA DE TRAJES PENDIENTES -->
+        <section class="dashboard-card" id="bandeja-moderacion" aria-label="Bandeja de Moderación" style="border-color: rgba(243, 156, 18, 0.5); margin-bottom: 2rem;">
+          <div class="dashboard-card-header" style="background: linear-gradient(90deg, rgba(243, 156, 18, 0.14), rgba(15, 34, 64, 0.95));">
+            <h2>
+              <span>🛡️</span> Postulaciones Pendientes de Revisión (Comunidad)
+              <span style="font-size: 0.85rem; color: #f9ca24; font-weight: 600;">
+                (<span id="total-pendientes-admin">{{ trajes_pendientes|length if trajes_pendientes else 0 }}</span> pendientes)
+              </span>
+            </h2>
+          </div>
+
+          <div class="dashboard-card-body" style="padding: 1.2rem;">
+            <div class="admin-table-wrapper">
+              <table class="admin-table" id="tabla-moderacion-pendientes">
+                <thead>
+                  <tr>
+                    <th style="width: 55px;">ID</th>
+                    <th style="width: 80px;">Portada</th>
+                    <th>Comparsero / Figura</th>
+                    <th>Comparsa & Género</th>
+                    <th>Descripción & Materiales</th>
+                    <th>Estado</th>
+                    <th style="width: 260px; text-align: center;">Decisión de Moderación</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-trajes-pendientes">
+                  {% for traje in trajes_pendientes %}
+                  <tr id="fila-pendiente-{{ traje.id }}">
+                    <td style="color: #f9ca24; font-weight: 700;">#{{ traje.id }}</td>
                     <td>
-                      <img src="{% if t.foto_url and (t.foto_url.startswith('http://') or t.foto_url.startswith('https://') or t.foto_url.startswith('/')) %}{{ t.foto_url }}{% else %}{{ url_for('static', filename=t.foto_url) }}{% endif %}" 
-                           alt="{{ t.comparsero }}" 
-                           class="traje-table-thumb">
+                      <img src="{{ (traje.foto_url or traje.foto) | media_url }}" 
+                           alt="{{ traje.comparsero }}" 
+                           class="traje-table-thumb"
+                           loading="lazy">
                     </td>
                     <td>
-                      <strong style="color: #fff;">{{ t.comparsero }}</strong>
-                      {% if t.diseno_original %}
-                        <br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ {{ t.diseno_original }}</span>
+                      <strong style="color: #fff;">{{ traje.comparsero }}</strong>
+                      {% if traje.diseno_original %}
+                        <br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ {{ traje.diseno_original }}</span>
                       {% endif %}
+                      <br><span style="font-size: 0.76rem; color: var(--dorado-light);">📸 {{ traje.fotos|length if traje.fotos else 1 }} foto(s)</span>
                     </td>
                     <td>
-                      <span>{{ t.comparsa }}</span><br>
-                      <span style="font-size: 0.78rem; color: var(--dorado-light);">{{ t.genero }}</span>
+                      <span>{{ traje.comparsa }}</span><br>
+                      <span style="font-size: 0.78rem; color: var(--dorado-light);">{{ traje.genero }}</span>
                     </td>
-                    <td>
-                      {% if t.es_obra_maestra %}
-                        <span class="badge-obra-table">★ Obra Maestra</span>
-                      {% else %}
-                        <span class="badge-estandar-table">Catálogo General</span>
+                    <td style="max-width: 320px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
+                      {% if traje.descripcion %}
+                        <div style="color: #e2e8f0; margin-bottom: 0.25rem;">{{ traje.descripcion[:110] }}{% if traje.descripcion|length > 110 %}...{% endif %}</div>
                       {% endif %}
+                      <div>💎 {{ traje.materiales[:90] }}{% if traje.materiales and traje.materiales|length > 90 %}...{% endif %}</div>
                     </td>
-                    <td style="font-size: 0.82rem; color: var(--text-muted);">
-                      📸 {{ t.fotos|length if t.fotos else 1 }} foto(s)
+                    <td>
+                      <span class="badge-pendiente-table">⏳ PENDIENTE</span>
                     </td>
                     <td>
                       <div class="acciones-cell">
-                        <a href="/admin/editar/{{ t.id }}" class="btn-edit-traje" title="Editar este traje">
-                          <span>✏️</span> Editar
-                        </a>
-                        <button type="button" 
-                                class="btn-delete-traje" 
-                                data-id="{{ t.id }}"
-                                data-nombre="{{ t.comparsero }}"
-                                onclick="eliminarTrajeDashboard({{ t.id }}, this.getAttribute('data-nombre'))"
-                                title="Eliminar este traje">
-                          <span>🗑️</span> Eliminar
+                        <button type="button"
+                                class="btn-approve-traje"
+                                data-id="{{ traje.id }}"
+                                data-nombre="{{ traje.comparsero }}"
+                                onclick="aprobarTrajeModeracion({{ traje.id }}, this.getAttribute('data-nombre'))"
+                                title="Aprobar y publicar en el catálogo">
+                          <span>✅</span> Aprobar
+                        </button>
+                        <button type="button"
+                                class="btn-delete-traje"
+                                data-id="{{ traje.id }}"
+                                data-nombre="{{ traje.comparsero }}"
+                                onclick="rechazarTrajeModeracion({{ traje.id }}, this.getAttribute('data-nombre'))"
+                                title="Rechazar y eliminar registro">
+                          <span>❌</span> Rechazar
                         </button>
                       </div>
                     </td>
                   </tr>
                   {% endfor %}
-                {% endif %}
-              </tbody>
-            </table>
-          </div>
-          <div id="trajes-admin-vacio" class="admin-empty-state" style="display: {% if trajes and trajes|length > 0 %}none{% else %}block{% endif %};">
-            <p style="font-size: 1.05rem; color: var(--dorado-light);">No hay trajes cargados todavía.</p>
-          </div>
-        </div>
-      </section>
+                </tbody>
+              </table>
+            </div>
 
-      <!-- ======================================================================
-           SECCIÓN C: MODERACIÓN DE COMENTARIOS PÚBLICOS
-           ====================================================================== -->
-      <section class="dashboard-card" aria-label="Moderación de comentarios">
-        <div class="dashboard-card-header">
+            <div id="pendientes-admin-vacio" class="admin-empty-state" style="display: {% if trajes_pendientes and trajes_pendientes|length > 0 %}none{% else %}block{% endif %};">
+              <p style="font-size: 1.05rem; color: var(--dorado-light); margin-bottom: 0.3rem;">✓ La Bandeja de Moderación está al día.</p>
+              <span style="font-size: 0.85rem;">No hay trajes pendientes de revisión en este momento. Cuando un comparsero suba su traje en <code>/comunidad/subir</code>, aparecerá aquí.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- TARJETA 2: MODERACIÓN DE COMENTARIOS PÚBLICOS -->
+        <section class="dashboard-card" aria-label="Moderación de comentarios">
+          <div class="dashboard-card-header">
+            <h2>
+              <span>💬</span> Comentarios Públicos de la Comunidad
+              <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
+                (<span id="total-comentarios">{{ comentarios|length if comentarios else 0 }}</span> registrados)
+              </span>
+            </h2>
+            <button type="button" id="btn-recargar" class="btn-admin-nav" style="cursor: pointer;" onclick="cargarTodosLosComentarios()">
+              <span>🔄</span> Actualizar Lista
+            </button>
+          </div>
+
+          <div class="dashboard-card-body" style="padding: 1.2rem;">
+            
+            <div id="admin-loading" class="admin-loading" style="display: none;">
+              <p>Cargando comentarios registrados en SQLite...</p>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table" id="tabla-comentarios">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 220px;">Traje Asociado</th>
+                    <th style="width: 170px;">Usuario</th>
+                    <th>Comentario</th>
+                    <th style="width: 160px;">Fecha</th>
+                    <th style="width: 110px; text-align: center;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-comentarios">
+                  {% for c in comentarios %}
+                  <tr id="fila-comentario-{{ c.id }}">
+                    <td style="color: var(--dorado-light); font-weight: 600;">#{{ c.id }}</td>
+                    <td>
+                      {% if c.comparsero %}
+                        <strong>{{ c.comparsero }}</strong><br>
+                        <span style="font-size:0.8rem; color:var(--text-muted);">ID #{{ c.traje_id }}</span>
+                      {% else %}
+                        <span style="color:var(--text-muted);">Traje ID #{{ c.traje_id }}</span>
+                      {% endif %}
+                    </td>
+                    <td style="font-weight: 600;">{{ c.usuario }}</td>
+                    <td style="line-height: 1.4;">{{ c.texto }}</td>
+                    <td style="font-size: 0.82rem; color: var(--text-muted);">{{ c.fecha }}</td>
+                    <td style="text-align: center;">
+                      <button type="button" 
+                              class="btn-delete-comentario" 
+                              data-id="{{ c.id }}"
+                              data-usuario="{{ c.usuario }}"
+                              onclick="eliminarComentario({{ c.id }}, this.getAttribute('data-usuario'))"
+                              title="Eliminar este comentario">
+                        <span>🗑️</span> Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <div id="admin-vacio" class="admin-empty-state" style="display: {% if comentarios and comentarios|length > 0 %}none{% else %}block{% endif %};">
+              <p style="font-size: 1.1rem; color: var(--dorado-light);">No hay comentarios registrados en este momento.</p>
+              <span style="font-size: 0.85rem;">Los comentarios enviados en las fichas técnicas aparecerán aquí para su supervisión.</span>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </section>
+    <!-- FIN PESTAÑA 4: MODERACIÓN DE COMUNIDAD -->
+
+    <!-- ======================================================================
+         5. SECCIÓN GESTOR DE ENTREVISTAS (PRENSA & YOUTUBE CMS)
+         ====================================================================== -->
+    <section id="seccion-entrevistas" class="saas-tab-pane" aria-label="Gestor de Entrevistas">
+      
+      <div class="admin-title-area" style="margin-bottom: 1.5rem;">
+        <div>
+          <h1 style="font-family: 'Julius Sans One', sans-serif; color: var(--champagne); font-size: 1.5rem; margin-bottom: 0.35rem;">
+            Gestor de Entrevistas & Cobertura de Prensa
+          </h1>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Cargá enlaces de YouTube, videos de taller o coberturas de diarios que alimentan la sección pública /entrevistas.
+          </p>
+        </div>
+        <a href="/entrevistas" class="btn-admin-nav" target="_blank" style="border-color: var(--champagne); color: var(--champagne);">
+          <span>📺</span> Ver Sección Pública (/entrevistas) ↗
+        </a>
+      </div>
+
+      <div class="dashboard-layout">
+        
+        <!-- FORMULARIO DE CARGA DE ENTREVISTAS -->
+        <section class="dashboard-card" aria-label="Cargar nueva entrevista" style="margin-bottom: 2rem;">
+          <div class="dashboard-card-header">
+            <h2>
+              <span>🎙️</span> Cargar Nueva Entrevista o Cobertura
+            </h2>
+            <span style="font-size: 0.82rem; color: var(--dorado-light);">API REST • POST /api/entrevistas</span>
+          </div>
+
+          <div class="dashboard-card-body" style="padding: 1.5rem;">
+            <form id="form-nueva-entrevista" method="POST">
+              <div class="form-grid">
+                
+                <div class="form-group full-width">
+                  <label for="entrevista-titulo" class="form-label">
+                    <span>✦</span> Título de la Entrevista o Video *
+                  </label>
+                  <input type="text" id="entrevista-titulo" name="titulo" class="form-control" placeholder="Ej: Entrevista en Canal 9: Secretos del Armado de Espaldares" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="entrevista-tipo-medio" class="form-label">
+                    <span>🎬</span> Formato del Medio *
+                  </label>
+                  <select id="entrevista-tipo-medio" name="tipo_medio" class="form-control" required>
+                    <option value="video" selected>🎥 Video / Podcast / Audiovisual</option>
+                    <option value="articulo">📰 Artículo Escrito / Nota de Prensa</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="entrevista-plataforma" class="form-label">
+                    <span>🌐</span> Plataforma o Fuente *
+                  </label>
+                  <select id="entrevista-plataforma" name="plataforma" class="form-control" required>
+                    <option value="YouTube" selected>YouTube</option>
+                    <option value="Instagram">Instagram (Reels / Post)</option>
+                    <option value="Diario">Diario Digital / Prensa</option>
+                    <option value="Podcast">Podcast / Spotify / Radio</option>
+                    <option value="Taller">Archivo de Taller / Propio</option>
+                  </select>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="entrevista-enlace" class="form-label">
+                    <span>🔗</span> Enlace URL del Video o Artículo *
+                  </label>
+                  <input type="text" id="entrevista-enlace" name="url_enlace" class="form-control" placeholder="https://www.youtube.com/watch?v=... o https://diarioepoca.com/... o /assets/videos/..." required>
+                  <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">
+                    * Si seleccionás <strong>Video</strong>, el sistema adaptará la URL e incrustará un <code>&lt;iframe&gt;</code> responsivo. Si es <strong>Artículo</strong>, se presentará en una tarjeta Glassmorphism con botón hacia la fuente oficial.
+                  </span>
+                </div>
+
+                <div class="form-group">
+                  <label for="entrevista-fecha" class="form-label">
+                    <span>📅</span> Fecha o Temporada *
+                  </label>
+                  <input type="text" id="entrevista-fecha" name="fecha" class="form-control" placeholder="Ej: Febrero 2026 o Temporada Oficial" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="entrevista-medio" class="form-label">
+                    <span>📰</span> Medio de Prensa o Programa
+                  </label>
+                  <input type="text" id="entrevista-medio" name="medio" class="form-control" placeholder="Ej: Diario Época, Canal 9 Corrientes, Taller">
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="entrevista-desc" class="form-label">
+                    <span>📝</span> Descripción o Reseña Breve
+                  </label>
+                  <textarea id="entrevista-desc" name="descripcion" class="form-control" rows="3" placeholder="Breve descripción del contenido audiovisual o nota periodística..."></textarea>
+                </div>
+
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <span id="entrevista-submit-status" style="font-size: 0.9rem;"></span>
+                <button type="submit" id="btn-submit-entrevista" class="btn-submit-traje">
+                  <span>✦</span> Publicar Entrevista en el Sitio
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- TABLA DE ENTREVISTAS CARGADAS -->
+        <section class="dashboard-card" aria-label="Entrevistas publicadas">
+          <div class="dashboard-card-header">
+            <h2>
+              <span>📺</span> Entrevistas Activas en el Sitio Público
+              <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
+                (<span id="total-entrevistas-admin">{{ entrevistas|length if entrevistas else 0 }}</span> notas registradas)
+              </span>
+            </h2>
+          </div>
+
+          <div class="dashboard-card-body" style="padding: 1.2rem;">
+            <div class="admin-table-wrapper">
+              <table class="admin-table" id="tabla-entrevistas-admin">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th>Título de la Nota / Video</th>
+                    <th style="width: 140px;">Formato</th>
+                    <th style="width: 150px;">Medio / Fuente</th>
+                    <th style="width: 130px;">Fecha</th>
+                    <th>Enlace</th>
+                    <th style="width: 110px; text-align: center;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-entrevistas-admin">
+                  {% if entrevistas %}
+                    {% for e in entrevistas %}
+                    <tr id="fila-entrevista-{{ e.id }}">
+                      <td style="color: var(--dorado-light); font-weight: 600;">#{{ e.id }}</td>
+                      <td>
+                        <strong style="color: #fff;">{{ e.titulo }}</strong>
+                        {% if e.descripcion %}
+                          <br><span style="font-size: 0.78rem; color: var(--text-muted);">{{ e.descripcion[:90] }}...</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <span style="font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 4px; display: inline-block; {% if e.tipo_medio == 'video' %}background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);{% else %}background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);{% endif %}">
+                          {{ '🎥 Video' if e.tipo_medio == 'video' else '📰 Artículo' }}
+                        </span>
+                        <div style="font-size: 0.73rem; color: var(--text-muted); margin-top: 0.2rem;">{{ e.plataforma or 'Medio Digital' }}</div>
+                      </td>
+                      <td>{{ e.medio or e.plataforma or 'Prensa Digital' }}</td>
+                      <td style="font-size: 0.82rem; color: var(--text-muted);">{{ e.fecha }}</td>
+                      <td>
+                        <a href="{{ e.url_enlace or e.enlace_youtube_o_diario }}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">
+                          Ver Fuente ↗
+                        </a>
+                      </td>
+                      <td style="text-align: center;">
+                        <button type="button" 
+                                class="btn-delete-traje" 
+                                data-id="{{ e.id }}"
+                                data-titulo="{{ e.titulo }}"
+                                onclick="eliminarEntrevista({{ e.id }}, this.getAttribute('data-titulo'))"
+                                title="Eliminar esta entrevista">
+                          <span>🗑️</span> Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+
+            <div id="entrevistas-admin-vacio" class="admin-empty-state" style="display: {% if entrevistas and entrevistas|length > 0 %}none{% else %}block{% endif %};">
+              <p style="font-size: 1.05rem; color: var(--dorado-light);">No hay entrevistas cargadas aún.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+    <!-- FIN PESTAÑA 5: GESTOR DE ENTREVISTAS -->
+
+    <!-- ======================================================================
+         4. SECCIÓN REGISTRO DE ERRORES (AUDITORÍA & RESILIENCIA)
+         ====================================================================== -->
+    <section id="seccion-errores" class="saas-tab-pane" aria-label="Registro de Errores">
+      <div class="admin-title-area" style="margin-bottom: 1.5rem;">
+        <div>
+          <h1 style="font-family: 'Julius Sans One', sans-serif; color: var(--champagne); font-size: 1.5rem; margin-bottom: 0.35rem;">
+            Registro de Errores & Auditoría
+          </h1>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Historial de capturas try-except para Google Drive y consultas SQLite.
+          </p>
+        </div>
+        <button type="button" id="btn-limpiar-errores" class="btn-admin-nav" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171; cursor: pointer;">
+          <span>🗑️</span> Vaciar Log de Errores
+        </button>
+      </div>
+
+      <div class="dashboard-card" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="dashboard-card-header" style="background: linear-gradient(90deg, rgba(239, 68, 68, 0.12), rgba(11, 21, 40, 0.95));">
           <h2>
-            <span>💬</span> Sección C: Moderación de Comentarios
-            <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
-              (<span id="total-comentarios">0</span> registrados)
+            <span>⚠️</span> Eventos e Incidencias Registradas
+            <span style="font-size: 0.85rem; color: #f87171; font-weight: 600;">
+              (<span id="total-errores-admin">{{ metricas.todos_los_errores|length if metricas and metricas.todos_los_errores else 0 }}</span> eventos)
             </span>
           </h2>
-          <button type="button" id="btn-recargar" class="btn-admin-nav" style="cursor: pointer;">
-            <span>🔄</span> Actualizar Lista
-          </button>
         </div>
 
         <div class="dashboard-card-body" style="padding: 1.2rem;">
-          
-          <div id="admin-loading" class="admin-loading">
-            <p>Cargando comentarios registrados en SQLite...</p>
-          </div>
-
-          <div class="admin-table-wrapper">
-            <table class="admin-table" id="tabla-comentarios" style="display: none;">
-              <thead>
-                <tr>
-                  <th style="width: 50px;">ID</th>
-                  <th style="width: 220px;">Traje Asociado</th>
-                  <th style="width: 170px;">Usuario</th>
-                  <th>Comentario</th>
-                  <th style="width: 160px;">Fecha</th>
-                  <th style="width: 110px; text-align: center;">Acción</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-comentarios">
-                <!-- Inyectado dinámicamente con JavaScript -->
-              </tbody>
-            </table>
-          </div>
-
-          <div id="admin-vacio" class="admin-empty-state" style="display: none;">
-            <p style="font-size: 1.1rem; color: var(--dorado-light);">No hay comentarios registrados en este momento.</p>
-            <span style="font-size: 0.85rem;">Los comentarios enviados en las fichas técnicas aparecerán aquí para su supervisión.</span>
-          </div>
-
+          {% if metricas and metricas.todos_los_errores and metricas.todos_los_errores|length > 0 %}
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 170px;">Fecha / Hora</th>
+                    <th style="width: 160px;">Módulo</th>
+                    <th>Detalle del Error Capturado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for err in metricas.todos_los_errores %}
+                    <tr>
+                      <td>#{{ err.id }}</td>
+                      <td style="color: var(--text-muted); font-size: 0.82rem;">{{ err.fecha }}</td>
+                      <td><span class="badge-module-pill">{{ err.modulo }}</span></td>
+                      <td style="font-family: monospace; font-size: 0.82rem; color: #f87171; word-break: break-all;">
+                        {{ err.mensaje_error }}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="clean-empty-status">
+              <span class="empty-status-check">✓</span>
+              <h4 style="color: #ffffff; margin-bottom: 0.35rem;">Sin errores en el sistema</h4>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Google Drive, subida de archivos y consultas a base de datos operan sin incidencias.</p>
+            </div>
+          {% endif %}
         </div>
-      </section>
+      </div>
+    </section>
 
+      </main>
     </div>
-  </main>
+  </div>
 
-  <!-- Lógica JavaScript del CMS & Dashboard (FASE 13) -->
+  <!-- ======================================================================
+       MODAL GLASSMORPHISM: EDITAR TRAJE COMPLETO (FASE CMS & CRUD)
+       Permite actualizar Nombre, Comparsa, Género, Archivo (Google Drive), Destaque
+       ====================================================================== -->
+  <div class="admin-modal-backdrop" id="modal-editar-traje" aria-hidden="true">
+    <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+      
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title" id="modal-edit-title">
+          <span>✏️</span> Editar Traje <span id="modal-edit-id-badge" style="color: #f9ca24; font-size: 0.95rem;"></span>
+        </h2>
+        <button type="button" class="admin-modal-close" onclick="cerrarModalEditarTraje()" aria-label="Cerrar ventana">✕</button>
+      </div>
+
+      <form id="form-modal-editar-traje" method="POST" enctype="multipart/form-data">
+        <input type="hidden" id="edit-traje-id" name="id">
+
+        <div class="admin-modal-body">
+          <div class="form-grid">
+            
+            <!-- Nombre / Comparsero -->
+            <div class="form-group full-width">
+              <label for="edit-comparsero" class="form-label">
+                <span>✦</span> Nombre del Traje / Comparsero *
+              </label>
+              <input type="text" id="edit-comparsero" name="comparsero" class="form-control" required>
+            </div>
+
+            <!-- Comparsa -->
+            <div class="form-group">
+              <label for="edit-comparsa" class="form-label">
+                <span>🎭</span> Comparsa Asignada *
+              </label>
+              <input type="text" id="edit-comparsa" name="comparsa" class="form-control" list="lista-comparsas" required>
+            </div>
+
+            <!-- Género -->
+            <div class="form-group">
+              <label for="edit-genero" class="form-label">
+                <span>✦</span> Categoría / Género *
+              </label>
+              <select id="edit-genero" name="genero" class="form-control" required>
+                <option value="Femenino">Femenino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Unisex / Sin Género">Unisex / Sin Género</option>
+              </select>
+            </div>
+
+            <!-- Estado de Destaque -->
+            <div class="form-group full-width" style="background: rgba(230, 213, 184, 0.05); padding: 0.9rem; border-radius: 8px; border: 1px solid rgba(230, 213, 184, 0.15);">
+              <label class="custom-checkbox-container" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; margin: 0;">
+                <input type="checkbox" id="edit-es-destaque" name="es_destaque" value="1" style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
+                <div>
+                  <strong style="color: var(--champagne);">★ Traje Destacado (Destaques & Obras Maestras)</strong>
+                  <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.15rem 0 0;">
+                    Al activarlo, este traje aparecerá con prioridad en el slider de inicio y en la sección exclusiva /destaques.
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            <!-- Archivo Multimedia en Google Drive -->
+            <div class="form-group full-width">
+              <label class="form-label">
+                <span>📁</span> Archivo Multimedia (Google Drive)
+              </label>
+              
+              <div style="display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.75rem; background: rgba(0,0,0,0.25); padding: 0.85rem; border-radius: 8px;">
+                <div id="edit-preview-box" style="width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid var(--champagne-border); flex-shrink: 0; background: #000;">
+                  <img id="edit-img-preview" src="" alt="Vista actual" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                  <span style="font-size: 0.84rem; color: #fff; font-weight: 600;">Cambiar imagen o video en Google Drive (Selección Múltiple permitida):</span>
+                  <input type="file" id="edit-archivo" name="archivo" accept="image/*,video/mp4" multiple class="form-control" style="margin-top: 0.4rem; padding: 0.4rem;">
+                  <span style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">
+                    * Máximo 6 archivos y 20MB por archivo. Si seleccionás nuevos archivos, se subirán directo a Google Drive y actualizarán la galería en SQLite.
+                  </span>
+                </div>
+              </div>
+
+              <!-- Enlace directo opcional -->
+              <input type="text" id="edit-foto-url" name="foto_url" class="form-control" placeholder="O pegá un enlace directo de Google Drive / imagen...">
+            </div>
+
+            <!-- Materiales -->
+            <div class="form-group full-width">
+              <label for="edit-materiales" class="form-label">
+                <span>💎</span> Desglose de Materiales *
+              </label>
+              <textarea id="edit-materiales" name="materiales" class="form-control" rows="2" required></textarea>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-group full-width">
+              <label for="edit-descripcion" class="form-label">
+                <span>📝</span> Descripción Curatorial
+              </label>
+              <textarea id="edit-descripcion" name="descripcion" class="form-control" rows="2"></textarea>
+            </div>
+
+            <!-- Diseño Original y Herrería (Opcionales) -->
+            <div class="form-group">
+              <label for="edit-diseno-original" class="form-label">
+                <span>✏️</span> Diseño Original
+              </label>
+              <input type="text" id="edit-diseno-original" name="diseno_original" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="edit-herreria-estructura" class="form-label">
+                <span>⚙️</span> Herrería y Estructura
+              </label>
+              <input type="text" id="edit-herreria-estructura" name="herreria_estructura" class="form-control">
+            </div>
+
+            <!-- Boceto (Opcional) -->
+            <div class="form-group full-width">
+              <label for="edit-enlace-boceto" class="form-label">
+                <span>📐</span> Enlace a Boceto Original (Antes / Después)
+              </label>
+              <input type="text" id="edit-enlace-boceto" name="enlace_boceto" class="form-control" placeholder="https://...">
+            </div>
+
+          </div>
+        </div>
+
+        <div class="admin-modal-footer">
+          <button type="button" class="btn-admin-nav" onclick="cerrarModalEditarTraje()" style="padding: 0.65rem 1.25rem;">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-modal-guardar-traje" class="btn-submit-traje" style="padding: 0.65rem 1.35rem;">
+            <span>💾</span> Guardar Cambios en SQLite
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Lógica JavaScript del CMS & Dashboard (FASE 13 & SAAS) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      initSidebarNavigation();
+      initChartComparsas();
+      initLimpiarErrores();
       initFormTrajeCMS();
       cargarTodosLosComentarios();
+      initFiltrosTablaAdmin();
+      initFormEntrevistaCMS();
+      initModalEditarTrajeCMS();
+
+      {% if traje_editar %}
+        abrirModalEditarTraje({{ traje_editar.id }});
+      {% endif %}
 
       const tbodyTrajes = document.getElementById('tbody-trajes-admin');
       if (tbodyTrajes && tbodyTrajes.children.length === 0) {
@@ -1335,6 +3103,29 @@
       fileInput.addEventListener('change', () => {
         const selected = Array.from(fileInput.files || []);
         if (!selected.length) return;
+
+        // BLINDAJE 1: Máximo 6 archivos en total por traje
+        if (selected.length > 6) {
+          mostrarToast(`⚠️ Límite de archivos excedido: Seleccionaste ${selected.length} archivos. El máximo permitido por traje es de 6 archivos.`, 'error');
+          fileInput.value = '';
+          previewContainer.innerHTML = '';
+          nuevasFotosState = [];
+          return;
+        }
+
+        // BLINDAJE 2: Máximo 20MB por archivo individual
+        const MAX_BYTES = 20 * 1024 * 1024; // 20MB
+        for (let i = 0; i < selected.length; i++) {
+          const f = selected[i];
+          if (f.size > MAX_BYTES) {
+            const tamanoMB = (f.size / (1024 * 1024)).toFixed(1);
+            mostrarToast(`⚠️ Archivo demasiado pesado: "${f.name}" pesa ${tamanoMB}MB y supera el límite máximo de 20MB por archivo.`, 'error');
+            fileInput.value = '';
+            previewContainer.innerHTML = '';
+            nuevasFotosState = [];
+            return;
+          }
+        }
 
         selected.forEach((file, idx) => {
           const totalIndex = nuevasFotosState.length;
@@ -1444,9 +3235,11 @@
           formData.delete('fotos');
           formData.delete('titulos_fotos');
 
-          // Asegurar el envío explícito del estado del checkbox es_obra_maestra
-          const chkObra = document.getElementById('es_obra_maestra');
-          formData.set('es_obra_maestra', chkObra && chkObra.checked ? '1' : '0');
+          // Asegurar el envío explícito del estado del checkbox es_destaque
+          const chkDestaque = document.getElementById('es_destaque') || document.getElementById('es_obra_maestra');
+          const valDestaque = chkDestaque && chkDestaque.checked ? '1' : '0';
+          formData.set('es_destaque', valDestaque);
+          formData.set('es_obra_maestra', valDestaque);
 
           // Adjuntar los archivos seleccionados y sus títulos
           const filesToUpload = nuevasFotosState.length > 0
@@ -1546,33 +3339,40 @@
 
           const fotoUrl = escapeHTML(resolverImagenAdmin(t.foto_url || ''));
           const cantFotos = Array.isArray(t.fotos) && t.fotos.length > 0 ? t.fotos.length : 1;
-          const badgeObra = t.es_obra_maestra
-            ? `<span class="badge-obra-table">★ Obra Maestra</span>`
+          const isDestaque = t.es_destaque || t.es_obra_maestra;
+          const badgeObra = isDestaque
+            ? `<span class="badge-obra-table">★ Destaque</span>`
             : `<span class="badge-estandar-table">Catálogo General</span>`;
           const disenoTxt = t.diseno_original
             ? `<br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ ${escapeHTML(t.diseno_original)}</span>`
             : '';
 
+          tr.setAttribute('data-id', t.id);
+          tr.setAttribute('data-nombre', (t.comparsero || '').toLowerCase());
+          tr.setAttribute('data-comparsa', t.comparsa || '');
+          tr.setAttribute('data-genero', t.genero || '');
+          tr.setAttribute('data-destaque', isDestaque ? 'destaque' : 'general');
+
           tr.innerHTML = `
             <td style="color: var(--dorado-light); font-weight: 600;">#${t.id}</td>
             <td>
-              <img src="${fotoUrl}" alt="${escapeHTML(t.comparsero)}" class="traje-table-thumb">
+              <img src="${fotoUrl}" alt="${escapeHTML(t.comparsero)}" class="traje-table-thumb" id="thumb-traje-${t.id}">
             </td>
             <td>
-              <strong style="color: #fff;">${escapeHTML(t.comparsero)}</strong>
+              <strong style="color: #fff;" id="nombre-traje-${t.id}">${escapeHTML(t.comparsero)}</strong>
               ${disenoTxt}
             </td>
             <td>
-              <span>${escapeHTML(t.comparsa)}</span><br>
-              <span style="font-size: 0.78rem; color: var(--dorado-light);">${escapeHTML(t.genero)}</span>
+              <span id="comparsa-traje-${t.id}">${escapeHTML(t.comparsa)}</span><br>
+              <span style="font-size: 0.78rem; color: var(--dorado-light);" id="genero-traje-${t.id}">${escapeHTML(t.genero)}</span>
             </td>
-            <td>${badgeObra}</td>
+            <td id="badge-destaque-td-${t.id}">${badgeObra}</td>
             <td style="font-size: 0.82rem; color: var(--text-muted);">📸 ${cantFotos} foto(s)</td>
             <td>
               <div class="acciones-cell">
-                <a href="/admin/editar/${t.id}" class="btn-edit-traje" title="Editar este traje">
+                <button type="button" class="btn-edit-traje" onclick="abrirModalEditarTraje(${t.id})" title="Editar este traje">
                   <span>✏️</span> Editar
-                </a>
+                </button>
                 <button type="button" class="btn-delete-traje" title="Eliminar este traje">
                   <span>🗑️</span> Eliminar
                 </button>
@@ -1821,7 +3621,542 @@
         alert(`Error al eliminar: ${error.message}`);
       }
     }
+
+    /**
+     * MODAL CMS: Editar Traje en Vivo & Sincronización Google Drive / SQLite
+     */
+    async function abrirModalEditarTraje(id) {
+      const modal = document.getElementById('modal-editar-traje');
+      if (!modal) return;
+
+      try {
+        const res = await fetch(`/api/trajes/${id}`);
+        if (!res.ok) throw new Error('No se pudo cargar la información del traje.');
+        const traje = await res.json();
+
+        document.getElementById('modal-edit-id-badge').textContent = `#${traje.id}`;
+        document.getElementById('edit-traje-id').value = traje.id;
+        document.getElementById('edit-comparsero').value = traje.comparsero || '';
+        document.getElementById('edit-comparsa').value = traje.comparsa || '';
+        document.getElementById('edit-genero').value = traje.genero || 'Femenino';
+        document.getElementById('edit-es-destaque').checked = Boolean(traje.es_destaque || traje.es_obra_maestra);
+        document.getElementById('edit-foto-url').value = traje.foto_url || '';
+        document.getElementById('edit-materiales').value = traje.materiales || '';
+        document.getElementById('edit-descripcion').value = traje.descripcion || '';
+        document.getElementById('edit-diseno-original').value = traje.diseno_original || '';
+        document.getElementById('edit-herreria-estructura').value = traje.herreria_estructura || '';
+        document.getElementById('edit-enlace-boceto').value = traje.enlace_boceto || '';
+
+        const previewImg = document.getElementById('edit-img-preview');
+        if (previewImg) {
+          previewImg.src = resolverImagenAdmin(traje.foto_url || '');
+        }
+
+        const fileInput = document.getElementById('edit-archivo');
+        if (fileInput) fileInput.value = '';
+
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      } catch (err) {
+        console.error('Error al abrir modal:', err);
+        mostrarToast(err.message, 'error');
+      }
+    }
+
+    function cerrarModalEditarTraje() {
+      const modal = document.getElementById('modal-editar-traje');
+      if (!modal) return;
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    window.abrirModalEditarTraje = abrirModalEditarTraje;
+    window.cerrarModalEditarTraje = cerrarModalEditarTraje;
+
+    function initModalEditarTrajeCMS() {
+      const form = document.getElementById('form-modal-editar-traje');
+      if (!form) return;
+
+      // BLINDAJE: Validación estricta para archivo en modal de edición
+      const editFileInput = document.getElementById('edit-archivo');
+      if (editFileInput) {
+        editFileInput.addEventListener('change', () => {
+          const selected = Array.from(editFileInput.files || []);
+          if (!selected.length) return;
+
+          if (selected.length > 6) {
+            mostrarToast(`⚠️ Límite de archivos excedido: Seleccionaste ${selected.length} archivos. El máximo permitido por traje es de 6 archivos.`, 'error');
+            editFileInput.value = '';
+            return;
+          }
+
+          const MAX_BYTES = 20 * 1024 * 1024;
+          for (let i = 0; i < selected.length; i++) {
+            const f = selected[i];
+            if (f.size > MAX_BYTES) {
+              const tamanoMB = (f.size / (1024 * 1024)).toFixed(1);
+              mostrarToast(`⚠️ Archivo demasiado pesado: "${f.name}" pesa ${tamanoMB}MB y supera el límite de 20MB.`, 'error');
+              editFileInput.value = '';
+              return;
+            }
+          }
+        });
+      }
+
+      // Cerrar modal al hacer click fuera del cuadro
+      const modal = document.getElementById('modal-editar-traje');
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) cerrarModalEditarTraje();
+        });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-traje-id').value;
+        const btnSave = document.getElementById('btn-modal-guardar-traje');
+        const origText = btnSave.innerHTML;
+        btnSave.disabled = true;
+        btnSave.innerHTML = '<span>⏳</span> Subiendo a Drive y guardando en SQLite...';
+
+        try {
+          const formData = new FormData(form);
+          const res = await fetch(`/api/trajes/editar/${id}`, {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Error al actualizar el traje en el servidor.');
+
+          mostrarToast(`✓ Traje "${data.traje.comparsero}" actualizado con éxito`, 'success');
+          cerrarModalEditarTraje();
+
+          // Actualizar datos visuales de la fila en tiempo real
+          const t = data.traje;
+          const fila = document.getElementById(`fila-traje-${id}`);
+          if (fila) {
+            const nombreEl = document.getElementById(`nombre-traje-${id}`);
+            if (nombreEl) nombreEl.textContent = t.comparsero;
+            const compEl = document.getElementById(`comparsa-traje-${id}`);
+            if (compEl) compEl.textContent = t.comparsa;
+            const genEl = document.getElementById(`genero-traje-${id}`);
+            if (genEl) genEl.textContent = t.genero;
+            const thumbEl = document.getElementById(`thumb-traje-${id}`);
+            if (thumbEl && t.foto_url) thumbEl.src = resolverImagenAdmin(t.foto_url);
+
+            const badgeTd = document.getElementById(`badge-destaque-td-${id}`);
+            if (badgeTd) {
+              badgeTd.innerHTML = (t.es_destaque || t.es_obra_maestra)
+                ? '<span class="badge-obra-table">★ Destaque</span>'
+                : '<span class="badge-estandar-table">Catálogo General</span>';
+            }
+
+            fila.setAttribute('data-nombre', (t.comparsero || '').toLowerCase());
+            fila.setAttribute('data-comparsa', t.comparsa || '');
+            fila.setAttribute('data-genero', t.genero || '');
+            fila.setAttribute('data-destaque', (t.es_destaque || t.es_obra_maestra) ? 'destaque' : 'general');
+          } else {
+            cargarTrajesDashboard();
+          }
+        } catch (err) {
+          console.error('Error al guardar edición de traje:', err);
+          mostrarToast(`Error: ${err.message}`, 'error');
+        } finally {
+          btnSave.disabled = false;
+          btnSave.innerHTML = origText;
+        }
+      });
+    }
+
+    /**
+     * FILTROS ROBUSTOS EN TABLA CATÁLOGO (Búsqueda en tiempo real por nombre, comparsa, género y destaque)
+     */
+    function initFiltrosTablaAdmin() {
+      const searchInput = document.getElementById('busqueda-tabla-trajes');
+      const comparsaSelect = document.getElementById('filtro-comparsa-tabla');
+      const generoSelect = document.getElementById('filtro-genero-tabla');
+      const destaqueSelect = document.getElementById('filtro-destaque-tabla');
+      const noResults = document.getElementById('trajes-filtro-sin-resultados');
+
+      function filtrarFilas() {
+        const query = (searchInput?.value || '').trim().toLowerCase();
+        const selComp = (comparsaSelect?.value || '').trim().toLowerCase();
+        const selGen = (generoSelect?.value || '').trim().toLowerCase();
+        const selDest = (destaqueSelect?.value || '').trim().toLowerCase();
+
+        const filas = document.querySelectorAll('#tbody-trajes-admin tr');
+        let visibles = 0;
+
+        filas.forEach(f => {
+          const rowNombre = (f.getAttribute('data-nombre') || '').toLowerCase();
+          const rowComp = (f.getAttribute('data-comparsa') || '').toLowerCase();
+          const rowGen = (f.getAttribute('data-genero') || '').toLowerCase();
+          const rowDest = (f.getAttribute('data-destaque') || '').toLowerCase();
+
+          const matchQuery = !query || rowNombre.includes(query) || rowComp.includes(query);
+          const matchComp = !selComp || rowComp.includes(selComp);
+          const matchGen = !selGen || rowGen.includes(selGen);
+          const matchDest = !selDest || rowDest === selDest;
+
+          if (matchQuery && matchComp && matchGen && matchDest) {
+            f.style.display = '';
+            visibles++;
+          } else {
+            f.style.display = 'none';
+          }
+        });
+
+        if (noResults) {
+          noResults.style.display = (visibles === 0 && filas.length > 0) ? 'block' : 'none';
+        }
+      }
+
+      if (searchInput) searchInput.addEventListener('input', filtrarFilas);
+      if (comparsaSelect) comparsaSelect.addEventListener('change', filtrarFilas);
+      if (generoSelect) generoSelect.addEventListener('change', filtrarFilas);
+      if (destaqueSelect) destaqueSelect.addEventListener('change', filtrarFilas);
+    }
+
+    /**
+     * GESTOR DE ENTREVISTAS (Alta y Baja dinámica con persistencia en SQLite)
+     */
+    function initFormEntrevistaCMS() {
+      const form = document.getElementById('form-nueva-entrevista');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit-entrevista');
+        const origBtn = btn.innerHTML;
+        const statusSpan = document.getElementById('entrevista-submit-status');
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> Publicando en SQLite...';
+
+        try {
+          const formData = new FormData(form);
+          const res = await fetch('/api/entrevistas', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Error al guardar la entrevista.');
+
+          mostrarToast('✓ Entrevista publicada con éxito en el sitio', 'success');
+          form.reset();
+
+          const tbody = document.getElementById('tbody-entrevistas-admin');
+          const vacio = document.getElementById('entrevistas-admin-vacio');
+          if (vacio) vacio.style.display = 'none';
+
+          if (tbody) {
+            const eData = data.entrevista;
+            const tr = document.createElement('tr');
+            tr.id = `fila-entrevista-${eData.id}`;
+            const descTxt = eData.descripcion 
+              ? `<br><span style="font-size: 0.78rem; color: var(--text-muted);">${escapeHTML(eData.descripcion.slice(0, 90))}...</span>`
+              : '';
+
+            const badgeFormato = (eData.tipo_medio === 'video')
+              ? `<span style="font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 4px; display: inline-block; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">🎥 Video</span>`
+              : `<span style="font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 4px; display: inline-block; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">📰 Artículo</span>`;
+
+            tr.innerHTML = `
+              <td style="color: var(--dorado-light); font-weight: 600;">#${eData.id}</td>
+              <td>
+                <strong style="color: #fff;">${escapeHTML(eData.titulo)}</strong>
+                ${descTxt}
+              </td>
+              <td>
+                ${badgeFormato}
+                <div style="font-size: 0.73rem; color: var(--text-muted); margin-top: 0.2rem;">${escapeHTML(eData.plataforma || 'Medio Digital')}</div>
+              </td>
+              <td>${escapeHTML(eData.medio || eData.plataforma || 'Prensa Digital')}</td>
+              <td style="font-size: 0.82rem; color: var(--text-muted);">${escapeHTML(eData.fecha)}</td>
+              <td>
+                <a href="${escapeHTML(eData.url_enlace || eData.enlace_youtube_o_diario)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">
+                  Ver Fuente ↗
+                </a>
+              </td>
+              <td style="text-align: center;">
+                <button type="button" class="btn-delete-traje" data-id="${eData.id}" data-titulo="${escapeHTML(eData.titulo)}" onclick="eliminarEntrevista(${eData.id}, this.getAttribute('data-titulo'))" title="Eliminar">
+                  <span>🗑️</span> Eliminar
+                </button>
+              </td>
+            `;
+            tbody.prepend(tr);
+          }
+
+          const countEl = document.getElementById('total-entrevistas-admin');
+          if (countEl) {
+            countEl.textContent = (parseInt(countEl.textContent, 10) || 0) + 1;
+          }
+        } catch (err) {
+          console.error('Error al guardar entrevista:', err);
+          mostrarToast(`Error: ${err.message}`, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origBtn;
+        }
+      });
+    }
+
+    async function eliminarEntrevista(id, titulo) {
+      const confirmar = confirm(`¿Estás seguro de que deseas eliminar permanentemente la entrevista "${titulo}" (ID #${id})?`);
+      if (!confirmar) return;
+
+      try {
+        const res = await fetch(`/api/entrevistas/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'No se pudo eliminar la entrevista.');
+
+        const fila = document.getElementById(`fila-entrevista-${id}`);
+        if (fila) {
+          fila.style.transition = 'all 0.3s ease';
+          fila.style.opacity = '0';
+          setTimeout(() => {
+            fila.remove();
+            const countEl = document.getElementById('total-entrevistas-admin');
+            if (countEl) {
+              const nuevo = Math.max(0, (parseInt(countEl.textContent, 10) || 1) - 1);
+              countEl.textContent = nuevo;
+              if (nuevo === 0) {
+                const vacio = document.getElementById('entrevistas-admin-vacio');
+                if (vacio) vacio.style.display = 'block';
+              }
+            }
+          }, 260);
+        }
+        mostrarToast(`✓ Entrevista #${id} eliminada con éxito`, 'success');
+      } catch (err) {
+        console.error('Error al eliminar entrevista:', err);
+        mostrarToast(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    window.eliminarEntrevista = eliminarEntrevista;
+
+    /**
+     * NAVEGACIÓN SAAS: Pestañas de Área de Contenido y Menú Lateral Mobile First
+     */
+    function initSidebarNavigation() {
+      const sidebar = document.getElementById('saas-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const hamburgerBtn = document.getElementById('hamburger-menu-btn');
+      const closeBtn = document.getElementById('sidebar-close-btn');
+      const crumbTitle = document.getElementById('topbar-crumb-title');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('sidebar-open');
+        if (backdrop) backdrop.classList.add('active');
+        if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('sidebar-open');
+        if (backdrop) backdrop.classList.remove('active');
+        if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      if (hamburgerBtn) hamburgerBtn.addEventListener('click', openSidebar);
+      if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+      if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+      const menuItems = document.querySelectorAll('.sidebar-menu-item');
+      const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-tab]');
+      const panes = document.querySelectorAll('.saas-tab-pane');
+      const navTriggers = document.querySelectorAll('[data-nav]');
+
+      function activateTab(tabId) {
+        if (!tabId) tabId = 'seccion-dashboard';
+
+        panes.forEach(pane => {
+          if (pane.id === tabId) {
+            pane.classList.add('active-pane');
+          } else {
+            pane.classList.remove('active-pane');
+          }
+        });
+
+        menuItems.forEach(item => {
+          if (item.getAttribute('data-tab') === tabId) {
+            item.classList.add('active');
+            const textEl = item.querySelector('.menu-text');
+            if (crumbTitle && textEl) {
+              crumbTitle.textContent = textEl.textContent.trim();
+            }
+          } else {
+            item.classList.remove('active');
+          }
+        });
+
+        mobileNavItems.forEach(item => {
+          if (item.getAttribute('data-tab') === tabId) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+
+        closeSidebar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      mobileNavItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetTab = item.getAttribute('data-tab');
+          if (targetTab) {
+            activateTab(targetTab);
+            try { history.replaceState(null, null, '#' + targetTab); } catch (_) {}
+          }
+        });
+      });
+
+      menuItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetTab = item.getAttribute('data-tab');
+          if (targetTab) {
+            activateTab(targetTab);
+            try { history.replaceState(null, null, '#' + targetTab); } catch (_) {}
+          }
+        });
+      });
+
+      navTriggers.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetTab = btn.getAttribute('data-nav');
+          if (targetTab) {
+            activateTab(targetTab);
+            try { history.replaceState(null, null, '#' + targetTab); } catch (_) {}
+          }
+        });
+      });
+
+      // Selección de pestaña inicial:
+      {% if traje_editar %}
+        activateTab('seccion-subir');
+      {% else %}
+        const hash = window.location.hash.replace('#', '');
+        if (hash && document.getElementById(hash)) {
+          activateTab(hash);
+        } else {
+          activateTab('seccion-dashboard');
+        }
+      {% endif %}
+    }
+
+    /**
+     * GRÁFICO CHART.JS: Distribución de Trajes por Comparsa (Gráfico de Anillos / Doughnut)
+     */
+    function initChartComparsas() {
+      const canvas = document.getElementById('chartComparsas');
+      if (!canvas || typeof Chart === 'undefined') return;
+
+      const labels = {{ (metricas.comparsas_labels if metricas else []) | tojson }};
+      const counts = {{ (metricas.comparsas_counts if metricas else []) | tojson }};
+
+      if (!labels || labels.length === 0) return;
+
+      const champagnePalette = [
+        '#E6D5B8', '#D4AF37', '#B38D46', '#8C7A5B',
+        '#5C6B73', '#9A8C74', '#4A5B6C', '#C4B59D',
+        '#7E685A', '#A39171'
+      ];
+
+      new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: counts,
+            backgroundColor: champagnePalette.slice(0, labels.length),
+            borderColor: '#040911',
+            borderWidth: 2,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#cbd5e1',
+                font: { family: "'Montserrat', sans-serif", size: 11 },
+                padding: 10,
+                boxWidth: 12
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(4, 9, 17, 0.95)',
+              titleColor: '#E6D5B8',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(230, 213, 184, 0.3)',
+              borderWidth: 1,
+              padding: 10,
+              boxPadding: 4
+            }
+          },
+          cutout: '66%'
+        }
+      });
+    }
+
+    /**
+     * VACIAR LOG DE ERRORES (POST /api/admin/limpiar-errores)
+     */
+    function initLimpiarErrores() {
+      const btn = document.getElementById('btn-limpiar-errores');
+      if (!btn) return;
+
+      btn.addEventListener('click', async () => {
+        if (!confirm('¿Deseas vaciar todos los registros del historial de errores?')) return;
+        try {
+          const res = await fetch('/api/admin/limpiar-errores', { method: 'POST' });
+          if (res.ok) {
+            mostrarToast('✓ Log de errores vaciado con éxito.', 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            mostrarToast('Error al vaciar log de errores.', 'error');
+          }
+        } catch (err) {
+          mostrarToast('Error de conexión al vaciar errores.', 'error');
+        }
+      });
+    }
   </script>
+
+  <!-- Barra de Navegación Rápida Móvil (Mobile-First Touch Bar) -->
+  <nav class="saas-mobile-bottom-nav" aria-label="Navegación Móvil de Administración">
+    <a href="#seccion-dashboard" class="mobile-nav-item active" data-tab="seccion-dashboard">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">Panel</span>
+    </a>
+    <a href="#seccion-catalogo" class="mobile-nav-item" data-tab="seccion-catalogo">
+      <span class="nav-icon">🎭</span>
+      <span class="nav-text">Catálogo</span>
+    </a>
+    <a href="#seccion-moderacion" class="mobile-nav-item" data-tab="seccion-moderacion">
+      <span class="nav-icon">🛡️</span>
+      <span class="nav-text">Bandeja</span>
+      {% if trajes_pendientes and trajes_pendientes|length > 0 %}
+      <span class="nav-badge">{{ trajes_pendientes|length }}</span>
+      {% endif %}
+    </a>
+    <a href="#seccion-entrevistas" class="mobile-nav-item" data-tab="seccion-entrevistas">
+      <span class="nav-icon">🎙️</span>
+      <span class="nav-text">Prensa</span>
+    </a>
+    <a href="/" target="_blank" class="mobile-nav-item" title="Ver Sitio Público">
+      <span class="nav-icon">🌐</span>
+      <span class="nav-text">Sitio</span>
+    </a>
+  </nav>
 
 </body>
 </html>

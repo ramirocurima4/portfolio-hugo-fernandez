@@ -42,6 +42,21 @@
        HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
        ========================================================================== -->
   <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
     <div class="header-container">
       
       <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
@@ -50,38 +65,39 @@
         <span></span>
       </button>
 
+      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
       <nav class="main-nav" aria-label="Navegación principal">
         <ul class="nav-list">
           <li class="nav-item">
             <a href="/" class="nav-link">Inicio</a>
           </li>
           
+          <!-- Desplegable: Comparsas -->
           <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Galería de Inspiración</a></li>
-              <li><a href="/trajes#feed-trajes-todos">Todos los Trajes</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-              <li><a href="/comunidad/subir">📸 Subí tu Traje (Comunidad)</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a href="/pages/arandu-beleza.html" class="nav-link">
+            <a href="/comparsas" class="nav-link">
               Comparsas <span class="dropdown-icon">▼</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="/pages/arandu-beleza.html">Catálogo de Comparsas</a></li>
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
               {% for comparsa in comparsas_unicas %}
               <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
               {% endfor %}
             </ul>
           </li>
 
-          <li class="nav-item">
-            <a href="/pages/coordinacion.html" class="nav-link">Obras Maestras</a>
+          <!-- Desplegable: Trajes -->
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link active">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
           </li>
 
           <li class="nav-item">
@@ -89,11 +105,11 @@
           </li>
 
           <li class="nav-item">
-            <a href="/pages/materiales.html" class="nav-link">Materiales</a>
+            <a href="/entrevistas" class="nav-link">Entrevistas</a>
           </li>
 
           <li class="nav-item">
-            <a href="/pages/entrevistas.html" class="nav-link">Entrevistas</a>
+            <a href="/#contacto" class="nav-link">Contacto</a>
           </li>
         </ul>
       </nav>
@@ -119,11 +135,7 @@
           <a href="/trajes" class="btn-back-nav slide-up" style="opacity: 0.85;">
             ↕ Ir al Feed de Trajes
           </a>
-          {% if traje.es_obra_maestra %}
-          <a href="/pages/coordinacion.html" class="btn-back-nav slide-up" style="color: var(--dorado-brillo);">
-            ✦ Ver Obras Maestras
-          </a>
-          {% endif %}
+
         </div>
         <a href="https://api.whatsapp.com/send?text={{ ('¡Mirá este traje del Carnaval Correntino! ' ~ traje.comparsero ~ ' (' ~ traje.comparsa ~ ') - ' ~ request.url)|urlencode }}"
            target="_blank"
@@ -149,7 +161,7 @@
             </span>
             <img id="detalle-imagen" 
                  class="detalle-imagen"
-                 src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                 src="{{ traje.foto_url | media_url }}" 
                  alt="{{ traje.comparsero }}" 
                  loading="lazy">
           </div>
@@ -159,14 +171,14 @@
             {% if fotos and fotos|length > 0 %}
               {% for f in fotos %}
                 <div class="gallery-thumb-item" title="Click para ampliar: {{ f.titulo or 'Detalle' }}">
-                  <img src="{% if f.ruta_imagen and (f.ruta_imagen.startswith('http://') or f.ruta_imagen.startswith('https://') or f.ruta_imagen.startswith('/')) %}{{ f.ruta_imagen }}{% else %}{{ url_for('static', filename=f.ruta_imagen) }}{% endif %}" 
+                  <img src="{{ f.ruta_imagen | media_url }}" 
                        alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy">
                   <span class="thumb-caption">{{ f.titulo or ('Vista Principal' if f.es_principal else 'Detalle') }}</span>
                 </div>
               {% endfor %}
             {% else %}
               <div class="gallery-thumb-item" title="Click para ampliar detalle">
-                <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                <img src="{{ traje.foto_url | media_url }}" 
                      alt="{{ traje.comparsero }}" loading="lazy">
                 <span class="thumb-caption">Vista Principal</span>
               </div>
@@ -262,31 +274,27 @@
               </div>
             </section>
 
-            <!-- 2.C Desglose de Materiales -->
+            <!-- 2.C Desglose de Materiales: Etiquetas Horizontales Minimalistas (Píldoras/Tags) -->
             <section class="desglose-materiales" aria-label="Desglose técnico de materiales">
               <h2 class="materiales-subtitle">
-                <span class="icono-guia">✦</span> Materiales Utilizados (Aproximado)
+                <span class="icono-guia">✦</span> Materiales Utilizados
               </h2>
 
-              <div class="materiales-tags-grid" id="detalle-materiales">
+              <div class="materiales-pills-container" id="detalle-materiales">
                 {% if materiales_lista %}
                   {% for material in materiales_lista %}
-                  <div class="material-tag reveal visible delay-{{ (loop.index0 % 3) + 1 }}">
-                    <span class="tag-label">✦ Material</span>
-                    <span class="tag-quantity">{{ material }}</span>
-                  </div>
+                  <span class="material-pill">
+                    <span class="tag-bullet">✦</span>
+                    <span class="tag-name">{{ material }}</span>
+                  </span>
                   {% endfor %}
                 {% else %}
-                  <div class="material-tag">
-                    <span class="tag-label">✦ Materiales</span>
-                    <span class="tag-quantity">{{ traje.materiales }}</span>
-                  </div>
+                  <span class="material-pill">
+                    <span class="tag-bullet">✦</span>
+                    <span class="tag-name">{{ traje.materiales }}</span>
+                  </span>
                 {% endif %}
               </div>
-
-              <p class="materiales-nota">
-                * Cantidades y dimensiones estimadas del taller de realización para referencia técnica y cálculo de presupuesto de comparseros y artesanos.
-              </p>
             </section>
 
           </div>
@@ -398,41 +406,34 @@
   </main>
 
   <!-- ==========================================================================
-       FOOTER PROFESIONAL
+       5. FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
        ========================================================================== -->
   <footer class="site-footer">
     <div class="footer-container">
-      <div class="footer-brand">
-        <div class="brand-name">Hugo Fernández</div>
-        <p>Excelencia, coordinación y pasión en vestuarios de alta costura para los carnavales más importantes de la región.</p>
+      
+      <!-- Superior: Botones limpios de Contacto Directo -->
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
       </div>
 
-      <div class="footer-col">
-        <h4>Navegación</h4>
-        <ul>
-          <li><a href="/">Inicio</a></li>
-          <li><a href="/trajes">Inspiración de Trajes</a></li>
-          <li><a href="/pages/arandu-beleza.html">Catálogo Comparsas</a></li>
-          <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-          <li><a href="/pages/materiales.html">Catálogo de Materiales</a></li>
-          <li><a href="/pages/entrevistas.html">Notas y Entrevistas</a></li>
-        </ul>
-      </div>
+      <!-- Medio: Aviso Legal -->
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
 
-      <div class="footer-col">
-        <h4>Contacto & Redes</h4>
-        <ul>
-          <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram Oficial</a></li>
-          <li><a href="https://wa.me/5493794000000" target="_blank" rel="noopener noreferrer">WhatsApp Directo</a></li>
-          <li><a href="mailto:hugofernandezcarnaval@gmail.com">Email de Consultas</a></li>
-          <li><span>Corrientes, Argentina</span></li>
-        </ul>
-      </div>
-    </div>
+      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
 
-    <div class="footer-bottom">
-      <p>© 2026 <strong>Hugo Fernández Arte Creativo</strong>. Todos los derechos reservados.</p>
-      <p>Diseñado por <strong>Ramiro Curima</strong> | Dirección de Arte & Desarrollo</p>
     </div>
   </footer>
 

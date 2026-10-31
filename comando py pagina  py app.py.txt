@@ -49,3 +49,6 @@ python app.py
 (Si PowerShell te dice que no reconoce 'python', usá el atajo de Windows: py app.py).
 Cómo saber si funcionó: La terminal se va a quedar "trabajando" y te va a mostrar un mensaje que dice algo como Running on http://127.0.0.1:5000. Esa es la señal de que el motor arrancó.
 Para ver la página: Abrís tu navegador web (Chrome, Edge, etc.), escribís esa misma dirección ([http://127.0.0.1:5000](http://127.0.0.1:5000)) en la barra de arriba y le das Enter.
+
+source venv/bin/activate
+python3 app.py

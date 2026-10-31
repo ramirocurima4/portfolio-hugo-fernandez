@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Directorio y catálogo interactivo de comparsas y agrupaciones de carnaval coordinadas por Hugo Fernández Arte Creativo.">
+  <title>Comparsas & Agrupaciones | Hugo Fernández Catálogo Interactivo</title>
+  
+  <!-- Tipografías Google Fonts: Dancing Script y Julius Sans One -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Julius+Sans+One&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="/css/estilos.css">
+  <script src="/static/js/main.js" defer></script>
+</head>
+<body style="background-color: #040911;">
+
+  <!-- ==========================================================================
+       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
+    <div class="header-container">
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/" class="nav-link">Inicio</a>
+          </li>
+          
+          <!-- Desplegable: Comparsas -->
+          <li class="nav-item dropdown">
+            <a href="/comparsas" class="nav-link active">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <!-- Desplegable: Trajes -->
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/entrevistas" class="nav-link">Entrevistas</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/#contacto" class="nav-link">Contacto</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logo / Marca en la esquina superior derecha -->
+      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
+        <span class="brand-name">Hugo Fernández</span>
+        <span class="brand-sub">Arte Creativo</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL: CATÁLOGO DE COMPARSAS
+       ========================================================================== -->
+  <main class="main-symmetric-container" style="background-color: #040911; min-height: 80vh; padding: 2rem 1.2rem 4rem;">
+    <div class="container" style="max-width: 1200px; width: 100%; margin: 0 auto;">
+
+      <div style="margin-bottom: 1.5rem; text-align: left;">
+        <a href="/" class="btn-perfil-tecnico" style="border: 1px solid #E6D5B8; font-family: 'Julius Sans One', sans-serif; text-decoration: none; padding: 0.5rem 1.15rem; font-size: 0.82rem;">
+          ← Volver al Inicio
+        </a>
+      </div>
+
+      <!-- Acceso Rápido a las Agrupaciones -->
+      <nav class="comparsas-pills-nav slide-up" aria-label="Páginas de Comparsas" style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;">
+        <a href="/comparsas" class="comparsa-pill active">✦ Todas las Comparsas</a>
+        {% for comparsa in comparsas_unicas %}
+        <a href="{{ url_for('vista_comparsa', nombre=comparsa) }}" class="comparsa-pill">🎭 {{ comparsa }}</a>
+        {% endfor %}
+      </nav>
+      
+      <!-- Encabezado de la página -->
+      <header class="page-header slide-up" style="text-align: center; margin-bottom: 2.5rem;">
+        <span class="destaques-badge" style="margin-bottom: 0.8rem;">Directorio & Catálogo de Taller</span>
+        <h1 class="dorado-titulo" style="font-family: 'Julius Sans One', sans-serif !important; color: #E6D5B8 !important; font-size: clamp(1.8rem, 3.5vw, 2.6rem); letter-spacing: 2px; text-transform: uppercase;">
+          Comparsas & Agrupaciones
+        </h1>
+        <div class="section-divider"></div>
+        <p style="color: #94a3b8; max-width: 720px; margin: 0.5rem auto 0; font-size: 0.95rem; line-height: 1.6;">
+          Explorá las figuras, realizaciones y vestuarios de alta costura diseñados y coordinados en nuestro taller para las comparsas del Carnaval Correntino.
+        </p>
+      </header>
+
+      <!-- ==========================================================================
+           GRILLA DE TARJETAS DE PRESENTACIÓN (GLASSMORPHISM ESTRICTO)
+           ========================================================================== -->
+      <section class="comparsas-catalogo-grid" aria-label="Directorio de Comparsas">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; width: 100%;">
+          {% for comparsa in comparsas %}
+          <article class="comparsa-card glass-card" style="backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem 1.8rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1.2rem; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            
+            <!-- Cuerpo de Información de la Comparsa -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+                <span style="font-family: 'Julius Sans One', sans-serif; font-size: 0.74rem; letter-spacing: 1.2px; text-transform: uppercase; color: #E6D5B8; background: rgba(230, 213, 184, 0.1); border: 1px solid rgba(230, 213, 184, 0.3); padding: 0.3rem 0.75rem; border-radius: 999px;">
+                  {{ comparsa.categoria }}
+                </span>
+                <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 600;">
+                  🎭 {{ comparsa.total_trajes }} {% if comparsa.total_trajes == 1 %}traje{% else %}trajes{% endif %}
+                </span>
+              </div>
+
+              <!-- Título en Julius Sans One y color #E6D5B8 -->
+              <h2 class="comparsa-card-title" style="font-family: 'Julius Sans One', sans-serif !important; color: #E6D5B8 !important; font-size: 1.45rem; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 0.4rem 0; line-height: 1.3;">
+                {{ comparsa.nombre }}
+              </h2>
+              
+              <p style="font-size: 0.88rem; color: #cbd5e1; font-style: italic; margin-bottom: 0.6rem;">
+                « {{ comparsa.apodo }} »
+              </p>
+              
+              <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 0.9rem;">
+                🎨 <strong style="color: #E6D5B8;">Colores:</strong> {{ comparsa.colores }}
+              </p>
+
+              <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.55; margin-bottom: 0.8rem;">
+                {{ comparsa.historia }}
+              </p>
+            </div>
+
+            <!-- Barra Inferior de Acción -->
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+              {% if comparsa.destaques > 0 %}
+              <span style="font-size: 0.78rem; color: #E6D5B8; font-family: 'Julius Sans One', sans-serif;">
+                ✦ {{ comparsa.destaques }} destacados
+              </span>
+              {% else %}
+              <span></span>
+              {% endif %}
+              <a href="{{ url_for('vista_comparsa', nombre=comparsa.nombre) }}" class="btn-hero-primary" style="padding: 0.6rem 1.2rem; font-size: 0.84rem; font-family: 'Julius Sans One', sans-serif; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.45rem;">
+                <span>✦</span> Ver Trajes →
+              </a>
+            </div>
+
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER PROFESIONAL
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
+      </div>
+
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
+
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

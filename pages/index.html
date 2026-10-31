@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hugo Fernández - Realizador y Coordinador General de Vestuarios de Carnaval y Espectáculos Varios. Artesano Diplomado en Carnaval | Profesor de Historia (IFD N°1).">
+  <title>Hugo Fernández | Realizador y Coordinador General de Vestuarios</title>
+  
+  <!-- 1. Tipografías Google Fonts: Dancing Script y Julius Sans One -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Julius+Sans+One&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="/static/js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       BARRA SUPERIOR Y HEADER (INTACTAS: CONTADOR "RUMBO AL CARNAVAL" + "SUBÍ TU TRAJE")
+       Rutas de administración 100% invisibles en el frontend público.
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
+      <span class="carnaval-countdown-label">
+        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
+      </span>
+      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
+        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
+        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
+        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
+        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
+      </div>
+      <a href="/comunidad/subir" class="carnaval-countdown-cta">
+        ✨ SUBÍ TU TRAJE
+      </a>
+    </div>
+
+    <div class="header-container">
+      <!-- Botón móvil para responsive -->
+      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/" class="nav-link active">Inicio</a>
+          </li>
+          
+          <!-- Desplegable: Comparsas -->
+          <li class="nav-item dropdown">
+            <a href="/comparsas" class="nav-link">
+              Comparsas <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
+              {% for comparsa in comparsas_unicas %}
+              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <!-- Desplegable: Trajes -->
+          <li class="nav-item dropdown">
+            <a href="/trajes" class="nav-link">
+              Trajes <span class="dropdown-icon">▼</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/trajes">Todos los Trajes</a></li>
+              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
+              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
+              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
+              <li><a href="/destaques">✦ Obras Destacadas</a></li>
+              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/entrevistas" class="nav-link">Entrevistas</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="#contacto" class="nav-link">Contacto</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Marca oficial en cabecera -->
+      <a href="/" class="header-logo" title="Hugo Fernández">
+        <span class="brand-name">Hugo Fernández</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       ESTRUCTURA PRINCIPAL SIMÉTRICA (GLASSMORPHISM REAL SOBRE DEEP ABYSS)
+       ========================================================================== -->
+  <main class="main-symmetric-container">
+
+    <!-- ==========================================================================
+         2. TARJETA CENTRAL HERO (ARRIBA DE LA TRAYECTORIA)
+         Glassmorphism real: backdrop-filter: blur(15px); background: rgba(255, 255, 255, 0.05);
+         border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 40px;
+         margin: 40px auto; max-width: 800px; text-align: center;
+         ========================================================================== -->
+    <section class="hero-glass-card glass-card" id="hero" aria-label="Presentación Oficial Hugo Fernández">
+      
+      <!-- Foto: circular, centrada, borde sutil -->
+      <div class="hero-perfil-img-wrapper">
+        <img src="static/img/hugo_perfil.jpg" 
+             alt="Hugo Fernández - Realizador y Coordinador General de Vestuarios" 
+             class="hero-perfil-img"
+             onerror="this.onerror=null; this.src='/static/img/hugo_perfil.jpg';">
+      </div>
+
+      <!-- H1: "Realizador y Coordinador General de Vestuarios" (Dancing Script, blanco/tiza, tamaño grande) -->
+      <h1 class="hero-h1-dancing">
+        Realizador y Coordinador General de Vestuarios
+      </h1>
+
+      <!-- H2: "Artesano Diplomado en Carnaval" (Julius Sans One, dorado/acento, tamaño destacado) -->
+      <h2 class="hero-h2-julius">
+        Artesano Diplomado en Carnaval
+      </h2>
+
+      <!-- H3: "Profesor de Historia (IFD N°1)" (Julius Sans One, gris claro, tamaño menor) -->
+      <h3 class="hero-h3-julius">
+        Profesor de Historia (IFD N°1)
+      </h3>
+
+      <!-- 3. Perfil Técnico Minimalista: Botón elegante "Conocer Perfil Técnico" (abre Modal) y Botón Obras Destacadas -->
+      <div class="hero-action-buttons">
+        <button type="button" class="btn-perfil-tecnico" id="btn-perfil-tecnico" aria-haspopup="dialog">
+          <span>✦</span> Conocer Perfil Técnico
+        </button>
+        <a href="/destaques" class="btn-perfil-tecnico" style="border: 1px solid #E6D5B8; font-family: 'Julius Sans One', sans-serif; text-decoration: none;">
+          <span>✦</span> Ver Obras Destacadas
+        </a>
+        <a href="/trajes" class="btn-hero-primary">
+          <span>✦</span> Ver Galería de Trajes
+        </a>
+      </div>
+
+    </section>
+
+    <!-- ==========================================================================
+         4. SECCIÓN TRAYECTORIA EN EL CARNAVAL (DEBAJO DEL HERO)
+         Carrusel / Slider interactivo de comparsas (desliza de a uno por vez).
+         Flechas de navegación operativas e indicador de posición.
+         ========================================================================== -->
+    <section class="trayectoria-glass-section glass-card" id="trayectoria" aria-label="Trayectoria en el Carnaval">
+      <div class="trayectoria-header-bar">
+        <h2 class="card-section-title">✦ Trayectoria en el Carnaval</h2>
+        <p class="card-section-sub">Hacé clic en cualquier comparsa para desplegar su ficha técnica y trayectoria completa</p>
+      </div>
+
+      <!-- Controles de navegación simétricos -->
+      <div class="trayectoria-controls-wrapper">
+        <button type="button" class="btn-trayectoria-control" id="btn-tray-prev" aria-label="Ver comparsa anterior" disabled>
+          ◀ Anterior
+        </button>
+        <span class="trayectoria-page-indicator" id="tray-indicator">1 de 10</span>
+        <button type="button" class="btn-trayectoria-control" id="btn-tray-next" aria-label="Ver comparsa siguiente">
+          Siguiente ▶
+        </button>
+      </div>
+
+      <!-- Slider interactivo de trayectoria: Muestra 3 comparsas por vista en pantallas grandes, ordenadas de más reciente a más antigua -->
+      <div class="trayectoria-slider-wrapper" style="width: 100%; max-width: 1140px; margin: 0 auto; position: relative;">
+        <div class="trayectoria-slider-container" id="trayectoria-container">
+          {% for item in trayectoria %}
+          <div class="comparsa-btn-card glass-card trayectoria-slide"
+               role="button"
+               tabindex="0"
+               data-nombre="{{ item.nombre }}"
+               data-ciudad="{{ item.ciudad }}"
+               data-anios="{{ item.anios }}"
+               data-rol="{{ item.rol }}"
+               data-desc="{{ item.descripcion }}"
+               style="{% if loop.index0 < 3 %}display: flex;{% else %}display: none;{% endif %}">
+            <span class="comparsa-card-badge">{{ item.badge }}</span>
+            <h3 class="comparsa-card-title">{{ item.nombre }}</h3>
+            <p class="comparsa-card-role-snippet">{{ item.rol_snippet }}</p>
+            <span class="comparsa-card-action-hint">✦ Ver Ficha Completa →</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN PREGUNTAS FRECUENTES (FAQ - 2 PREGUNTAS, TERCERA ELIMINADA)
+         ========================================================================== -->
+    <section class="faq-glass-section glass-card" id="faq" aria-label="Preguntas Frecuentes">
+      <div class="faq-header-bar">
+        <span class="destaques-badge">✦ Consultas Clave</span>
+        <h2 class="card-section-title">Preguntas Frecuentes</h2>
+        <p class="card-section-sub">Todo lo que necesitás saber para coordinar la confección de tu vestuario</p>
+      </div>
+
+      <div class="faq-accordion-wrapper">
+        <details class="faq-item glass-card">
+          <summary class="faq-summary">¿Con cuánto tiempo de anticipación hay que encargar los trajes?</summary>
+          <div class="faq-content">
+            <p>Lo ideal es contactarnos con un mínimo de 3 a 5 meses de anticipación para planificar los bocetos, importar los materiales adecuados y garantizar las pruebas de calce necesarias.</p>
+          </div>
+        </details>
+
+        <details class="faq-item glass-card">
+          <summary class="faq-summary">¿Trabajás con comparsas de otras provincias o ciudades?</summary>
+          <div class="faq-content">
+            <p>Sí, coordinamos a distancia en todo el país mediante fichas técnicas detalladas y preparamos embalajes especiales de protección para garantizar que las estructuras lleguen intactas.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       3. MODAL GLASSMORPHISM PARA PERFIL TÉCNICO (APTITUDES COMPLETAS DEL PDF)
+       ========================================================================== -->
+  <div class="modal-glass-backdrop" id="modal-perfil-tecnico" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-glass-content glass-card modal-perfil-dialog">
+      <button type="button" class="modal-close-btn" id="modal-perfil-close" aria-label="Cerrar perfil técnico">✕</button>
+      
+      <div class="modal-perfil-header">
+        <span class="comparsa-card-badge">Ficha Técnica Profesional</span>
+        <h2 class="modal-perfil-title">Perfil Técnico & Aptitudes</h2>
+        <p class="modal-perfil-sub">Hugo Fernández • Artesano Diplomado en Carnaval</p>
+      </div>
+
+      <div class="modal-aptitudes-body">
+        <ul class="modal-aptitudes-list">
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Capacidad integral para jurar sobre la realización de vestuario referente al ámbito del carnaval.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Facilidad para visibilizar técnicas específicas en las confecciones.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Experiencia comprobable de desempeño en la guía de la confección de vestuario de carnaval.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Capacitación constante referente al tema.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Posibilidad de fácil acceso a nuevos materiales y nuevas técnicas de trabajo.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Realizador de vestuario con técnicas variadas, especialidad estilo artesanal.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Confeccionista de vestuarios premiados en la Capital Nacional del Carnaval, localidades del interior y de otras provincias del país.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Constante aporte de ideas en lo que respecta a las representaciones de vestuarios de fantasía y puesta en escena en las instituciones intervenidas.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Amplio conocimiento de la realización y bajada a la realidad de diseños de vestuario de carnaval, insistencia en la elección correcta de materiales colores, formas y técnicas especificas.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Confeccionista y realizador de vestuario de espectáculos.</span>
+          </li>
+          <li class="modal-aptitud-item">
+            <span class="modal-aptitud-bullet">✦</span>
+            <span>Inventivo y visionario en lo que respecta ideas centrales sobre temáticas específicas de representación en el ámbito del carnaval.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="modal-actions-bar">
+        <a href="/trajes" class="btn-hero-primary" style="padding: 0.55rem 1.2rem; font-size: 0.86rem;">
+          <span>✦</span> Ver Galería de Trajes
+        </a>
+        <button type="button" class="btn-hero-secondary" id="modal-perfil-btn-cerrar" style="padding: 0.55rem 1.2rem; font-size: 0.86rem;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL FLOTANTE (GLASSMORPHISM) PARA TRAYECTORIA
+       ========================================================================== -->
+  <div class="modal-glass-backdrop" id="modal-comparsa" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-glass-content glass-card">
+      <button type="button" class="modal-close-btn" id="modal-comparsa-close" aria-label="Cerrar ventana emergente">✕</button>
+      
+      <div>
+        <span class="comparsa-card-badge" id="modal-comp-badge">Comparsa</span>
+        <h2 class="card-section-title" id="modal-comp-title" style="font-size: 1.55rem; margin-top: 0.3rem;">Nombre</h2>
+        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.2rem;" id="modal-comp-ciudad">Ciudad • Años</div>
+      </div>
+
+      <div class="modal-meta-box" id="modal-comp-rol-box">
+        <strong style="color: #E6D5B8;">Rol:</strong> <span id="modal-comp-rol">Coordinador General</span>
+      </div>
+
+      <div class="modal-desc-body" id="modal-comp-desc">
+        Descripción completa extraída del CV...
+      </div>
+
+      <div class="modal-actions-bar">
+        <a href="/trajes" class="btn-hero-primary" id="modal-comp-link" style="padding: 0.5rem 1.1rem; font-size: 0.86rem;">
+          <span>✦</span> Ver Trajes en Catálogo
+        </a>
+        <button type="button" class="btn-hero-secondary" id="modal-btn-cerrar" style="padding: 0.5rem 1.1rem; font-size: 0.86rem;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      
+      <!-- Superior: Botones limpios de Contacto Directo -->
+      <div class="footer-contact-buttons" id="contacto">
+        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
+          💬 Contactar por WhatsApp
+        </a>
+        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
+          ✉️ Hugof28@hotmail.com
+        </a>
+        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
+          📷 @hugofernandez05
+        </a>
+      </div>
+
+      <!-- Medio: Aviso Legal -->
+      <p class="footer-legal-notice">
+        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
+      </p>
+
+      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
+      <p class="footer-signature">
+        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
+      </p>
+
+    </div>
+  </footer>
+
+</body>
+</html>
