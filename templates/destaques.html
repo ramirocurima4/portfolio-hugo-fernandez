@@ -1,236 +1,91 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Galería exclusiva de Obras Destacadas de Hugo Fernández. Vestuarios de alta costura, trajes insignia, coordinación técnica y fantasía de carnaval.">
-  <title>Obras Destacadas | Hugo Fernández Arte Creativo</title>
+{% extends "base.html" %}
+{% set nav_active = 'trajes' %}
+
+{% block title %}Obras Destacadas | Hugo Fernández Arte Creativo{% endblock %}
+{% block description %}Galería exclusiva de Obras Destacadas de Hugo Fernández. Vestuarios de alta costura, trajes insignia, coordinación técnica y fantasía de carnaval.{% endblock %}
+
+{% block content %}
+<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1200px; width: 100%; margin: 0 auto;">
   
-  <!-- Tipografías Google Fonts: Dancing Script y Julius Sans One -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Julius+Sans+One&display=swap" rel="stylesheet">
+  <div style="margin-bottom: 1.5rem; text-align: left;">
+    <a href="/" class="btn-back-nav" style="text-decoration: none;">
+      ← Volver al Inicio
+    </a>
+  </div>
 
-  <link rel="stylesheet" href="/static/css/estilos.css">
-  <link rel="stylesheet" href="/css/estilos.css">
-  <script src="/static/js/main.js" defer></script>
-</head>
-<body style="background-color: #040911;">
-
-  <!-- ==========================================================================
-       BARRA SUPERIOR Y HEADER STICKY
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
-      </a>
-    </div>
-
-    <div class="header-container">
-      <!-- Botón móvil para responsive -->
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link active">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
-        <span class="brand-name">Hugo Fernández</span>
-        <span class="brand-sub">Arte Creativo</span>
-      </a>
-    </div>
+  <!-- Encabezado de la Sección -->
+  <header class="page-header is-center">
+    <span class="destaques-badge" style="margin-bottom: 0.8rem;">✦ Selección Exclusiva</span>
+    <h1 class="dorado-titulo">
+      Obras Destacadas
+    </h1>
+    <div class="section-divider"></div>
+    <p>
+      Obras y realizaciones seleccionadas de alta costura, coordinación técnica y fantasía de carnaval confeccionadas por Hugo Fernández.
+    </p>
   </header>
 
-  <!-- ==========================================================================
-       CONTENIDO PRINCIPAL: GALERÍA EXCLUSIVA DE DESTAQUES
-       ========================================================================== -->
-  <main class="main-symmetric-container" style="background-color: #040911; min-height: 80vh; padding: 2rem 1.2rem 4rem;">
-    
-    <div style="max-width: 1200px; width: 100%; margin: 0 auto 1.5rem; text-align: left;">
-      <a href="/" class="btn-perfil-tecnico" style="border: 1px solid #E6D5B8; font-family: 'Julius Sans One', sans-serif; text-decoration: none; padding: 0.5rem 1.15rem; font-size: 0.82rem;">
-        ← Volver al Inicio
-      </a>
-    </div>
-
-    <!-- Encabezado de la Sección -->
-    <header class="destaques-header-bar" style="text-align: center; margin-bottom: 2.5rem;">
-      <span class="destaques-badge">✦ Selección Exclusiva</span>
-      <h1 class="destaques-section-title" style="font-family: 'Julius Sans One', sans-serif; font-size: clamp(1.8rem, 3.6vw, 2.6rem); color: #ffffff; letter-spacing: 2.2px; text-transform: uppercase;">
-        Obras Destacadas
-      </h1>
-      <p class="destaques-section-sub" style="color: #94a3b8; max-width: 720px; margin: 0.5rem auto 0; font-size: 0.95rem; line-height: 1.6;">
-        Obras y realizaciones seleccionadas de alta costura, coordinación técnica y fantasía de carnaval confeccionadas por Hugo Fernández.
-      </p>
-    </header>
-
-    <!-- Grilla de Tarjetas Glassmorphism -->
-    <section class="destaques-glass-section glass-card" style="max-width: 1200px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem;" aria-label="Trajes Destacados">
-      {% if trajes and trajes|length > 0 %}
-        <div class="destaques-grid">
-          {% for traje in trajes %}
-            <article class="destaque-card glass-card">
-              <div class="destaque-media-wrapper">
-                {% if traje.foto_url | es_video or traje.foto | es_video %}
-                  <!-- Visualización de Video .mp4 -->
-                  <div class="destaque-video-container">
-                    <video controls width="100%" preload="metadata" class="destaque-video-player">
-                      <source src="{{ (traje.foto or traje.foto_url) | media_url }}" type="video/mp4">
-                      Tu navegador no soporta reproducción de video HTML5.
-                    </video>
+  <!-- Grilla de Tarjetas Glassmorphism -->
+  <section class="destaques-glass-section glass-card" style="width: 100%; margin: 2rem auto; padding: 2rem 1.5rem;" aria-label="Trajes Destacados">
+    {% if trajes and trajes|length > 0 %}
+      <div class="destaques-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+        {% for traje in trajes %}
+          <article class="destaque-card glass-card" style="overflow: hidden; display: flex; flex-direction: column;">
+            <div class="destaque-media-wrapper" style="position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; background: var(--ink-2, #0a0f26);">
+              {% if traje.foto_url | es_video or traje.foto | es_video %}
+                <video controls width="100%" preload="metadata" class="destaque-video-player" style="width: 100%; height: 100%; object-fit: cover;">
+                  <source src="{{ (traje.foto or traje.foto_url) | media_url }}" type="video/mp4">
+                </video>
+              {% elif traje.enlace_boceto %}
+                <div class="ba-slider-container" data-ba-slider style="width: 100%; height: 100%;">
+                  <img src="{{ (traje.foto or traje.foto_url) | media_url }}" alt="Después: {{ traje.nombre or traje.comparsero }}" class="ba-img ba-after-img" loading="lazy">
+                  <div class="ba-before-wrapper">
+                    <img src="{{ traje.enlace_boceto | media_url }}" alt="Antes: {{ traje.nombre or traje.comparsero }}" class="ba-img ba-before-img" loading="lazy">
                   </div>
-                {% elif traje.enlace_boceto %}
-                  <!-- Slider Interactivo: Antes (Boceto) vs Después (Traje) -->
-                  <div class="ba-slider-container" data-ba-slider>
-                    <img src="{{ (traje.foto or traje.foto_url) | media_url }}" alt="Después: Traje Terminado - {{ traje.nombre or traje.comparsero }}" class="ba-img ba-after-img" loading="lazy">
-                    <div class="ba-before-wrapper">
-                      <img src="{{ traje.enlace_boceto | media_url }}" alt="Antes: Boceto de Diseño - {{ traje.nombre or traje.comparsero }}" class="ba-img ba-before-img" loading="lazy">
-                    </div>
-                    <span class="ba-badge ba-badge-before">Antes (Boceto)</span>
-                    <span class="ba-badge ba-badge-after">Después (Traje)</span>
-                    <div class="ba-divider">
-                      <div class="ba-handle" aria-hidden="true"><span>↔</span></div>
-                    </div>
-                    <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar boceto y traje terminado">
-                  </div>
-                {% else %}
-                  <!-- Imagen Estándar de Alta Definición -->
-                  <div class="destaque-single-img-wrapper">
-                    <img src="{{ (traje.foto or traje.foto_url) | media_url }}" alt="{{ traje.nombre or traje.comparsero }}" class="destaque-single-img" loading="lazy">
-                  </div>
-                {% endif %}
-              </div>
+                  <span class="ba-badge ba-badge-before">Antes</span>
+                  <span class="ba-badge ba-badge-after">Después</span>
+                  <div class="ba-divider"><div class="ba-handle" aria-hidden="true"><span>↔</span></div></div>
+                  <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
+                </div>
+              {% else %}
+                <img src="{{ (traje.foto or traje.foto_url) | media_url }}" alt="{{ traje.nombre or traje.comparsero }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+              {% endif %}
+            </div>
 
-              <div class="destaque-info-body">
-                <div class="destaque-meta-row">
+            <div class="destaque-info-body" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 1rem;">
+              <div>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.6rem; flex-wrap: wrap;">
                   <span class="destaque-comparsa-badge">{{ traje.comparsa }}</span>
                   {% if traje.genero %}
                     <span class="destaque-genero-badge">{{ traje.genero }}</span>
                   {% endif %}
                 </div>
-                <h2 class="destaque-card-title">{{ traje.nombre or traje.comparsero }}</h2>
+                <h2 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.35rem; color: var(--champan-hi, #f7ecd0); margin: 0 0 0.4rem 0;">
+                  {{ traje.nombre or traje.comparsero }}
+                </h2>
                 {% if traje.descripcion %}
-                  <p class="destaque-card-desc">{{ traje.descripcion }}</p>
+                  <p style="font-size: 0.88rem; color: var(--niebla, #aab2d4); line-height: 1.55;">{{ traje.descripcion }}</p>
                 {% endif %}
-                {% if traje.materiales %}
-                  <div class="destaque-materiales-pills">
-                    {% for mat in traje.materiales.split(',')[:4] %}
-                      <span class="destaque-mat-pill">{{ mat.strip() }}</span>
-                    {% endfor %}
-                  </div>
-                {% endif %}
-                <div class="destaque-action-bar">
-                  <a href="/traje/{{ traje.id }}" class="btn-destaque-ver">
-                    <span>✦</span> Ver Ficha Completa →
-                  </a>
-                </div>
               </div>
-            </article>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div style="text-align: center; padding: 4rem 1.5rem; color: #E6D5B8;">
-          <p style="font-size: 1.25rem; font-family: 'Julius Sans One', sans-serif; margin-bottom: 0.6rem;">✦ No hay obras destacadas registradas actualmente.</p>
-          <p style="font-size: 0.92rem; color: #94a3b8; max-width: 500px; margin: 0 auto 1.5rem;">Podés marcar cualquier traje como destaque desde el Panel de Administración para que figure en esta sección exclusiva.</p>
-          <a href="/trajes" class="btn-hero-primary" style="padding: 0.65rem 1.4rem;">
-            <span>✦</span> Explorar Todo el Catálogo
-          </a>
-        </div>
-      {% endif %}
-    </section>
-
-  </main>
-
-  <!-- ==========================================================================
-       FOOTER ESTRUCTURA OFICIAL
-       ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      
-      <!-- Superior: Botones de Contacto Directo -->
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
-        </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
-        </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
+              <div style="margin-top: 1rem;">
+                <a href="/traje/{{ traje.id }}" class="btn-hero-primary" style="padding: 0.55rem 1.1rem; font-size: 0.8rem;">
+                  <span>✦</span> Ver Ficha Completa →
+                </a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 4rem 1.5rem; color: var(--champan-hi, #f7ecd0);">
+        <p style="font-size: 1.25rem; font-family: var(--f-display, 'Fraunces', serif); margin-bottom: 0.6rem;">✦ No hay obras destacadas registradas actualmente.</p>
+        <p style="font-size: 0.92rem; color: var(--niebla, #aab2d4); max-width: 500px; margin: 0 auto 1.5rem;">Podés marcar cualquier traje como destaque desde el Panel de Administración para que figure en esta sección exclusiva.</p>
+        <a href="/trajes" class="btn-hero-primary" style="padding: 0.65rem 1.4rem;">
+          <span>✦</span> Explorar Todo el Catálogo
         </a>
       </div>
+    {% endif %}
+  </section>
 
-      <!-- Medio: Aviso Legal -->
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
-
-      <!-- Inferior: Firma centrado -->
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
-
-    </div>
-  </footer>
-
-</body>
-</html>
+</div>
+{% endblock %}

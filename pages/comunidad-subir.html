@@ -1,378 +1,253 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Comunidad de Comparseros del Carnaval Correntino: Subí tu traje, compartí su historia, materiales y fotografías en el catálogo colaborativo de Hugo Fernández Arte Creativo.">
-  <title>Comunidad de Comparseros | Subí tu Traje | Hugo Fernández Arte Creativo</title>
-  <link rel="stylesheet" href="/static/css/estilos.css">
-  <link rel="stylesheet" href="../css/estilos.css">
-  <script src="/static/js/main.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set nav_active = 'comunidad' %}
 
-  <!-- ==========================================================================
-       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
-      </a>
-    </div>
+{% block title %}Comunidad de Comparseros | Subí tu Traje | Hugo Fernández Arte Creativo{% endblock %}
+{% block description %}Comunidad de Comparseros del Carnaval Correntino: Subí tu traje, compartí su historia, materiales y fotografías en el catálogo colaborativo de Hugo Fernández Arte Creativo.{% endblock %}
 
-    <div class="header-container">
-      
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+{% block content %}
+<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1200px; width: 100%; margin: 0 auto;">
 
-      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link active">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
-        <span class="brand-name">Hugo Fernández</span>
-        <span class="brand-sub">Arte Creativo</span>
-      </a>
-
-    </div>
+  <!-- Encabezado de la Sección Social -->
+  <header class="page-header is-center">
+    <span class="hero-badge" style="margin-bottom: 0.8rem;">Comunidad del Carnaval Correntino • FASE 14</span>
+    <h1 class="dorado-titulo">Subí tu Traje a la Galería</h1>
+    <div class="section-divider"></div>
+    <p>
+      ¿Desfilaste en el Corsódromo Nolo Alías o en los carnavales de la región? Compartí las fotografías 
+      y los créditos de tu vestuario con toda la comunidad comparsera. 
+      Una vez revisado por el taller en la Bandeja de Moderación, tu traje formará parte del catálogo oficial.
+    </p>
   </header>
 
-  <main>
-    <div class="container">
-
-      <!-- Encabezado de la Sección Social -->
-      <header class="page-header slide-up">
-        <span class="hero-badge" style="margin-bottom: 0.8rem;">Comunidad del Carnaval Correntino • FASE 14</span>
-        <h1 class="dorado-titulo">Subí tu Traje a la Galería</h1>
-        <div class="section-divider"></div>
-        <p>
-          ¿Desfilaste en el Corsódromo Nolo Alías o en los carnavales de la región? Compartí las fotografías, 
-          el desglose de materiales y los créditos de tu vestuario con toda la comunidad comparsera. 
-          Una vez revisado por el taller en la Bandeja de Moderación, tu traje formará parte del catálogo oficial.
+  {% if exito %}
+  <section class="comunidad-alert-success slide-up" role="status">
+    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+      <span style="font-size: 2rem;">🎉</span>
+      <div>
+        <h2 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.4rem; color: #3ddc97; margin-bottom: 0.4rem;">
+          ¡Tu traje fue enviado con éxito a la Bandeja de Moderación!
+        </h2>
+        <p style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;">
+          {% if traje_enviado %}
+            Registramos la propuesta de <strong>{{ traje_enviado.comparsero }}</strong> ({{ traje_enviado.comparsa }}) con estado <code>pendiente</code>.
+          {% else %}
+            Tu vestuario quedó registrado con estado <code>pendiente</code> en nuestra base de datos.
+          {% endif %}
+          En cuanto el equipo de Hugo Fernández lo apruebe desde el panel de moderación, aparecerá publicado en el Feed de Trajes y en la página de tu comparsa.
         </p>
-      </header>
-
-      {% if exito %}
-      <section class="comunidad-alert-success slide-up" role="status">
-        <div class="comunidad-alert-icon">🎉</div>
-        <div class="comunidad-alert-content">
-          <h2>¡Tu traje fue enviado con éxito a la Bandeja de Moderación!</h2>
-          <p>
-            {% if traje_enviado %}
-              Registramos la propuesta de <strong>{{ traje_enviado.comparsero }}</strong> ({{ traje_enviado.comparsa }}) con estado <code>pendiente</code>.
-            {% else %}
-              Tu vestuario quedó registrado con estado <code>pendiente</code> en nuestra base de datos.
-            {% endif %}
-            En cuanto el equipo de Hugo Fernández lo apruebe desde el panel de moderación, aparecerá publicado en el Feed de Trajes y en la página de tu comparsa.
-          </p>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
-            <a href="/trajes" class="btn-dorado">Explorar Feed de Trajes →</a>
-            <a href="/comunidad/subir" class="btn-back-nav" style="margin: 0;">Subir otro traje</a>
-          </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+          <a href="/trajes" class="btn-dorado">Explorar Feed de Trajes →</a>
+          <a href="/comunidad/subir" class="btn-back-nav" style="margin: 0;">Subir otro traje</a>
         </div>
-      </section>
-      {% endif %}
-
-      {% if error %}
-      <section class="comunidad-alert-error slide-up" role="alert">
-        <p>⚠️ {{ error }}</p>
-      </section>
-      {% endif %}
-
-      <!-- Formulario Público de Comunidad -->
-      <section class="comunidad-form-card reveal visible">
-        <div class="comunidad-form-header">
-          <h2><span>✨</span> Ficha de Postulación del Vestuario</h2>
-          <span class="comunidad-badge-moderacion">Estado inicial: Pendiente de Moderación</span>
-        </div>
-
-        <form id="form-comunidad-subir" action="/comunidad/subir" method="POST" enctype="multipart/form-data" class="comunidad-form-body">
-          <div class="comunidad-form-grid">
-
-            <!-- Nombre del Comparsero y Figura -->
-            <div class="comunidad-field">
-              <label for="comparsero"><span>👑</span> Nombre del Comparsero y Rol / Figura *</label>
-              <input type="text" id="comparsero" name="comparsero" required
-                     placeholder="Ej: Valentina G. - Bastonera de Comparsa / Solista">
-            </div>
-
-            <!-- Comparsa -->
-            <div class="comunidad-field">
-              <label for="comparsa"><span>🎭</span> Comparsa o Agrupación Musical *</label>
-              <input type="text" id="comparsa" name="comparsa" list="datalist-comparsas-comunidad" required
-                     placeholder="Seleccioná o escribí tu comparsa...">
-              <datalist id="datalist-comparsas-comunidad">
-                <option value="Arandú Beleza">
-                <option value="Sapucay">
-                <option value="Ará Berá">
-                <option value="Samba Total">
-                <option value="Copacabana">
-                <option value="Imperio Bahiano">
-                <option value="Panambí">
-                <option value="Kamandukahia">
-                <option value="Sambanda">
-              </datalist>
-            </div>
-
-            <!-- Categoría / Género -->
-            <div class="comunidad-field">
-              <label for="genero"><span>✦</span> Categoría / Género *</label>
-              <select id="genero" name="genero" required>
-                <option value="Femenino">Femenino</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Unisex / Sin Género">Unisex / Sin Género</option>
-              </select>
-            </div>
-
-            <!-- Créditos de Diseño -->
-            <div class="comunidad-field">
-              <label for="diseno_original"><span>✏️</span> Diseñador / Boceto Original</label>
-              <input type="text" id="diseno_original" name="diseno_original"
-                     placeholder="Ej: Nombre del diseñador del boceto">
-            </div>
-
-            <!-- Créditos de Herrería -->
-            <div class="comunidad-field full-span">
-              <label for="herreria_estructura"><span>⚙️</span> Taller de Herrería / Estructura y Peso Aproximado</label>
-              <input type="text" id="herreria_estructura" name="herreria_estructura"
-                     placeholder="Ej: Arnés de duraluminio soldado en TIG (3.5 kg), espaldar desmontable">
-            </div>
-
-            <!-- Descripción e Historia del Traje -->
-            <div class="comunidad-field full-span">
-              <label for="descripcion"><span>📜</span> Historia y Descripción del Traje en el Corsódromo *</label>
-              <textarea id="descripcion" name="descripcion" rows="4" required
-                        placeholder="Contanos qué representa tu fantasía, el tema anual de la comparsa y cómo viviste el desfile en la calzada..."></textarea>
-            </div>
-
-            <!-- Materiales Utilizados -->
-            <div class="comunidad-field full-span">
-              <label for="materiales"><span>💎</span> Materiales, Plumaje y Pedrería Utilizada (Separados por coma) *</label>
-              <textarea id="materiales" name="materiales" rows="3" required
-                        placeholder="Ej: 8.000 cristales boreales, plumas de faisán y avestruz, acetato termoformado dorado, terciopelo elastizado..."></textarea>
-            </div>
-
-            <!-- Selección Múltiple de Fotografías -->
-            <div class="comunidad-field full-span">
-              <label for="fotos-comunidad"><span>📸</span> Fotografías del Traje (Podés seleccionar múltiples imágenes) *</label>
-              <div class="comunidad-upload-zone">
-                <p class="upload-zone-title">📂 Elegí una o varias fotos de tu traje en pasarela o taller</p>
-                <input type="file" id="fotos-comunidad" name="fotos" accept="image/*,video/mp4" multiple required>
-                <p class="upload-zone-hint">
-                  Formatos soportados: JPG, PNG, WEBP, MP4 (máximo 6 archivos en total, hasta 20MB por archivo). La primera imagen será la portada de tu ficha.
-                </p>
-              </div>
-              <div id="comunidad-preview-grid" class="comunidad-preview-grid"></div>
-            </div>
-
-          </div>
-
-          <div class="comunidad-form-actions">
-            <a href="/trajes" class="btn-back-nav" style="margin: 0;">← Volver al Feed</a>
-            <button type="submit" id="btn-enviar-comunidad" class="btn-dorado">
-              ✦ Enviar Traje a Moderación
-            </button>
-          </div>
-        </form>
-      </section>
-
+      </div>
     </div>
-  </main>
+  </section>
+  {% endif %}
 
-  <!-- ==========================================================================
-       5. FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
-       ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      
-      <!-- Superior: Botones limpios de Contacto Directo -->
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
-        </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
-        </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
-        </a>
+  {% if error %}
+  <section class="comunidad-alert-error slide-up" role="alert">
+    <p style="font-weight: 500; font-size: 1rem;">⚠️ {{ error }}</p>
+  </section>
+  {% endif %}
+
+  <!-- Formulario Público de Comunidad -->
+  <section class="comunidad-form-card glass-card">
+    <div class="comunidad-form-header">
+      <h2><span>✨</span> Ficha de Postulación del Vestuario</h2>
+      <span class="comunidad-badge-moderacion">Estado inicial: Pendiente de Moderación</span>
+    </div>
+
+    <form id="form-comunidad-subir" action="/comunidad/subir" method="POST" enctype="multipart/form-data" class="comunidad-form-body">
+      <div class="comunidad-form-grid">
+
+        <!-- Nombre del Comparsero y Figura -->
+        <div class="comunidad-field">
+          <label for="comparsero"><span>👑</span> Nombre del Comparsero y Rol / Figura *</label>
+          <input type="text" id="comparsero" name="comparsero" required
+                 placeholder="Ej: Valentina G. - Bastonera de Comparsa / Solista">
+        </div>
+
+        <!-- Comparsa -->
+        <div class="comunidad-field">
+          <label for="comparsa"><span>🎭</span> Comparsa o Agrupación Musical *</label>
+          <input type="text" id="comparsa" name="comparsa" list="datalist-comparsas-comunidad" required
+                 placeholder="Seleccioná o escribí tu comparsa...">
+          <datalist id="datalist-comparsas-comunidad">
+            {% for comparsa in comparsas %}
+            <option value="{{ comparsa.nombre }}">
+            {% endfor %}
+          </datalist>
+        </div>
+
+        <!-- Categoría / Género -->
+        <div class="comunidad-field full-span">
+          <label for="genero"><span>✦</span> Categoría / Género *</label>
+          <select id="genero" name="genero" required>
+            <option value="Femenino">Femenino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Unisex / Sin Género">Unisex / Sin Género</option>
+          </select>
+        </div>
+
+        <!-- Créditos del Traje (Agrupados) -->
+        <div class="comunidad-field full-span creditos-fieldset" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(94, 242, 224, 0.25); border-radius: 12px; padding: 1.1rem 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; border-bottom: 1px solid rgba(94, 242, 224, 0.2); padding-bottom: 0.5rem;">
+            <span style="font-size: 1.1rem;">👑</span>
+            <strong style="color: var(--champan, #ead9b6); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--f-label, 'Syne', sans-serif);">Créditos del Traje</strong>
+            <span style="font-size: 0.75rem; color: var(--niebla, #aab2d4); margin-left: auto;">Opcional si no recordás todos los datos</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+            <div class="comunidad-field">
+              <label for="diseno_original"><span>✏️</span> Diseño Original</label>
+              <input type="text" id="diseno_original" name="diseno_original" placeholder="(Autor del boceto/diseño)">
+            </div>
+            <div class="comunidad-field">
+              <label for="confeccion"><span>🪡</span> Confección (Quién realizó el traje)</label>
+              <input type="text" id="confeccion" name="confeccion" placeholder="Quién confeccionó el vestuario">
+            </div>
+            <div class="comunidad-field">
+              <label for="estructura"><span>⚙️</span> Estructura</label>
+              <input type="text" id="estructura" name="estructura" placeholder="Arnés, materiales y peso aproximado">
+            </div>
+          </div>
+        </div>
+
+        <!-- Descripción e Historia del Traje (Opcional) -->
+        <div class="comunidad-field full-span">
+          <label for="descripcion"><span>📜</span> Historia y Descripción del Traje (Opcional)</label>
+          <textarea id="descripcion" name="descripcion" rows="3"
+                    placeholder="Contanos qué representa tu fantasía, el tema anual de la comparsa y cómo viviste el desfile en la calzada..."></textarea>
+        </div>
+
+        <!-- Selección Múltiple de Fotografías -->
+        <div class="comunidad-field full-span">
+          <label for="fotos-comunidad"><span>📸</span> Fotografías del Traje (Podés seleccionar múltiples imágenes) *</label>
+          <div class="comunidad-upload-zone">
+            <p class="upload-zone-title">📂 Elegí una o varias fotos de tu traje en pasarela o taller</p>
+            <input type="file" id="fotos-comunidad" name="fotos" accept="image/*,video/mp4" multiple required>
+            <p class="upload-zone-hint">
+              Formatos soportados: JPG, PNG, WEBP, MP4 (máximo 6 archivos en total, hasta 20MB por archivo). La primera imagen será la portada de tu ficha.
+            </p>
+          </div>
+          <div id="comunidad-preview-grid" class="comunidad-preview-grid"></div>
+        </div>
+
       </div>
 
-      <!-- Medio: Aviso Legal -->
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
+      <div class="comunidad-form-actions">
+        <a href="/trajes" class="btn-back-nav" style="margin: 0;">← Volver al Feed</a>
+        <button type="submit" id="btn-enviar-comunidad" class="btn-dorado">
+          ✦ Enviar Traje a Moderación
+        </button>
+      </div>
+    </form>
+  </section>
 
-      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
+</div>
+{% endblock %}
 
-    </div>
-  </footer>
-
-  <script>
-    // Alerta estilizada Toast para Comunidad
-    function mostrarAlertaComunidad(mensaje, tipo = 'error') {
-      let toast = document.getElementById('comunidad-toast-alert');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'comunidad-toast-alert';
-        toast.style.cssText = `
-          position: fixed;
-          top: 24px;
-          right: 24px;
-          z-index: 99999;
-          max-width: 440px;
-          padding: 1rem 1.4rem;
-          border-radius: 12px;
-          font-family: 'Montserrat', sans-serif;
-          font-size: 0.92rem;
-          font-weight: 500;
-          line-height: 1.45;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.65);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-          transform: translateY(-20px);
-          opacity: 0;
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-        `;
-        document.body.appendChild(toast);
-      }
-
-      if (tipo === 'error') {
-        toast.style.background = 'rgba(180, 25, 35, 0.94)';
-        toast.style.border = '1px solid rgba(255, 120, 120, 0.45)';
-        toast.style.color = '#ffffff';
-      } else {
-        toast.style.background = 'rgba(11, 21, 40, 0.95)';
-        toast.style.border = '1px solid #E6D5B8';
-        toast.style.color = '#E6D5B8';
-      }
-
-      toast.innerHTML = `<span style="font-size: 1.3rem;">⚠️</span> <div>${mensaje}</div>`;
-      toast.style.transform = 'translateY(0)';
-      toast.style.opacity = '1';
-
-      clearTimeout(toast._timeout);
-      toast._timeout = setTimeout(() => {
-        toast.style.transform = 'translateY(-20px)';
-        toast.style.opacity = '0';
-      }, 5500);
+{% block extra_js %}
+<script>
+  // Alerta estilizada Toast para Comunidad
+  function mostrarAlertaComunidad(mensaje, tipo = 'error') {
+    let toast = document.getElementById('comunidad-toast-alert');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'comunidad-toast-alert';
+      toast.style.cssText = `
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 99999;
+        max-width: 440px;
+        padding: 1rem 1.4rem;
+        border-radius: 12px;
+        font-family: 'Hanken Grotesk', system-ui, sans-serif;
+        font-size: 0.92rem;
+        font-weight: 500;
+        line-height: 1.45;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.65);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(-20px);
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      `;
+      document.body.appendChild(toast);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const inputFotos = document.getElementById('fotos-comunidad');
-      const previewGrid = document.getElementById('comunidad-preview-grid');
-      if (!inputFotos || !previewGrid) return;
+    if (tipo === 'error') {
+      toast.style.background = 'rgba(180, 25, 35, 0.94)';
+      toast.style.border = '1px solid rgba(255, 120, 120, 0.45)';
+      toast.style.color = '#ffffff';
+    } else {
+      toast.style.background = 'rgba(11, 21, 40, 0.95)';
+      toast.style.border = '1px solid #E6D5B8';
+      toast.style.color = '#E6D5B8';
+    }
 
-      inputFotos.addEventListener('change', () => {
-        const files = Array.from(inputFotos.files || []);
-        if (!files.length) return;
+    toast.innerHTML = `<span style="font-size: 1.3rem;">⚠️</span> <div>${mensaje}</div>`;
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
 
-        // BLINDAJE 1: Máximo 6 archivos en total
-        if (files.length > 6) {
-          mostrarAlertaComunidad(`⚠️ Límite de archivos excedido: Seleccionaste ${files.length} archivos. El máximo permitido por traje es de 6 archivos.`, 'error');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+      toast.style.transform = 'translateY(-20px)';
+      toast.style.opacity = '0';
+    }, 5500);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputFotos = document.getElementById('fotos-comunidad');
+    const previewGrid = document.getElementById('comunidad-preview-grid');
+    if (!inputFotos || !previewGrid) return;
+
+    inputFotos.addEventListener('change', () => {
+      const files = Array.from(inputFotos.files || []);
+      if (!files.length) return;
+
+      // BLINDAJE 1: Máximo 6 archivos en total
+      if (files.length > 6) {
+        mostrarAlertaComunidad(`⚠️ Límite de archivos excedido: Seleccionaste ${files.length} archivos. El máximo permitido por traje es de 6 archivos.`, 'error');
+        inputFotos.value = '';
+        previewGrid.innerHTML = '';
+        return;
+      }
+
+      // BLINDAJE 2: Máximo 20MB por archivo individual
+      const MAX_BYTES = 20 * 1024 * 1024; // 20MB
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        if (f.size > MAX_BYTES) {
+          const tamanoMB = (f.size / (1024 * 1024)).toFixed(1);
+          mostrarAlertaComunidad(`⚠️ Archivo demasiado pesado: "${f.name}" pesa ${tamanoMB}MB y supera el límite de 20MB por archivo. Por favor seleccioná un archivo más liviano.`, 'error');
           inputFotos.value = '';
           previewGrid.innerHTML = '';
           return;
         }
+      }
 
-        // BLINDAJE 2: Máximo 20MB por archivo individual
-        const MAX_BYTES = 20 * 1024 * 1024; // 20MB
-        for (let i = 0; i < files.length; i++) {
-          const f = files[i];
-          if (f.size > MAX_BYTES) {
-            const tamanoMB = (f.size / (1024 * 1024)).toFixed(1);
-            mostrarAlertaComunidad(`⚠️ Archivo demasiado pesado: "${f.name}" pesa ${tamanoMB}MB y supera el límite de 20MB por archivo. Por favor seleccioná un archivo más liviano.`, 'error');
-            inputFotos.value = '';
-            previewGrid.innerHTML = '';
-            return;
-          }
-        }
-
-        // Renderizar previews si pasa todas las validaciones
-        previewGrid.innerHTML = '';
-        files.forEach((file, idx) => {
-          const item = document.createElement('div');
-          item.className = 'comunidad-preview-item';
-          item.innerHTML = `
-            <img src="" alt="Previsualización #${idx + 1}">
-            <div class="comunidad-preview-meta">
-              <span class="comunidad-preview-badge">${idx === 0 ? '★ Portada Principal' : 'Foto #' + (idx + 1)}</span>
-              <input type="text" name="titulos_fotos" value="${idx === 0 ? 'Vista Principal' : 'Detalle #' + (idx + 1)}" placeholder="Título de la foto">
-            </div>
-          `;
-          const img = item.querySelector('img');
-          const reader = new FileReader();
-          reader.onload = (e) => { img.src = e.target.result; };
-          reader.readAsDataURL(file);
-          previewGrid.appendChild(item);
-        });
+      // Renderizar previews si pasa todas las validaciones
+      previewGrid.innerHTML = '';
+      files.forEach((file, idx) => {
+        const item = document.createElement('div');
+        item.className = 'comunidad-preview-item';
+        item.innerHTML = `
+          <img src="" alt="Previsualización #${idx + 1}">
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 4px; background: rgba(0,0,0,0.7); font-size: 0.7rem; color: #fff; text-align: center;">
+            ${idx === 0 ? '★ Portada Principal' : 'Foto #' + (idx + 1)}
+          </div>
+        `;
+        const img = item.querySelector('img');
+        const reader = new FileReader();
+        reader.onload = (e) => { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+        previewGrid.appendChild(item);
       });
     });
-  </script>
-
-</body>
-</html>
+  });
+</script>
+{% endblock %}

@@ -37,24 +37,186 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Hanken+Grotesk:wght@300..700&family=Syne:wght@500..800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 
-  {#- Capas de CSS en orden de cascada: tokens → base → fx → layout → componentes → página -#}
+  {#- Capas de CSS en orden de cascada: tokens → style → base → fx → layout → componentes → página -#}
   <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('css/base.css') }}">
   <link rel="stylesheet" href="{{ asset('css/fx.css') }}">
   <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
   <link rel="stylesheet" href="{{ asset('css/components.css') }}">
+
+  {#- Estilos críticos globales: Deep Abyss, Champagne, Glassmorphism, Responsive y Blindaje de Logotipo -#}
+  <style>
+    :root {
+      --deep-abyss: #040911;
+      --deep-abyss-card: rgba(255, 255, 255, 0.05);
+      --deep-abyss-surface: rgba(4, 9, 17, 0.85);
+      --azul-noche: #040911;
+      --negro-fondo: #040911;
+      --void: #03040a;
+      --ink: #060916;
+      --ink-2: #0a0f26;
+      --ink-3: #101842;
+      --ink-4: #17215a;
+      --champagne: #E6D5B8;
+      --champagne-light: #F4EAD9;
+      --champagne-brillo: #FCF6BA;
+      --champagne-suave: #E6D5B8;
+      --champagne-borde: rgba(230, 213, 184, 0.35);
+      --champagne-border: rgba(230, 213, 184, 0.25);
+      --champagne-glow: rgba(230, 213, 184, 0.15);
+      --champan: #ead9b6;
+      --champan-hi: #f7ecd0;
+      --oro: #c9a75e;
+      --dorado-gradiente: linear-gradient(45deg, #E6D5B8, #FCF6BA, #B38728, #FBF5B7);
+      --dorado-solido: #E6D5B8;
+      --dorado-brillo: #FCF6BA;
+      --dorado-suave: #E6D5B8;
+      --dorado-borde: rgba(230, 213, 184, 0.35);
+      --dorado-glow: rgba(230, 213, 184, 0.25);
+      --dorado: #ead9b6;
+      --dorado-light: #f7ecd0;
+      --glass: rgba(14, 20, 52, 0.46);
+      --glass-strong: rgba(10, 15, 40, 0.72);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+      --linea: rgba(176, 190, 255, 0.12);
+      --linea-fuerte: rgba(176, 190, 255, 0.24);
+      --perla: #eef0ff;
+      --niebla: #aab2d4;
+      --bruma: #6d759c;
+      --ultramar: #3040ff;
+      --cobalto: #1f2fd8;
+      --zafiro: #0f1d78;
+      --lapislazuli: #1a2a9e;
+      --rio: #5ef2e0;
+      --orquidea: #9d6cff;
+      --fucsia: #ff4fa3;
+      --grad-licuado: linear-gradient(115deg, #3040ff 0%, #9d6cff 48%, #5ef2e0 100%);
+      --grad-aurora: radial-gradient(120% 90% at 20% 0%, rgba(48, 64, 255, .55), transparent 60%),
+                     radial-gradient(90% 80% at 90% 20%, rgba(157, 108, 255, .38), transparent 55%),
+                     radial-gradient(80% 70% at 60% 100%, rgba(94, 242, 224, .22), transparent 60%);
+      --grad-champan: linear-gradient(115deg, #fbf1d6 0%, #ead9b6 35%, #c9a75e 70%, #f7ecd0 100%);
+      --f-display: "Fraunces", "Cormorant Garamond", "Times New Roman", serif;
+      --f-label: "Syne", "Helvetica Neue", Arial, sans-serif;
+      --f-body: "Hanken Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --f-script: "Dancing Script", "Brush Script MT", cursive;
+      --f-julius: "Julius Sans One", sans-serif;
+      --fuente-titulos: "Fraunces", serif;
+      --fuente-cuerpo: "Hanken Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    html, body {
+      background-color: #060916 !important;
+      background: #060916 !important;
+      color: #eef0ff !important;
+      font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      overflow-x: hidden !important;
+      max-width: 100vw;
+      width: 100%;
+    }
+    body::before {
+      display: none !important;
+    }
+    main, .site-main, .main-symmetric-container, .main-content {
+      background-color: transparent !important;
+      background: transparent !important;
+      color: #eef0ff !important;
+      font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    img.brand-logo-img,
+    .header-logo-img,
+    .footer-logo-img,
+    .header-logo img,
+    .footer-logo-ring img,
+    .footer-brand-badge img,
+    .site-header img,
+    .site-footer img,
+    .site-header .brand-logo-img,
+    .site-footer .brand-logo-img,
+    img.login-logo {
+      max-height: 45px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      flex-shrink: 0 !important;
+    }
+    .footer-logo-ring img {
+      max-height: 42px !important;
+      max-width: 42px !important;
+    }
+    .glass-card,
+    .glass-panel,
+    .glass-surface,
+    .hero-glass-card,
+    .perfil-central-glass-card,
+    .trayectoria-glass-section,
+    .comparsa-btn-card,
+    .modal-glass-content,
+    .contacto-compacto-glass,
+    .desglose-materiales,
+    .traje-detalle-card,
+    .traje-creditos,
+    .servicio-card,
+    .coordinacion-card,
+    .admin-card,
+    .login-card,
+    .comunidad-form-card,
+    .comparsa-card,
+    .destaque-card,
+    .destaques-glass-section,
+    .material-card,
+    .comparsero-card,
+    .tarjeta-feed,
+    .immersive-traje-card {
+      background: linear-gradient(145deg, rgba(24, 34, 86, .42), rgba(8, 12, 34, .5)) !important;
+      backdrop-filter: blur(20px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+      border: 1px solid var(--linea, rgba(176, 190, 255, 0.12)) !important;
+      border-radius: 16px;
+      box-shadow: 0 18px 50px -15px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    .dorado-titulo, .text-liquid {
+      font-family: var(--f-display, 'Fraunces', serif);
+      background: var(--grad-licuado);
+      background-size: 200% 100%;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      color: transparent !important;
+    }
+    .eyebrow, .hero-badge, .destaques-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .6em;
+      font-family: var(--f-label, 'Syne', sans-serif);
+      font-size: var(--t-xs, 0.78rem);
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--rio, #5ef2e0);
+    }
+    .section-divider {
+      width: 72px;
+      height: 2px;
+      margin: 1.2rem auto;
+      background: var(--grad-licuado);
+      box-shadow: 0 0 18px rgba(94, 242, 224, .6);
+      border-radius: 999px;
+    }
+  </style>
   {% block extra_css %}{% endblock %}
 
   <script src="{{ asset('js/main.js') }}" defer></script>
   <script src="{{ asset('js/fx.js') }}" defer></script>
   {% block extra_js_head %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}" style="background-color: #060916 !important; background: #060916 !important; color: #eef0ff !important; font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;">
   {% include "partials/_fx_layers.html" %}
   {% include "partials/_header.html" %}
 
   {% block hero %}{% endblock %}
-  <main id="contenido" class="site-main">
+  <main id="contenido" class="site-main" style="background-color: transparent !important; background: transparent !important; color: #eef0ff !important; font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;">
     {% block content %}{% endblock %}
   </main>
 

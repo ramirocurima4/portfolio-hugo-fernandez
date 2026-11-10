@@ -94,6 +94,8 @@
   /* ── ALIAS LEGADOS ────────────────────────────────────────────────────────
      Plantillas/JS antiguos aún referencian estos nombres en estilos en línea.
      Se remapean a la nueva paleta para que nada se vea roto ni "dorado viejo". */
+  --deep-abyss:       #040911;
+  --negro-fondo:      #040911;
   --azul-noche:       var(--ink);
   --dorado-solido:    var(--champan);
   --dorado-brillo:    var(--champan-hi);

@@ -1,367 +1,405 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Hugo Fernández - Realizador y Coordinador General de Vestuarios de Carnaval y Espectáculos Varios. Artesano Diplomado en Carnaval | Profesor de Historia (IFD N°1).">
-  <title>Hugo Fernández | Realizador y Coordinador General de Vestuarios</title>
-  
-  <!-- 1. Tipografías Google Fonts: Dancing Script y Julius Sans One -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Julius+Sans+One&display=swap" rel="stylesheet">
+{% extends "base.html" %}
+{% set nav_active = 'inicio' %}
+{% set show_curtain = true %}
 
-  <link rel="stylesheet" href="/static/css/estilos.css">
-  <link rel="stylesheet" href="css/estilos.css">
-  <script src="/static/js/main.js" defer></script>
-</head>
-<body>
+{% block extra_css %}<link rel="stylesheet" href="{{ asset('css/pages/home.css') }}">{% endblock %}
 
-  <!-- ==========================================================================
-       BARRA SUPERIOR Y HEADER (INTACTAS: CONTADOR "RUMBO AL CARNAVAL" + "SUBÍ TU TRAJE")
-       Rutas de administración 100% invisibles en el frontend público.
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
-      </a>
-    </div>
+{#- ==========================================================================
+    HERO ASIMÉTRICO — retrato en arco con anillo cónico, sello giratorio y collage
+    ========================================================================== -#}
+{% block hero %}
+<section class="hero" id="hero" aria-label="Presentación Oficial Hugo Fernández">
+  <div class="hero-orbit" aria-hidden="true"></div>
+  <div class="hero-inner wrap">
 
-    <div class="header-container">
-      <!-- Botón móvil para responsive -->
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+    <div class="hero-copy">
+      <span class="eyebrow hero-badge" data-reveal>Coordinación General de Vestuarios · Carnaval de Corrientes</span>
 
-      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link active">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
+      <!-- H1: "Realizador y Coordinador General de Vestuarios" -->
+      <h1 class="hero-title hero-h1-dancing" data-split>Realizador y Coordinador General de <em class="text-liquid">Vestuarios</em></h1>
 
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Marca oficial en cabecera -->
-      <a href="/" class="header-logo" title="Hugo Fernández">
-        <span class="brand-name">Hugo Fernández</span>
-      </a>
-    </div>
-  </header>
-
-  <!-- ==========================================================================
-       ESTRUCTURA PRINCIPAL SIMÉTRICA (GLASSMORPHISM REAL SOBRE DEEP ABYSS)
-       ========================================================================== -->
-  <main class="main-symmetric-container">
-
-    <!-- ==========================================================================
-         2. TARJETA CENTRAL HERO (ARRIBA DE LA TRAYECTORIA)
-         Glassmorphism real: backdrop-filter: blur(15px); background: rgba(255, 255, 255, 0.05);
-         border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 40px;
-         margin: 40px auto; max-width: 800px; text-align: center;
-         ========================================================================== -->
-    <section class="hero-glass-card glass-card" id="hero" aria-label="Presentación Oficial Hugo Fernández">
-      
-      <!-- Foto: circular, centrada, borde sutil -->
-      <div class="hero-perfil-img-wrapper">
-        <img src="static/img/hugo_perfil.jpg" 
-             alt="Hugo Fernández - Realizador y Coordinador General de Vestuarios" 
-             class="hero-perfil-img"
-             onerror="this.onerror=null; this.src='/static/img/hugo_perfil.jpg';">
+      <div class="hero-roles" data-reveal style="--rd:.5s">
+        <!-- H2: "Artesano Diplomado en Carnaval" -->
+        <h2 class="hero-h2-julius">Artesano Diplomado en Carnaval</h2>
+        <!-- H3: "Profesor de Historia (IFD N°1)" -->
+        <h3 class="hero-h3-julius">Profesor de Historia (IFD N°1)</h3>
       </div>
 
-      <!-- H1: "Realizador y Coordinador General de Vestuarios" (Dancing Script, blanco/tiza, tamaño grande) -->
-      <h1 class="hero-h1-dancing">
-        Realizador y Coordinador General de Vestuarios
-      </h1>
-
-      <!-- H2: "Artesano Diplomado en Carnaval" (Julius Sans One, dorado/acento, tamaño destacado) -->
-      <h2 class="hero-h2-julius">
-        Artesano Diplomado en Carnaval
-      </h2>
-
-      <!-- H3: "Profesor de Historia (IFD N°1)" (Julius Sans One, gris claro, tamaño menor) -->
-      <h3 class="hero-h3-julius">
-        Profesor de Historia (IFD N°1)
-      </h3>
-
-      <!-- 3. Perfil Técnico Minimalista: Botón elegante "Conocer Perfil Técnico" (abre Modal) y Botón Obras Destacadas -->
-      <div class="hero-action-buttons">
+      <!-- Perfil técnico (abre modal), obras destacadas y galería (Botones estáticos con hover tradicional) -->
+      <div class="hero-actions hero-action-buttons" data-reveal style="--rd:.65s">
         <button type="button" class="btn-perfil-tecnico" id="btn-perfil-tecnico" aria-haspopup="dialog">
           <span>✦</span> Conocer Perfil Técnico
         </button>
-        <a href="/destaques" class="btn-perfil-tecnico" style="border: 1px solid #E6D5B8; font-family: 'Julius Sans One', sans-serif; text-decoration: none;">
-          <span>✦</span> Ver Obras Destacadas
-        </a>
-        <a href="/trajes" class="btn-hero-primary">
-          <span>✦</span> Ver Galería de Trajes
-        </a>
+        <a href="/destaques" class="btn-perfil-tecnico"><span>✦</span> Ver Obras Destacadas</a>
+        <a href="/trajes" class="btn-hero-primary"><span>✦</span> Ver Galería de Trajes</a>
       </div>
+    </div>
 
-    </section>
-
-    <!-- ==========================================================================
-         4. SECCIÓN TRAYECTORIA EN EL CARNAVAL (DEBAJO DEL HERO)
-         Carrusel / Slider interactivo de comparsas (desliza de a uno por vez).
-         Flechas de navegación operativas e indicador de posición.
-         ========================================================================== -->
-    <section class="trayectoria-glass-section glass-card" id="trayectoria" aria-label="Trayectoria en el Carnaval">
-      <div class="trayectoria-header-bar">
-        <h2 class="card-section-title">✦ Trayectoria en el Carnaval</h2>
-        <p class="card-section-sub">Hacé clic en cualquier comparsa para desplegar su ficha técnica y trayectoria completa</p>
-      </div>
-
-      <!-- Controles de navegación simétricos -->
-      <div class="trayectoria-controls-wrapper">
-        <button type="button" class="btn-trayectoria-control" id="btn-tray-prev" aria-label="Ver comparsa anterior" disabled>
-          ◀ Anterior
-        </button>
-        <span class="trayectoria-page-indicator" id="tray-indicator">1 de 10</span>
-        <button type="button" class="btn-trayectoria-control" id="btn-tray-next" aria-label="Ver comparsa siguiente">
-          Siguiente ▶
-        </button>
-      </div>
-
-      <!-- Slider interactivo de trayectoria: Muestra 3 comparsas por vista en pantallas grandes, ordenadas de más reciente a más antigua -->
-      <div class="trayectoria-slider-wrapper" style="width: 100%; max-width: 1140px; margin: 0 auto; position: relative;">
-        <div class="trayectoria-slider-container" id="trayectoria-container">
-          {% for item in trayectoria %}
-          <div class="comparsa-btn-card glass-card trayectoria-slide"
-               role="button"
-               tabindex="0"
-               data-nombre="{{ item.nombre }}"
-               data-ciudad="{{ item.ciudad }}"
-               data-anios="{{ item.anios }}"
-               data-rol="{{ item.rol }}"
-               data-desc="{{ item.descripcion }}"
-               style="{% if loop.index0 < 3 %}display: flex;{% else %}display: none;{% endif %}">
-            <span class="comparsa-card-badge">{{ item.badge }}</span>
-            <h3 class="comparsa-card-title">{{ item.nombre }}</h3>
-            <p class="comparsa-card-role-snippet">{{ item.rol_snippet }}</p>
-            <span class="comparsa-card-action-hint">✦ Ver Ficha Completa →</span>
+    <div class="hero-visual" aria-hidden="false">
+      <div class="hero-collage" data-tilt data-parallax="-0.06">
+        <figure class="hero-arch" data-reveal="zoom">
+          <span class="hero-arch-ring"></span>
+          <div class="hero-arch-frame">
+            <img src="{{ asset('img/hugo_perfil.jpg') }}"
+                 alt="Hugo Fernández - Realizador y Coordinador General de Vestuarios"
+                 class="hero-perfil-img" fetchpriority="high">
           </div>
-          {% endfor %}
+        </figure>
+
+        <figure class="hero-plate" data-parallax="0.09" data-reveal="right" style="--rd:.45s">
+          <img src="{{ asset('assets/img/IMG-20261015-WA0019.jpg') }}" alt="Traje celeste con plumaje y pedrería realizado en el taller" loading="eager">
+          <figcaption>Obra de taller</figcaption>
+        </figure>
+
+        <svg class="hero-seal" viewBox="0 0 200 200" aria-hidden="true">
+          <defs><path id="sealPath" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+          <text><textPath href="#sealPath" startOffset="0">Artesano diplomado en carnaval ✦ alta costura ✦ Corrientes ✦ </textPath></text>
+          <circle cx="100" cy="100" r="5" class="seal-dot"/>
+        </svg>
+
+        <div class="hero-chip chip-a glass-card" data-parallax="-0.12">
+          <small>Trayectoria</small>
+          <b>{{ trayectoria|length }}</b>
+          <span>comparsas</span>
+        </div>
+        <div class="hero-chip chip-b glass-card" data-parallax="0.14">
+          <small>Formación</small>
+          <span>Prof. de Historia · IFD N°1</span>
         </div>
       </div>
-    </section>
-
-    <!-- ==========================================================================
-         SECCIÓN PREGUNTAS FRECUENTES (FAQ - 2 PREGUNTAS, TERCERA ELIMINADA)
-         ========================================================================== -->
-    <section class="faq-glass-section glass-card" id="faq" aria-label="Preguntas Frecuentes">
-      <div class="faq-header-bar">
-        <span class="destaques-badge">✦ Consultas Clave</span>
-        <h2 class="card-section-title">Preguntas Frecuentes</h2>
-        <p class="card-section-sub">Todo lo que necesitás saber para coordinar la confección de tu vestuario</p>
-      </div>
-
-      <div class="faq-accordion-wrapper">
-        <details class="faq-item glass-card">
-          <summary class="faq-summary">¿Con cuánto tiempo de anticipación hay que encargar los trajes?</summary>
-          <div class="faq-content">
-            <p>Lo ideal es contactarnos con un mínimo de 3 a 5 meses de anticipación para planificar los bocetos, importar los materiales adecuados y garantizar las pruebas de calce necesarias.</p>
-          </div>
-        </details>
-
-        <details class="faq-item glass-card">
-          <summary class="faq-summary">¿Trabajás con comparsas de otras provincias o ciudades?</summary>
-          <div class="faq-content">
-            <p>Sí, coordinamos a distancia en todo el país mediante fichas técnicas detalladas y preparamos embalajes especiales de protección para garantizar que las estructuras lleguen intactas.</p>
-          </div>
-        </details>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ==========================================================================
-       3. MODAL GLASSMORPHISM PARA PERFIL TÉCNICO (APTITUDES COMPLETAS DEL PDF)
-       ========================================================================== -->
-  <div class="modal-glass-backdrop" id="modal-perfil-tecnico" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-glass-content glass-card modal-perfil-dialog">
-      <button type="button" class="modal-close-btn" id="modal-perfil-close" aria-label="Cerrar perfil técnico">✕</button>
-      
-      <div class="modal-perfil-header">
-        <span class="comparsa-card-badge">Ficha Técnica Profesional</span>
-        <h2 class="modal-perfil-title">Perfil Técnico & Aptitudes</h2>
-        <p class="modal-perfil-sub">Hugo Fernández • Artesano Diplomado en Carnaval</p>
-      </div>
-
-      <div class="modal-aptitudes-body">
-        <ul class="modal-aptitudes-list">
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Capacidad integral para jurar sobre la realización de vestuario referente al ámbito del carnaval.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Facilidad para visibilizar técnicas específicas en las confecciones.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Experiencia comprobable de desempeño en la guía de la confección de vestuario de carnaval.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Capacitación constante referente al tema.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Posibilidad de fácil acceso a nuevos materiales y nuevas técnicas de trabajo.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Realizador de vestuario con técnicas variadas, especialidad estilo artesanal.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Confeccionista de vestuarios premiados en la Capital Nacional del Carnaval, localidades del interior y de otras provincias del país.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Constante aporte de ideas en lo que respecta a las representaciones de vestuarios de fantasía y puesta en escena en las instituciones intervenidas.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Amplio conocimiento de la realización y bajada a la realidad de diseños de vestuario de carnaval, insistencia en la elección correcta de materiales colores, formas y técnicas especificas.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Confeccionista y realizador de vestuario de espectáculos.</span>
-          </li>
-          <li class="modal-aptitud-item">
-            <span class="modal-aptitud-bullet">✦</span>
-            <span>Inventivo y visionario en lo que respecta ideas centrales sobre temáticas específicas de representación en el ámbito del carnaval.</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="modal-actions-bar">
-        <a href="/trajes" class="btn-hero-primary" style="padding: 0.55rem 1.2rem; font-size: 0.86rem;">
-          <span>✦</span> Ver Galería de Trajes
-        </a>
-        <button type="button" class="btn-hero-secondary" id="modal-perfil-btn-cerrar" style="padding: 0.55rem 1.2rem; font-size: 0.86rem;">
-          Cerrar
-        </button>
-      </div>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       MODAL FLOTANTE (GLASSMORPHISM) PARA TRAYECTORIA
-       ========================================================================== -->
-  <div class="modal-glass-backdrop" id="modal-comparsa" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-glass-content glass-card">
-      <button type="button" class="modal-close-btn" id="modal-comparsa-close" aria-label="Cerrar ventana emergente">✕</button>
-      
-      <div>
-        <span class="comparsa-card-badge" id="modal-comp-badge">Comparsa</span>
-        <h2 class="card-section-title" id="modal-comp-title" style="font-size: 1.55rem; margin-top: 0.3rem;">Nombre</h2>
-        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.2rem;" id="modal-comp-ciudad">Ciudad • Años</div>
-      </div>
+  <a href="#oficios" class="hero-scroll" aria-label="Seguir bajando"><span></span><em>Scroll</em></a>
+</section>
 
-      <div class="modal-meta-box" id="modal-comp-rol-box">
-        <strong style="color: #E6D5B8;">Rol:</strong> <span id="modal-comp-rol">Coordinador General</span>
-      </div>
 
-      <div class="modal-desc-body" id="modal-comp-desc">
-        Descripción completa extraída del CV...
-      </div>
+{% endblock %}
 
-      <div class="modal-actions-bar">
-        <a href="/trajes" class="btn-hero-primary" id="modal-comp-link" style="padding: 0.5rem 1.1rem; font-size: 0.86rem;">
-          <span>✦</span> Ver Trajes en Catálogo
-        </a>
-        <button type="button" class="btn-hero-secondary" id="modal-btn-cerrar" style="padding: 0.5rem 1.1rem; font-size: 0.86rem;">
-          Cerrar
-        </button>
-      </div>
+{% block content %}
+
+<!-- ==========================================================================
+     OFICIO — manifiesto con placa fotográfica en parallax (texto del perfil técnico)
+     ========================================================================== -->
+<section class="oficio wrap" id="oficios" aria-label="Aptitudes">
+  <div class="oficio-copy">
+    <span class="eyebrow" data-reveal>Aptitudes</span>
+    <h2 class="oficio-title" data-split>Una arquitectura de plumas, metal y <em>luz</em> que se baila.</h2>
+    <div class="oficio-pillars">
+      <article class="pillar" data-reveal style="--rd:.05s">
+        <span class="pillar-n">01</span>
+        <h3>Confección artesanal</h3>
+        <p>Realizador de vestuario con técnicas variadas, especialidad estilo artesanal.</p>
+      </article>
+      <article class="pillar" data-reveal style="--rd:.15s">
+        <span class="pillar-n">02</span>
+        <h3>Vestuarios premiados</h3>
+        <p>Confeccionista de vestuarios premiados en la Capital Nacional del Carnaval, localidades del interior y de otras provincias del país.</p>
+      </article>
+      <article class="pillar" data-reveal style="--rd:.25s">
+        <span class="pillar-n">03</span>
+        <h3>Visión escénica</h3>
+        <p>Inventivo y visionario en las ideas centrales sobre temáticas específicas de representación en el ámbito del carnaval.</p>
+      </article>
+    </div>
+    <button type="button" class="btn-ver-ficha" id="btn-explorar-tecnicas" aria-haspopup="dialog" aria-controls="modal-aptitudes-taller" data-reveal>Aptitudes <span class="arrow-icon">✦</span></button>
+  </div>
+
+  <div class="oficio-visual" aria-hidden="true">
+    <figure class="oficio-plate" data-reveal="zoom">
+      <img src="{{ asset('assets/img/traje-verde.jpg') }}" alt="" loading="lazy" data-parallax-img="0.12">
+      <span class="oficio-plate-tag">Plumaje · Pedrería · Estructura</span>
+    </figure>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SELECCIÓN DEL TALLER — obras destacadas reales (es_destaque = 1) en riel horizontal.
+     Se oculta automáticamente si no hay ninguna marcada desde el Panel Admin.
+     ========================================================================== -->
+{% if trajes_destacados %}
+<section class="seleccion" id="seleccion" aria-label="Selección del taller">
+  <div class="wrap seleccion-head">
+    <div>
+      <span class="eyebrow" data-reveal>Selección del taller</span>
+      <h2 class="seccion-titulo" data-split>Obras que <em>deslumbran</em></h2>
+    </div>
+    <a href="/destaques" class="btn-hero-secondary" data-reveal data-magnetic>Ver todas las destacadas →</a>
+  </div>
+
+  <div class="rail" data-rail>
+    <div class="rail-track">
+      {% for t in trajes_destacados[:8] %}
+      <a href="{{ url_for('detalle_traje', id=t.id) }}" class="rail-card" data-spot>
+        <div class="rail-media">
+          {% if t.foto_url | es_video %}
+            <video muted loop playsinline preload="metadata" src="{{ t.foto_url | media_url }}"></video>
+          {% else %}
+            <img src="{{ t.foto_url | media_url }}" alt="{{ t.comparsero }} - {{ t.comparsa }}" loading="lazy" draggable="false">
+          {% endif %}
+        </div>
+        <div class="rail-info">
+          <span class="rail-badge">{{ t.comparsa }}</span>
+          <h3>{{ t.comparsero }}</h3>
+        </div>
+        <span class="rail-idx">{{ '%02d'|format(loop.index) }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ==========================================================================
+     TRAYECTORIA EN EL CARNAVAL — slider interactivo de comparsas (IDs usados por main.js)
+     Muestra 3 / 2 / 1 comparsas por vista según el ancho, de más reciente a más antigua.
+     ========================================================================== -->
+<section class="trayectoria-glass-section wrap" id="trayectoria" aria-label="Trayectoria en el Carnaval">
+  <div class="trayectoria-head">
+    <div class="trayectoria-header-bar">
+      <span class="eyebrow" data-reveal>Trayectoria</span>
+      <h2 class="seccion-titulo card-section-title" data-split>Trayectoria en el <em>Carnaval</em></h2>
+      <p class="card-section-sub" data-reveal>Hacé clic en cualquier comparsa para desplegar su ficha técnica y trayectoria completa</p>
+    </div>
+
+    <div class="trayectoria-controls-wrapper" data-reveal>
+      <button type="button" class="btn-trayectoria-control" id="btn-tray-prev" aria-label="Ver comparsa anterior" disabled>◀ Anterior</button>
+      <span class="trayectoria-page-indicator" id="tray-indicator">1 de 10</span>
+      <button type="button" class="btn-trayectoria-control" id="btn-tray-next" aria-label="Ver comparsa siguiente">Siguiente ▶</button>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
-       ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      
-      <!-- Superior: Botones limpios de Contacto Directo -->
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
-        </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
-        </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
-        </a>
+  <div class="trayectoria-slider-wrapper">
+    <div class="trayectoria-slider-container" id="trayectoria-container">
+      {% for item in trayectoria %}
+      <div class="comparsa-btn-card glass-card trayectoria-slide"
+           role="button"
+           tabindex="0"
+           data-spot
+           data-nombre="{{ item.nombre }}"
+           data-ciudad="{{ item.ciudad }}"
+           data-anios="{{ item.anios }}"
+           data-rol="{{ item.rol }}"
+           data-desc="{{ item.descripcion }}"
+           style="{% if loop.index0 < 3 %}display: flex;{% else %}display: none;{% endif %}">
+        <span class="comparsa-card-badge">{{ item.badge }}</span>
+        <h3 class="comparsa-card-title">{{ item.nombre }}</h3>
+        <p class="comparsa-card-role-snippet">{{ item.rol_snippet }}</p>
+        <span class="comparsa-card-action-hint">✦ Ver Ficha Completa →</span>
       </div>
-
-      <!-- Medio: Aviso Legal -->
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
-
-      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
-
+      {% endfor %}
     </div>
-  </footer>
+  </div>
+</section>
 
-</body>
-</html>
+<!-- ==========================================================================
+     LLAMADO A LA COMUNIDAD
+     ========================================================================== -->
+<section class="cta-comunidad wrap" aria-label="Comunidad comparsera">
+  <div class="cta-card">
+    <span class="eyebrow">Archivo vivo del carnaval</span>
+    <h2 data-split>¿Luciste un diseño coordinado o realizado por <span class="hugo-highlight">Hugo</span>?</h2>
+    <p>Celebramos trajes de cualquier año, edición o época coordinados o realizados en el taller de Hugo Fernández. Si desfilaste con una de nuestras creaciones en la calzada, este archivo es tuyo: compartí tus fotografías, bocetos y recuerdos del corsódromo.</p>
+    <a href="/comunidad/subir" class="btn-hero-primary" data-magnetic><span>✦</span> COMPARTIR MI TRAJE</a>
+  </div>
+</section>
+
+
+{% endblock %}
+
+{% block after_main %}
+<!-- ==========================================================================
+     MODAL: PERFIL TÉCNICO (APTITUDES COMPLETAS DEL CV)
+     ========================================================================== -->
+<div class="modal-glass-backdrop" id="modal-perfil-tecnico" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-glass-content glass-card modal-perfil-dialog">
+    <button type="button" class="modal-close-btn" id="modal-perfil-close" aria-label="Cerrar perfil técnico">✕</button>
+
+    <div class="modal-perfil-header">
+      <span class="comparsa-card-badge">Ficha Técnica Profesional</span>
+      <h2 class="modal-perfil-title">Perfil Técnico &amp; Aptitudes</h2>
+      <p class="modal-perfil-sub">Hugo Fernández • Artesano Diplomado en Carnaval</p>
+    </div>
+
+    <div class="modal-aptitudes-body">
+      <ul class="modal-aptitudes-list">
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Capacidad integral para jurar sobre la realización de vestuario referente al ámbito del carnaval.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Facilidad para visibilizar técnicas específicas en las confecciones.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Experiencia comprobable de desempeño en la guía de la confección de vestuario de carnaval.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Capacitación constante referente al tema.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Posibilidad de fácil acceso a nuevos materiales y nuevas técnicas de trabajo.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Realizador de vestuario con técnicas variadas, especialidad estilo artesanal.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Confeccionista de vestuarios premiados en la Capital Nacional del Carnaval, localidades del interior y de otras provincias del país.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Constante aporte de ideas en lo que respecta a las representaciones de vestuarios de fantasía y puesta en escena en las instituciones intervenidas.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Amplio conocimiento de la realización y bajada a la realidad de diseños de vestuario de carnaval, insistencia en la elección correcta de materiales colores, formas y técnicas especificas.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Confeccionista y realizador de vestuario de espectáculos.</span></li>
+        <li class="modal-aptitud-item"><span class="modal-aptitud-bullet">✦</span><span>Inventivo y visionario en lo que respecta ideas centrales sobre temáticas específicas de representación en el ámbito del carnaval.</span></li>
+      </ul>
+    </div>
+
+    <div class="modal-actions-bar">
+      <a href="/trajes" class="btn-hero-primary"><span>✦</span> Ver Galería de Trajes</a>
+      <button type="button" class="btn-hero-secondary" id="modal-perfil-btn-cerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL FLOTANTE (GLASSMORPHISM) PARA TRAYECTORIA
+     ========================================================================== -->
+<div class="modal-glass-backdrop" id="modal-comparsa" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-glass-content glass-card">
+    <button type="button" class="modal-close-btn" id="modal-comparsa-close" aria-label="Cerrar ventana emergente">✕</button>
+
+    <div>
+      <span class="comparsa-card-badge" id="modal-comp-badge">Comparsa</span>
+      <h2 class="card-section-title modal-perfil-title" id="modal-comp-title">Nombre</h2>
+      <div class="modal-comp-ciudad" id="modal-comp-ciudad">Ciudad • Años</div>
+    </div>
+
+    <div class="modal-meta-box" id="modal-comp-rol-box">
+      <strong>Rol:</strong> <span id="modal-comp-rol">Coordinador General</span>
+    </div>
+
+    <div class="modal-desc-body" id="modal-comp-desc">Descripción completa extraída del CV...</div>
+
+    <div class="modal-actions-bar">
+      <a href="/trajes" class="btn-hero-primary" id="modal-comp-link"><span>✦</span> Ver Trajes en Catálogo</a>
+      <button type="button" class="btn-hero-secondary" id="modal-btn-cerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL DE APTITUDES & TÉCNICAS DEL TALLER (DISEÑO CATÁLOGO DE MATERIALES)
+     Tarjetas oscuras con bordes dorados, tipografía de alta costura y detalles técnicos
+     ========================================================================== -->
+<div class="modal-glass-backdrop" id="modal-aptitudes-taller" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-glass-content glass-card modal-aptitudes-dialog">
+    <button type="button" class="modal-close-btn" id="modal-aptitudes-close" aria-label="Cerrar ventana de aptitudes">✕</button>
+
+    <div class="modal-aptitudes-header">
+      <span class="comparsa-card-badge">✦ Taller Hugo Fernández</span>
+      <h2 class="dorado-titulo modal-perfil-title">Aptitudes</h2>
+      <p class="modal-perfil-sub">Confección artesanal, orfebrería de fantasía y dirección técnica de vestuarios de carnaval</p>
+    </div>
+
+    <div class="modal-aptitudes-grid">
+      <!-- Tarjeta 1: Confección Artesanal -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Confección Artesanal</h3>
+          <span class="aptitud-card-tag">Técnica Principal</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Realizador de vestuario con técnicas variadas y especialidad en estilo artesanal. Rigurosidad en terminaciones a mano para soportar la exigencia física y dinamismo de la calzada.
+        </p>
+      </article>
+
+      <!-- Tarjeta 2: Jurado y Criterio Técnico -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Jurado &amp; Evaluación</h3>
+          <span class="aptitud-card-tag">Criterio Técnico</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Capacidad integral para jurar sobre la realización de vestuario en el ámbito del carnaval. Análisis de volumetría, balance de peso, caída de plumas y resistencia estructural.
+        </p>
+      </article>
+
+      <!-- Tarjeta 3: Visibilización de Técnicas -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Visibilización Técnica</h3>
+          <span class="aptitud-card-tag">Especialización</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Facilidad para visibilizar y aplicar técnicas específicas en las confecciones: orfebrería ligera, engarce de cristales checos, calado y armado de espaldares móviles.
+        </p>
+      </article>
+
+      <!-- Tarjeta 4: Guía y Coordinación -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Guía y Coordinación</h3>
+          <span class="aptitud-card-tag">Dirección de Taller</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Experiencia comprobable de desempeño en la guía de la confección de vestuario de carnaval para cuerpos de baile, destaques y solistas de instituciones de primer nivel.
+        </p>
+      </article>
+
+      <!-- Tarjeta 5: Innovación en Materiales -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Innovación en Materiales</h3>
+          <span class="aptitud-card-tag">Materia Prima</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Posibilidad y gestión de fácil acceso a nuevos materiales: cristalería facetada boreal, plumas exóticas importadas y polímeros termoformables de ultra ligereza.
+        </p>
+      </article>
+
+      <!-- Tarjeta 6: Vestuarios Premiados -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Vestuarios Premiados</h3>
+          <span class="aptitud-card-tag">Trayectoria</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Confeccionista de vestuarios galardonados en la Capital Nacional del Carnaval, certámenes del interior provincial y fiestas nacionales, avalados por jurados oficiales.
+        </p>
+      </article>
+
+      <!-- Tarjeta 7: Puesta en Escena -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Puesta en Escena</h3>
+          <span class="aptitud-card-tag">Fantasía Visual</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Constante aporte de ideas en lo que respecta a las representaciones de vestuarios de fantasía y dramaturgia visual en las instituciones de carnaval intervenidas.
+        </p>
+      </article>
+
+      <!-- Tarjeta 8: Bajada de Diseños -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Bajada a la Realidad</h3>
+          <span class="aptitud-card-tag">Ejecución Fiel</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Amplio conocimiento de la realización y bajada a la realidad de bocetos de diseño, con insistencia en la elección correcta de materiales, texturas, formas y técnicas específicas.
+        </p>
+      </article>
+
+      <!-- Tarjeta 9: Vestuarios de Espectáculos -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Vestuario de Espectáculos</h3>
+          <span class="aptitud-card-tag">Versatilidad</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Confeccionista y realizador de vestuario para espectáculos integrales, danzas escénicas, teatro de revista y puestas coreográficas de gran escala.
+        </p>
+      </article>
+
+      <!-- Tarjeta 10: Visión Temática & Vanguardia -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Visión Escénica &amp; Tema</h3>
+          <span class="aptitud-card-tag">Concepto Creativo</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Inventivo y visionario en lo que respecta a ideas centrales sobre temáticas específicas de representación narrativa y estética en el ámbito del carnaval.
+        </p>
+      </article>
+    </div>
+
+    <div class="modal-actions-bar">
+      <a href="/trajes" class="btn-hero-primary"><span>✦</span> Ver Galería de Trajes</a>
+      <button type="button" class="btn-hero-secondary" id="modal-aptitudes-btn-cerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

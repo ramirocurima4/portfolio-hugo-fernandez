@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso Administrador | Hugo Fernández Arte Creativo</title>
   <link rel="stylesheet" href="/static/css/estilos.css">
-  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="/static/css/style.css">
   <style>
     :root {
-      --deep-abyss: #05131f;
+      --deep-abyss: #040911;
     }
 
     * {
@@ -18,9 +18,10 @@
     }
 
     body {
-      background-color: var(--deep-abyss);
-      color: #ffffff;
-      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      background-color: #060916 !important;
+      background: #060916 !important;
+      color: #eef0ff !important;
+      font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -49,8 +50,9 @@
     }
 
     .login-container {
-      width: 100%;
+      width: 90%;
       max-width: 400px;
+      margin: auto;
       position: relative;
       z-index: 1;
     }
@@ -61,7 +63,7 @@
       -webkit-backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      padding: 2.5rem 2rem;
+      padding: 2rem 1.5rem;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
@@ -121,12 +123,13 @@
 
     .login-input {
       width: 100%;
+      display: block;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 8px;
-      padding: 0.75rem 1rem;
+      padding: 12px 14px;
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 16px;
       transition: border-color 0.2s ease, background 0.2s ease;
       box-sizing: border-box;
     }
@@ -139,12 +142,13 @@
 
     .btn-login {
       width: 100%;
+      display: block;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #ffffff;
-      padding: 0.75rem 1.2rem;
+      padding: 12px 16px;
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.25s ease;

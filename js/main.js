@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initTrayectoriaInteractiva();
   initModalPerfilTecnico();
+  initModalAptitudesTaller();
   initFiltrosGaleriaTrajes();
   cargarTrajes();
   cargarTrajesFeedMobile();
@@ -1317,6 +1318,52 @@ function initModalPerfilTecnico() {
     }
   });
 }
+
+/**
+ * Modal Interactivo para Aptitudes del Taller & Técnicas de Confección
+ * Abre con el botón "Explorar materiales y técnicas" y exhibe tarjetas oscuras con bordes dorados
+ */
+function initModalAptitudesTaller() {
+  const btnAbrir = document.getElementById('btn-explorar-tecnicas');
+  const modal = document.getElementById('modal-aptitudes-taller');
+  if (!btnAbrir || !modal) return;
+
+  const closeBtn = document.getElementById('modal-aptitudes-close');
+  const cerrarBtn = document.getElementById('modal-aptitudes-btn-cerrar');
+
+  function abrirModal() {
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    btnAbrir.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarModal() {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    btnAbrir.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  btnAbrir.addEventListener('click', (e) => {
+    e.preventDefault();
+    abrirModal();
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', cerrarModal);
+  if (cerrarBtn) cerrarBtn.addEventListener('click', cerrarModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) cerrarModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      cerrarModal();
+    }
+  });
+}
+
 
 
 

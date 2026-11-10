@@ -33,11 +33,13 @@ def init_db():
             comparsero TEXT NOT NULL,
             comparsa TEXT NOT NULL,
             genero TEXT NOT NULL,
-            materiales TEXT NOT NULL,
+            materiales TEXT DEFAULT '',
             foto_url TEXT,
             descripcion TEXT,
             diseno_original TEXT,
             herreria_estructura TEXT,
+            estructura TEXT,
+            confeccion TEXT,
             es_obra_maestra BOOLEAN DEFAULT 0,
             es_destaque BOOLEAN DEFAULT 0,
             enlace_boceto TEXT,
@@ -60,6 +62,19 @@ def init_db():
     if "herreria_estructura" not in columnas_actuales:
         cursor.execute("ALTER TABLE trajes ADD COLUMN herreria_estructura TEXT")
         print("[+] Migración SQLite: Columna 'herreria_estructura' agregada a tabla trajes.")
+
+    if "estructura" not in columnas_actuales:
+        cursor.execute("ALTER TABLE trajes ADD COLUMN estructura TEXT")
+        cursor.execute("UPDATE trajes SET estructura = herreria_estructura WHERE estructura IS NULL AND herreria_estructura IS NOT NULL")
+        print("[+] Migración SQLite: Columna 'estructura' agregada a tabla trajes.")
+
+    if "confeccion" not in columnas_actuales:
+        cursor.execute("ALTER TABLE trajes ADD COLUMN confeccion TEXT")
+        cursor.execute("UPDATE trajes SET confeccion = 'Hugo Fernández' WHERE confeccion IS NULL")
+        print("[+] Migración SQLite: Columna 'confeccion' agregada a tabla trajes.")
+
+    cursor.execute('UPDATE trajes SET estructura = herreria_estructura WHERE (estructura IS NULL OR estructura = "") AND herreria_estructura IS NOT NULL')
+    cursor.execute('UPDATE trajes SET confeccion = "Hugo Fernández" WHERE (confeccion IS NULL OR confeccion = "")')
 
     if "es_obra_maestra" not in columnas_actuales:
         cursor.execute("ALTER TABLE trajes ADD COLUMN es_obra_maestra BOOLEAN DEFAULT 0")
@@ -234,6 +249,21 @@ def init_db():
     """)
     conn.commit()
 
+    # 9. Creación de la tabla obras_atelier (CRUD Atelier Horacio Gómez)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS obras_atelier (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            titulo TEXT NOT NULL,
+            descripcion TEXT,
+            drive_url TEXT,
+            foto_url TEXT,
+            fotos_json TEXT,
+            categoria TEXT DEFAULT 'Atelier Horacio Gómez',
+            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+
     # 5. Verificar si la tabla ya contiene registros de trajes
     cursor.execute("SELECT COUNT(*) FROM trajes")
     count_trajes = cursor.fetchone()[0]
@@ -287,9 +317,9 @@ def seed_traje_unisex(conn):
     cursor.execute("""
         INSERT INTO trajes (
             comparsero, comparsa, genero, materiales, foto_url,
-            descripcion, diseno_original, herreria_estructura, es_obra_maestra, es_destaque, estado
+            descripcion, diseno_original, herreria_estructura, estructura, confeccion, es_obra_maestra, es_destaque, estado
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 'publicado')
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 'publicado')
     """, (
         "Espíritu de la Fantasía Taragüí (Figura Alegórica)",
         "Arandú Beleza",
@@ -299,6 +329,8 @@ def seed_traje_unisex(conn):
         "Fantasía alegórica escénica de diseño sin género concebida para proyectar simetría escultórica, ergonomía universal y máximo destello lumínico en la calzada del Corsódromo Nolo Alías.",
         "Hugo Fernández & Equipo Creativo",
         "Taller de Herrería Hugo Fernández (3.2 kg duraluminio balanceado)",
+        "Taller de Herrería Hugo Fernández (3.2 kg duraluminio balanceado)",
+        "Hugo Fernández",
     ))
     t_id = cursor.lastrowid
     cursor.execute("""
@@ -539,7 +571,7 @@ def seed_entrevistas(conn):
             "articulo",
             "Edición Especial",
             "Diario Época",
-            "Crónica y entrevista a fondo sobre las tres décadas de vanguardia de Hugo Fernández en la confección de trajes icónicos para Arandú Beleza, Copacabana y Samba Total."
+            "Crónica y entrevista a fondo sobre las tres décadas de vanguardia de Hugo Fernández en la confección de trajes icónicos para Arandú Beleza, Comparsa Panambí y Samba Total."
         )
     ]
     cursor.executemany("""
@@ -602,9 +634,9 @@ def seed_data(conn):
 
     for t in trajes_iniciales:
         cursor.execute("""
-            INSERT INTO trajes (comparsero, comparsa, genero, materiales, foto_url, descripcion, diseno_original, herreria_estructura, es_obra_maestra, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicado')
-        """, t)
+            INSERT INTO trajes (comparsero, comparsa, genero, materiales, foto_url, descripcion, diseno_original, herreria_estructura, estructura, confeccion, es_obra_maestra, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Hugo Fernández', ?, 'publicado')
+        """, (t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[7], t[8]))
         t_id = cursor.lastrowid
 
         # Insertar fotos en la tabla fotos_traje
@@ -627,6 +659,83 @@ def seed_data(conn):
 
     conn.commit()
     print(f"[+] Seed Data FASE 13 insertada exitosamente: {len(trajes_iniciales)} trajes y galerías cargadas en {DB_NAME}.")
+
+
+# ==============================================================================
+# FUNCIONES CRUD PARA OBRAS ATELIER HORACIO GÓMEZ
+# ==============================================================================
+
+def obtener_obras_atelier():
+    """Retorna todas las obras del Atelier Horacio Gómez ordenadas de más reciente a más antigua."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM obras_atelier ORDER BY id DESC")
+        return [dict(r) for r in cursor.fetchall()]
+    finally:
+        conn.close()
+
+
+def obtener_obra_atelier_por_id(obra_id):
+    """Retorna una obra específica de obras_atelier por su ID."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM obras_atelier WHERE id = ?", (obra_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def crear_obra_atelier(titulo, descripcion="", drive_url="", foto_url="", fotos_json="", categoria="Atelier Horacio Gómez"):
+    """Inserta una nueva obra en obras_atelier y retorna su ID generado."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO obras_atelier (titulo, descripcion, drive_url, foto_url, fotos_json, categoria)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (titulo, descripcion, drive_url, foto_url, fotos_json, categoria))
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+
+def eliminar_obra_atelier(obra_id):
+    """Elimina una obra del atelier por su ID."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM obras_atelier WHERE id = ?", (obra_id,))
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+
+def actualizar_obra_atelier(obra_id, titulo, descripcion="", drive_url="", foto_url=None, fotos_json=None, categoria="Atelier Horacio Gómez"):
+    """Actualiza una obra existente en obras_atelier."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        if foto_url is not None:
+            cursor.execute("""
+                UPDATE obras_atelier
+                SET titulo = ?, descripcion = ?, drive_url = ?, foto_url = ?, fotos_json = ?, categoria = ?
+                WHERE id = ?
+            """, (titulo, descripcion, drive_url, foto_url, fotos_json, categoria, obra_id))
+        else:
+            cursor.execute("""
+                UPDATE obras_atelier
+                SET titulo = ?, descripcion = ?, drive_url = ?, categoria = ?
+                WHERE id = ?
+            """, (titulo, descripcion, drive_url, categoria, obra_id))
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":

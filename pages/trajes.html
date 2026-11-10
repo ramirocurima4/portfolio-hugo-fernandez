@@ -1,261 +1,134 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Galería de inspiración visual de vestuarios de carnaval coordinados por Hugo Fernández.">
-  <title>Inspiración de Trajes | Hugo Fernández Arte Creativo</title>
-  <link rel="stylesheet" href="/static/css/estilos.css">
-  <link rel="stylesheet" href="../css/estilos.css">
-  <script src="/static/js/main.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set nav_active = 'trajes' %}
 
-  <!-- ==========================================================================
-       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
-      </a>
-    </div>
+{% block title %}Colección de Trajes & Pasarela | Hugo Fernández Arte Creativo{% endblock %}
+{% block description %}Galería de inspiración visual de vestuarios de carnaval coordinados por Hugo Fernández.{% endblock %}
 
-    <div class="header-container">
-      
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+{% block content %}
+<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1240px; width: 100%; margin: 0 auto;">
 
-      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link active">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
-        <span class="brand-name">Hugo Fernández</span>
-        <span class="brand-sub">Arte Creativo</span>
-      </a>
-
-    </div>
+  <!-- Encabezado de la página -->
+  <header class="page-header is-center">
+    <span class="hero-badge" style="margin-bottom: 0.8rem;">Galería Visual de Inspiración</span>
+    <h1 class="dorado-titulo">Colección de Trajes &amp; Pasarela</h1>
+    <div class="section-divider"></div>
+    <p>
+      Un recorrido visual inmersivo por el dinamismo, la majestuosidad del plumaje y el brillo escénico capturado bajo los reflectores del corsódromo.
+    </p>
   </header>
 
-  <main>
-    <div class="container">
-      
-      <!-- Encabezado de la página -->
-      <header class="page-header slide-up">
-        <span class="hero-badge" style="margin-bottom: 0.8rem;">Galería Visual de Inspiración</span>
-        <h1 class="dorado-titulo">Colección de Trajes & Pasarela</h1>
-        <div class="section-divider"></div>
-        <p>
-          Un recorrido visual inmersivo por el dinamismo, la majestuosidad del plumaje y el brillo escénico capturado bajo los reflectores del corsódromo.
-        </p>
-      </header>
-
-      <!-- ==========================================================================
-           FEED VERTICAL INMERSIVO DE TRAJES (SCROLL SNAP MÓVIL) - FASE 13
-           Alimentado por SELECT * FROM trajes ORDER BY id DESC estricto sin filtros.
-           Todo traje insertado aparece de inmediato en el scroll público.
-           ========================================================================== -->
-      <section class="trajes-section-wrapper" id="feed-trajes-todos">
-        <div class="section-category-header slide-up">
-          <h2 class="dorado-titulo">✦ Catálogo Completo de Trajes</h2>
-          <div class="category-line"></div>
-        </div>
-
-        <!-- Filtros Inclusivos de Género y Categoría (Fase 14 UX) -->
-        <div class="trajes-filter-bar-container slide-up" style="margin: 1.5rem 0 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;">
-          <div class="trajes-filter-bar" role="group" aria-label="Filtrar trajes por género" style="display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;">
-            <a href="/trajes?genero=todos" 
-               class="trajes-filter-btn {% if not genero_activo or genero_activo in ['todos', 'all'] %}active{% endif %}" 
-               data-filter="todos" 
-               role="button" 
-               aria-pressed="{% if not genero_activo or genero_activo in ['todos', 'all'] %}true{% else %}false{% endif %}">
-              ✦ Todos
-            </a>
-            <a href="/trajes?genero=Femenino" 
-               class="trajes-filter-btn {% if genero_activo == 'Femenino' %}active{% endif %}" 
-               data-filter="Femenino" 
-               role="button" 
-               aria-pressed="{% if genero_activo == 'Femenino' %}true{% else %}false{% endif %}">
-              👑 Femenino
-            </a>
-            <a href="/trajes?genero=Masculino" 
-               class="trajes-filter-btn {% if genero_activo == 'Masculino' %}active{% endif %}" 
-               data-filter="Masculino" 
-               role="button" 
-               aria-pressed="{% if genero_activo == 'Masculino' %}true{% else %}false{% endif %}">
-              🛡️ Masculino
-            </a>
-            <a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero" 
-               class="trajes-filter-btn {% if genero_activo == 'Unisex / Sin Género' %}active{% endif %}" 
-               data-filter="Unisex / Sin Género" 
-               role="button" 
-               aria-pressed="{% if genero_activo == 'Unisex / Sin Género' %}true{% else %}false{% endif %}">
-              ✨ Unisex / Sin Género
-            </a>
-          </div>
-          <span class="trajes-filter-counter" id="trajes-filter-count" style="font-size: 0.82rem; color: #94a3b8; font-family: 'Julius Sans One', sans-serif;">
-            {{ trajes|length }} {% if trajes|length == 1 %}obra exhibida{% else %}obras exhibidas{% endif %}
-          </span>
-        </div>
-
-        <!-- Indicador visual sutil para experiencia inmersiva móvil (Reels/Tinder) -->
-        <div class="mobile-feed-hint" aria-hidden="true">
-          <span>↕ Deslizá verticalmente para explorar trajes</span>
-        </div>
-
-        <div id="trajes-empty-filter" style="display: none; width: 100%; max-width: 600px; margin: 1.5rem auto; text-align: center; padding: 3rem 1.5rem; color: #E6D5B8; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(230, 213, 184, 0.2); border-radius: 12px;">
-          <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">✦ No se encontraron trajes para esta categoría.</p>
-          <span style="font-size: 0.85rem; color: #94a3b8;">Probá seleccionando "Todos" o subí tu traje desde la comunidad.</span>
-        </div>
-
-        <div class="feed-trajes-mobile immersive-scroll-container" id="feed-principal">
-          {% set lista_trajes = todos_los_trajes if todos_los_trajes else trajes %}
-          {% if lista_trajes %}
-            {% for traje in lista_trajes %}
-            <article class="tarjeta-feed immersive-traje-card reveal visible delay-{{ (loop.index0 % 3) + 1 }}" 
-                     data-id="{{ traje.id }}" 
-                     data-genero="{{ traje.genero }}"
-                     style="{% if genero_activo and genero_activo != 'todos' and not coincide_genero(traje.genero, genero_activo) %}display: none;{% endif %}">
-              <div class="immersive-traje-img-box">
-                {% if traje.foto_url | es_video %}
-                  <video controls width="100%" class="destaque-video-player" style="height: 100%; object-fit: cover;" preload="metadata">
-                    <source src="{{ traje.foto_url | media_url }}" type="video/mp4">
-                  </video>
-                {% elif traje.enlace_boceto %}
-                  <div class="ba-slider-container" data-ba-slider style="height: 100%;">
-                    <img src="{{ traje.foto_url | media_url }}" alt="Después: {{ traje.comparsero }}" class="ba-img ba-after-img" loading="lazy">
-                    <div class="ba-before-wrapper">
-                      <img src="{{ traje.enlace_boceto | media_url }}" alt="Antes: Boceto {{ traje.comparsero }}" class="ba-img ba-before-img" loading="lazy">
-                    </div>
-                    <span class="ba-badge ba-badge-before">Antes</span>
-                    <span class="ba-badge ba-badge-after">Después</span>
-                    <div class="ba-divider"><div class="ba-handle"><span>↔</span></div></div>
-                    <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
-                  </div>
-                {% else %}
-                  <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
-                       alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy">
-                {% endif %}
-              </div>
-              <div class="immersive-traje-overlay">
-                <div class="immersive-info">
-                  <span class="immersive-badge">
-                    {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_destaque or traje.es_obra_maestra %} • ★ Destaque{% endif %}
-                  </span>
-                  <h3 class="immersive-title">{{ traje.comparsero }}</h3>
-                  <p class="immersive-desc">
-                    {{ traje.descripcion if traje.descripcion else (traje.materiales if traje.materiales else 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.') }}
-                  </p>
-                </div>
-                <div class="immersive-action">
-                  <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-hero-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                    Consultar Ficha Técnica →
-                  </a>
-                </div>
-              </div>
-            </article>
-            {% endfor %}
-          {% else %}
-            <div style="text-align: center; padding: 3rem; color: var(--dorado-light);">
-              <p>No hay trajes registrados en este momento.</p>
-            </div>
-          {% endif %}
-        </div>
-      </section>
-
-    </div>
-  </main>
-
   <!-- ==========================================================================
-       5. FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
+       FEED VERTICAL INMERSIVO DE TRAJES (SCROLL SNAP MÓVIL) - FASE 13
+       Alimentado por SELECT * FROM trajes ORDER BY id DESC estricto sin filtros.
+       Todo traje insertado aparece de inmediato en el scroll público.
        ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      
-      <!-- Superior: Botones limpios de Contacto Directo -->
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
+  <section class="trajes-section-wrapper" id="feed-trajes-todos">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <h2 class="dorado-titulo" style="font-size: 1.8rem;">✦ Catálogo Completo de Trajes</h2>
+      <div class="section-divider" style="width: 50px; margin: 0.8rem auto;"></div>
+    </div>
+
+    <!-- Filtros Inclusivos de Género y Categoría (Fase 14 UX) -->
+    <div class="trajes-filter-bar-container" style="margin: 1.5rem 0 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;">
+      <div class="trajes-filter-bar" role="group" aria-label="Filtrar trajes por género" style="display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;">
+        <a href="/trajes?genero=todos" 
+           class="trajes-filter-btn {% if not genero_activo or genero_activo in ['todos', 'all'] %}active{% endif %}" 
+           data-filter="todos" 
+           role="button" 
+           aria-pressed="{% if not genero_activo or genero_activo in ['todos', 'all'] %}true{% else %}false{% endif %}">
+          ✦ Todos
         </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
+        <a href="/trajes?genero=Femenino" 
+           class="trajes-filter-btn {% if genero_activo == 'Femenino' %}active{% endif %}" 
+           data-filter="Femenino" 
+           role="button" 
+           aria-pressed="{% if genero_activo == 'Femenino' %}true{% else %}false{% endif %}">
+          👑 Femenino
         </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
+        <a href="/trajes?genero=Masculino" 
+           class="trajes-filter-btn {% if genero_activo == 'Masculino' %}active{% endif %}" 
+           data-filter="Masculino" 
+           role="button" 
+           aria-pressed="{% if genero_activo == 'Masculino' %}true{% else %}false{% endif %}">
+          🛡️ Masculino
+        </a>
+        <a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero" 
+           class="trajes-filter-btn {% if genero_activo == 'Unisex / Sin Género' %}active{% endif %}" 
+           data-filter="Unisex / Sin Género" 
+           role="button" 
+           aria-pressed="{% if genero_activo == 'Unisex / Sin Género' %}true{% else %}false{% endif %}">
+          ✨ Unisex / Sin Género
         </a>
       </div>
-
-      <!-- Medio: Aviso Legal -->
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
-
-      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
-
+      <span class="trajes-filter-counter" id="trajes-filter-count" style="font-size: 0.82rem; color: var(--niebla, #aab2d4); font-family: var(--f-label, 'Syne', sans-serif);">
+        {{ trajes|length }} {% if trajes|length == 1 %}obra exhibida{% else %}obras exhibidas{% endif %}
+      </span>
     </div>
-  </footer>
 
-</body>
-</html>
+    <!-- Indicador visual sutil para experiencia inmersiva móvil -->
+    <div class="mobile-feed-hint" aria-hidden="true" style="text-align: center; color: var(--niebla, #aab2d4); font-size: 0.82rem; margin-bottom: 1rem;">
+      <span>↕ Deslizá verticalmente para explorar trajes</span>
+    </div>
+
+    <div id="trajes-empty-filter" style="display: none; width: 100%; max-width: 600px; margin: 1.5rem auto; text-align: center; padding: 3rem 1.5rem; color: var(--champan-hi, #f7ecd0); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(230, 213, 184, 0.2); border-radius: 12px;">
+      <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">✦ No se encontraron trajes para esta categoría.</p>
+      <span style="font-size: 0.85rem; color: var(--niebla, #aab2d4);">Probá seleccionando "Todos" o subí tu traje desde la comunidad.</span>
+    </div>
+
+    <div class="feed-trajes-mobile immersive-scroll-container" id="feed-principal">
+      {% set lista_trajes = todos_los_trajes if todos_los_trajes else trajes %}
+      {% if lista_trajes %}
+        {% for traje in lista_trajes %}
+        <article class="tarjeta-feed immersive-traje-card glass-card" 
+                 data-id="{{ traje.id }}" 
+                 data-genero="{{ traje.genero }}"
+                 style="{% if genero_activo and genero_activo != 'todos' and not coincide_genero(traje.genero, genero_activo) %}display: none;{% endif %}">
+          <div class="immersive-traje-img-box">
+            {% if traje.foto_url | es_video %}
+              <video controls width="100%" class="destaque-video-player" style="height: 100%; object-fit: cover;" preload="metadata">
+                <source src="{{ traje.foto_url | media_url }}" type="video/mp4">
+              </video>
+            {% elif traje.enlace_boceto %}
+              <div class="ba-slider-container" data-ba-slider style="height: 100%;">
+                <img src="{{ traje.foto_url | media_url }}" alt="Después: {{ traje.comparsero }}" class="ba-img ba-after-img" loading="lazy">
+                <div class="ba-before-wrapper">
+                  <img src="{{ traje.enlace_boceto | media_url }}" alt="Antes: Boceto {{ traje.comparsero }}" class="ba-img ba-before-img" loading="lazy">
+                </div>
+                <span class="ba-badge ba-badge-before">Antes</span>
+                <span class="ba-badge ba-badge-after">Después</span>
+                <div class="ba-divider"><div class="ba-handle"><span>↔</span></div></div>
+                <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
+              </div>
+            {% else %}
+              <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+                   alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy">
+            {% endif %}
+          </div>
+          <div class="immersive-traje-overlay">
+            <div class="immersive-info">
+              <span class="immersive-badge">
+                {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_destaque or traje.es_obra_maestra %} • ★ Destaque{% endif %}
+              </span>
+              <h3 class="immersive-title">{{ traje.comparsero }}</h3>
+              <p class="immersive-desc">
+                {{ traje.descripcion if traje.descripcion else (traje.materiales if traje.materiales else 'Vestuario oficial de carnaval realizado y coordinado integralmente en el taller de Hugo Fernández.') }}
+              </p>
+            </div>
+            <div class="immersive-action" style="margin-top: 1rem;">
+              <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-hero-primary" style="padding: 0.55rem 1.1rem; font-size: 0.8rem;">
+                Consultar Ficha Técnica →
+              </a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      {% else %}
+        <div style="text-align: center; padding: 3rem; color: var(--champan-hi, #f7ecd0); grid-column: 1 / -1;">
+          <p>No hay trajes registrados en este momento.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

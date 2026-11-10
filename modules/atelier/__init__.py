@@ -5,6 +5,7 @@ Expone su propio Blueprint con rutas, controladores, assets y plantillas indepen
 """
 import os
 from flask import Blueprint, render_template
+from database import obtener_obras_atelier
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -24,15 +25,21 @@ atelier_bp = Blueprint(
 def index():
     """
     Vista principal del Atelier Horacio Gómez.
-    Renderiza la plantilla modular dedicada templates/atelier/index.html si existe,
-    o presenta la vista preliminar de alta costura.
+    Renderiza la plantilla modular dedicada templates/atelier/index.html con las obras cargadas.
     """
+    obras = []
+    try:
+        obras = obtener_obras_atelier()
+    except Exception as e:
+        print(f"[!] Error consultando obras de atelier: {e}")
+
     plantilla_atelier = os.path.join(BASE_DIR, "templates", "atelier", "index.html")
     if os.path.isfile(plantilla_atelier):
-        return render_template("atelier/index.html")
+        return render_template("atelier/index.html", obras=obras)
     
     return render_template(
         "destaques.html",
         titulo_seccion="Atelier Horacio Gómez",
-        subtitulo_seccion="Sección en fase de curaduría artística y catalogación de alta costura."
+        subtitulo_seccion="Sección en fase de curaduría artística y catalogación de alta costura.",
+        obras=obras
     )

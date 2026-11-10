@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ traje.comparsero }} - {{ traje.comparsa }} | Hugo Fernández Arte Creativo</title>
-  <meta name="description" content="{{ traje.descripcion if traje.descripcion else 'Descubre los detalles y materiales de esta obra del carnaval.' }}">
+{% extends "base.html" %}
+{% set nav_active = 'trajes' %}
 
-  <!-- ==========================================================================
-       FASE 8 & FASE 14 (MÓDULO 3 - MEJORA AUTÓNOMA UX #3):
-       METADATOS AUTOMÁTICOS OPEN GRAPH (OG) Y TWITTER CARDS OPTIMIZADOS PARA WHATSAPP
-       Decisión técnica autónoma: Al compartir el enlace /traje/<id> por WhatsApp,
-       Telegram o redes sociales, los crawlers leen og:title, og:description, og:image,
-       og:type y og:site_name renderizados desde el servidor (SSR), desplegando una
-       tarjeta visual enriquecida con la fotografía principal y el título del vestuario.
-       ========================================================================== -->
+{% block title %}{{ traje.comparsero }} - {{ traje.comparsa }} | Hugo Fernández Arte Creativo{% endblock %}
+{% block description %}{{ traje.descripcion if traje.descripcion else 'Descubre los detalles y materiales de esta obra del carnaval.' }}{% endblock %}
+
+{% block meta_extra %}
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Hugo Fernández Arte Creativo • Carnaval Correntino">
   <meta property="og:locale" content="es_AR">
@@ -31,411 +22,246 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ traje.comparsero }} - {{ traje.comparsa }} | Hugo Fernández">
   <meta name="twitter:description" content="{{ traje.descripcion if traje.descripcion else 'Obra de alta costura del Carnaval de Corrientes.' }}">
+{% endblock %}
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
-  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='js/detalle.js') }}" defer></script>
-</head>
-<body>
+{% block content %}
+<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1240px; width: 100%; margin: 0 auto;">
 
-  <!-- ==========================================================================
-       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
+  <!-- Barra de navegación contextual y botón para compartir por WhatsApp (FASE 14) -->
+  <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+    <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center;">
+      <a href="/comparsa/{{ traje.comparsa }}" class="btn-back-nav">
+        🎭 Ver más de {{ traje.comparsa }}
+      </a>
+      <a href="/trajes" class="btn-back-nav" style="opacity: 0.85;">
+        ↕ Ir al Feed de Trajes
       </a>
     </div>
+    <a href="https://api.whatsapp.com/send?text={{ ('¡Mirá este traje del Carnaval Correntino! ' ~ traje.comparsero ~ ' (' ~ traje.comparsa ~ ') - ' ~ request.url)|urlencode }}"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn-whatsapp-share"
+       title="Compartir ficha con vista previa Open Graph por WhatsApp">
+      <span>📲</span> Compartir en WhatsApp
+    </a>
+  </div>
 
-    <div class="header-container">
+  <!-- Estructura de la Ficha Individual del Comparsero -->
+  <article class="traje-showcase" data-traje-id="{{ traje.id }}">
+
+    <!-- 1. Galería Dinámica: 1 Foto Grande + Miniaturas -->
+    <div class="traje-gallery" style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr); gap: 1.5rem; margin-bottom: 2.5rem;">
       
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link active">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
-        <span class="brand-name">Hugo Fernández</span>
-        <span class="brand-sub">Arte Creativo</span>
-      </a>
-
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-
-      <!-- Barra de navegación contextual y botón para compartir por WhatsApp (FASE 14) -->
-      <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-        <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center;">
-          <a href="/comparsa/{{ traje.comparsa }}" class="btn-back-nav slide-up">
-            🎭 Ver más de {{ traje.comparsa }}
-          </a>
-          <a href="/trajes" class="btn-back-nav slide-up" style="opacity: 0.85;">
-            ↕ Ir al Feed de Trajes
-          </a>
-
-        </div>
-        <a href="https://api.whatsapp.com/send?text={{ ('¡Mirá este traje del Carnaval Correntino! ' ~ traje.comparsero ~ ' (' ~ traje.comparsa ~ ') - ' ~ request.url)|urlencode }}"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="btn-whatsapp-share slide-up"
-           title="Compartir ficha con vista previa Open Graph por WhatsApp">
-          <span>📲</span> Compartir en WhatsApp
-        </a>
+      <!-- Foto Principal Grande -->
+      <div class="gallery-main glass-card" style="overflow: hidden; position: relative; aspect-ratio: 3/4;">
+        <span class="gallery-badge" id="gallery-badge-txt" style="position: absolute; top: 14px; left: 14px; z-index: 2; font: 600 .7rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); background: rgba(4, 9, 17, 0.8); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(94, 242, 224, 0.3);">
+          {{ fotos[0].titulo if (fotos and fotos[0].titulo) else 'Vista Principal' }}
+        </span>
+        <img id="detalle-imagen" 
+             class="detalle-imagen"
+             src="{{ traje.foto_url | media_url }}" 
+             alt="{{ traje.comparsero }}" 
+             loading="lazy"
+             style="width: 100%; height: 100%; object-fit: cover;">
       </div>
 
-      <!-- ==========================================================================
-           ESTRUCTURA DE LA FICHA INDIVIDUAL DEL COMPARSERO (FASE 13)
-           ========================================================================== -->
-      <article class="traje-showcase reveal" data-traje-id="{{ traje.id }}">
-
-        <!-- 1. Galería Dinámica: 1 Foto Grande + Miniaturas de fotos_traje -->
-        <div class="traje-gallery">
-          
-          <!-- Foto Principal Grande -->
-          <div class="gallery-main">
-            <span class="gallery-badge" id="gallery-badge-txt">
-              {{ fotos[0].titulo if (fotos and fotos[0].titulo) else 'Vista Principal' }}
-            </span>
-            <img id="detalle-imagen" 
-                 class="detalle-imagen"
-                 src="{{ traje.foto_url | media_url }}" 
-                 alt="{{ traje.comparsero }}" 
-                 loading="lazy">
+      <!-- Miniaturas en Grilla al lado -->
+      <div class="gallery-thumbs" id="gallery-thumbs-container" style="display: flex; flex-direction: column; gap: 0.8rem; overflow-y: auto; max-height: 550px;">
+        {% if fotos and fotos|length > 0 %}
+          {% for f in fotos %}
+            <div class="gallery-thumb-item glass-card" style="cursor: pointer; overflow: hidden; border-radius: 10px; aspect-ratio: 4/3;" title="Click para ampliar: {{ f.titulo or 'Detalle' }}">
+              <img src="{{ f.ruta_imagen | media_url }}" 
+                   alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+              <span class="thumb-caption" style="display: none;">{{ f.titulo or ('Vista Principal' if f.es_principal else 'Detalle') }}</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="gallery-thumb-item glass-card" style="cursor: pointer; overflow: hidden; border-radius: 10px; aspect-ratio: 4/3;" title="Click para ampliar detalle">
+            <img src="{{ traje.foto_url | media_url }}" 
+                 alt="{{ traje.comparsero }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+            <span class="thumb-caption" style="display: none;">Vista Principal</span>
           </div>
+        {% endif %}
+      </div>
 
-          <!-- Miniaturas en Grilla al lado (Interactivas al hacer click - FASE 13) -->
-          <div class="gallery-thumbs" id="gallery-thumbs-container">
-            {% if fotos and fotos|length > 0 %}
-              {% for f in fotos %}
-                <div class="gallery-thumb-item" title="Click para ampliar: {{ f.titulo or 'Detalle' }}">
-                  <img src="{{ f.ruta_imagen | media_url }}" 
-                       alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy">
-                  <span class="thumb-caption">{{ f.titulo or ('Vista Principal' if f.es_principal else 'Detalle') }}</span>
-                </div>
-              {% endfor %}
+    </div>
+
+    <!-- 2. Contenedor de Detalles (Narrativa + Desglose de Materiales + Bloque de Créditos) -->
+    <div class="traje-details" style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr); gap: 2rem; align-items: start;">
+
+      <!-- Columna Izquierda / Principal -->
+      <div class="traje-content-main">
+
+        <!-- 2.A Narrativa -->
+        <div class="traje-narrative glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+          <h1 class="dorado-titulo traje-title" id="detalle-titulo" style="font-size: clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom: 0.8rem;">
+            {{ traje.comparsero }} - {{ traje.comparsa }}
+          </h1>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+              <span class="traje-rol-tag">{{ traje.genero }} • {{ traje.comparsa }}</span>
+              {% if traje.es_obra_maestra %}
+              <span class="traje-rol-tag" style="background: rgba(230, 213, 184, 0.15); border: 1px solid var(--champagne); color: var(--champan-hi, #f7ecd0);">
+                ★ Obra Maestra Destacada
+              </span>
+              {% endif %}
+            </div>
+            <button type="button" id="btn-compartir-traje" class="btn-perfil-tecnico" onclick="compartirTraje()">
+              <span>📲</span> Compartir Traje
+            </button>
+          </div>
+          <div id="share-feedback" class="share-feedback" style="display: none; color: #3ddc97; font-size: 0.88rem; margin-bottom: 1rem;">
+            ✓ ¡Enlace copiado al portapapeles!
+          </div>
+          
+          <div id="traje-desc-paragraphs" style="color: var(--niebla, #aab2d4); font-size: 1rem; line-height: 1.7;">
+            {% if traje.descripcion %}
+              <p>{{ traje.descripcion }}</p>
             {% else %}
-              <div class="gallery-thumb-item" title="Click para ampliar detalle">
-                <img src="{{ traje.foto_url | media_url }}" 
-                     alt="{{ traje.comparsero }}" loading="lazy">
-                <span class="thumb-caption">Vista Principal</span>
-              </div>
+              <p>
+                Vestuario oficial coordinado y realizado para la figura de <strong>{{ traje.comparsero }}</strong> de la comparsa <strong>{{ traje.comparsa }}</strong>.
+              </p>
+              <p>
+                Confeccionado artesanalmente bajo la dirección técnica de Hugo Fernández, integrando herrería de alta absorción de movimiento, distribución ergonómica de cargas y materiales escénicos seleccionados para máxima visibilidad en el corsódromo.
+              </p>
             {% endif %}
           </div>
-
         </div>
 
-        <!-- 2. Contenedor de Detalles (Narrativa + Desglose de Materiales + Bloque de Créditos) -->
-        <div class="traje-details">
+        <!-- 2.B Desglose de Materiales (Condicional si existen materiales registrados) -->
+        {% if traje.materiales and traje.materiales.strip() %}
+        <section class="desglose-materiales glass-card" style="padding: 2rem; margin-bottom: 2rem;" aria-label="Desglose técnico de materiales">
+          <h2 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.4rem; color: var(--champan-hi, #f7ecd0); margin-bottom: 1.2rem;">
+            <span style="color: var(--rio, #5ef2e0);">✦</span> Materiales Utilizados
+          </h2>
 
-          <!-- Columna Izquierda / Principal -->
-          <div class="traje-content-main">
-
-            <!-- 2.A Narrativa: Título (efecto dorado) y descripción -->
-            <div class="traje-narrative">
-              <h1 class="dorado-titulo traje-title" id="detalle-titulo">{{ traje.comparsero }} - {{ traje.comparsa }}</h1>
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
-                  <span class="traje-rol-tag" id="traje-badge-rol">{{ traje.genero }} • {{ traje.comparsa }}</span>
-                  {% if traje.es_obra_maestra %}
-                  <span class="traje-rol-tag" style="background: linear-gradient(45deg, rgba(191, 149, 63, 0.25), rgba(252, 246, 186, 0.2)); border: 1px solid var(--dorado-solido); color: var(--dorado-brillo);">
-                    ★ Obra Maestra Destacada
-                  </span>
-                  {% endif %}
-                </div>
-                <button type="button" id="btn-compartir-traje" class="btn-compartir" onclick="compartirTraje()">
-                  <span>📲</span> Compartir Traje
-                </button>
-              </div>
-              <div id="share-feedback" class="share-feedback" style="display: none;">
-                ✓ ¡Enlace copiado al portapapeles!
-              </div>
-              
-              <div id="traje-desc-paragraphs">
-                {% if traje.descripcion %}
-                  <p>{{ traje.descripcion }}</p>
-                {% else %}
-                  <p>
-                    Vestuario oficial coordinado y realizado para la figura de <strong>{{ traje.comparsero }}</strong> de la comparsa <strong>{{ traje.comparsa }}</strong>.
-                  </p>
-                  <p>
-                    Confeccionado artesanalmente bajo la dirección técnica de Hugo Fernández, integrando herrería de alta absorción de movimiento, distribución ergonómica de cargas y materiales escénicos seleccionados para máxima visibilidad en el corsódromo.
-                  </p>
-                {% endif %}
-              </div>
-            </div>
-
-            <!-- ==========================================================================
-                 FASE 4: VIDRIERA INTERACTIVA - SLIDER BOCETO VS REALIDAD
-                 ========================================================================== -->
-            <section class="comparativa-boceto reveal" aria-label="Comparativa interactiva de boceto vs realidad">
-              <div class="comparativa-header">
-                <span class="comparativa-badge">Vidriera Interactiva</span>
-                <h2 class="dorado-titulo comparativa-title">Del Papel al Corsódromo: Boceto vs. Realidad</h2>
-                <p class="comparativa-subtitle">
-                  Deslizá el control hacia los lados para comparar la concepción artística original con la realización terminada sobre la calzada.
-                </p>
-              </div>
-
-              <div class="image-comparison-container" id="image-comparison">
-                <div class="comparison-image-box comparison-before">
-                  <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop" 
-                       alt="Boceto artístico de diseño del traje" 
-                       id="comparison-sketch-img" 
-                       loading="lazy">
-                  <span class="comparison-tag tag-boceto">Boceto de Diseño</span>
-                </div>
-
-                <div class="comparison-image-box comparison-after" id="comparison-after-box">
-                  <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
-                       alt="Realización final del traje en el corsódromo" 
-                       id="comparison-real-img" 
-                       loading="lazy">
-                  <span class="comparison-tag tag-realidad">Realidad Terminada</span>
-                </div>
-
-                <div class="comparison-divider" id="comparison-divider">
-                  <div class="slider-handle" aria-hidden="true">
-                    <span class="handle-arrow">◀</span>
-                    <span class="handle-line">|</span>
-                    <span class="handle-arrow">▶</span>
-                  </div>
-                </div>
-
-                <input type="range" 
-                       min="0" 
-                       max="100" 
-                       value="50" 
-                       class="comparison-range-slider" 
-                       id="comparison-slider" 
-                       aria-label="Control deslizante para comparar boceto y realidad">
-              </div>
-            </section>
-
-            <!-- 2.C Desglose de Materiales: Etiquetas Horizontales Minimalistas (Píldoras/Tags) -->
-            <section class="desglose-materiales" aria-label="Desglose técnico de materiales">
-              <h2 class="materiales-subtitle">
-                <span class="icono-guia">✦</span> Materiales Utilizados
-              </h2>
-
-              <div class="materiales-pills-container" id="detalle-materiales">
-                {% if materiales_lista %}
-                  {% for material in materiales_lista %}
-                  <span class="material-pill">
-                    <span class="tag-bullet">✦</span>
-                    <span class="tag-name">{{ material }}</span>
-                  </span>
-                  {% endfor %}
-                {% else %}
-                  <span class="material-pill">
-                    <span class="tag-bullet">✦</span>
-                    <span class="tag-name">{{ traje.materiales }}</span>
-                  </span>
-                {% endif %}
-              </div>
-            </section>
-
+          <div class="materiales-pills-container" id="detalle-materiales" style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            {% if materiales_lista %}
+              {% for material in materiales_lista %}
+              <span class="material-pill">
+                <span class="tag-bullet">✦</span>
+                <span class="tag-name">{{ material }}</span>
+              </span>
+              {% endfor %}
+            {% else %}
+              <span class="material-pill">
+                <span class="tag-bullet">✦</span>
+                <span class="tag-name">{{ traje.materiales }}</span>
+              </span>
+            {% endif %}
           </div>
+        </section>
+        {% endif %}
 
-          <!-- 2.B Bloque de Créditos: Recuadro lateral elegante y discreto -->
-          <aside class="traje-creditos" aria-label="Créditos técnicos del traje">
-            <div class="creditos-header">
-              <span class="creditos-badge">Ficha Técnica</span>
-              <h3 class="creditos-title">Créditos de Producción</h3>
-            </div>
-
-            <ul class="creditos-list">
-              <li class="credito-item">
-                <span class="credito-cargo">Diseño Original</span>
-                <span class="credito-nombre" id="credito-diseno">{{ traje.diseno_original if traje.diseno_original else 'Hugo Fernández & Equipo de Arte' }}</span>
-              </li>
-              <li class="credito-item">
-                <span class="credito-cargo">Herrería y Estructura</span>
-                <span class="credito-nombre" id="credito-herreria">{{ traje.herreria_estructura if traje.herreria_estructura else 'Taller de Herrería Escénica (Duraluminio)' }}</span>
-              </li>
-              <li class="credito-item credito-destacado">
-                <span class="credito-cargo">Coordinación y Realización General</span>
-                <span class="credito-nombre" id="credito-realizacion">Hugo Fernández</span>
-              </li>
-            </ul>
-
-            <div class="creditos-meta">
-              <div class="meta-row">
-                <span class="meta-sub">Comparsa:</span>
-                <span class="meta-val" id="meta-comparsa">{{ traje.comparsa }}</span>
-              </div>
-              <div class="meta-row">
-                <span class="meta-sub">Categoría:</span>
-                <span class="meta-val" id="meta-ano">{{ '★ Obra Maestra' if traje.es_obra_maestra else 'Catálogo Oficial' }}</span>
-              </div>
-              <div class="meta-row">
-                <span class="meta-sub">Rol Escénico:</span>
-                <span class="meta-val" id="meta-rol">{{ traje.genero }} ({{ traje.comparsa }})</span>
-              </div>
-            </div>
-          </aside>
-
-        </div>
-
-      </article>
-
-      <!-- ==========================================================================
-           FASE 7: SECCIÓN DE COMENTARIOS DE LA COMUNIDAD COMPARSERA
-           ========================================================================== -->
-      <section class="comentarios-section reveal" id="seccion-comentarios" aria-label="Comentarios y opiniones del traje">
-        <div class="comentarios-header">
-          <span class="hero-badge" style="margin-bottom: 0.5rem;">Comunidad & Reseñas</span>
-          <h2 class="dorado-titulo">Comentarios del Traje</h2>
-          <div class="section-divider"></div>
-          <p style="color: var(--texto-gris-medio); font-size: 0.95rem;">
-            Dejá tus impresiones técnicas, recuerdos del desfile o consultas sobre la realización de este vestuario.
-          </p>
-        </div>
-
-        <div class="comentario-form-card">
-          <h3 class="form-title" style="color: #ffffff; font-size: 1.15rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <span>💬</span> Dejar un comentario
-          </h3>
-          <form id="form-comentario" class="form-comentario">
-            <div class="form-group" style="margin-bottom: 1.2rem;">
-              <label for="comentario-usuario" style="display: block; color: var(--dorado-brillo); font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem;">
-                Nombre o Usuario
-              </label>
-              <input type="text" 
-                     id="comentario-usuario" 
-                     name="usuario" 
-                     placeholder="Tu nombre o figura comparsera (ej: Mariana C., Pasista)..." 
-                     required 
-                     class="input-comentario">
-            </div>
-
-            <div class="form-group" style="margin-bottom: 1.2rem;">
-              <label for="comentario-texto" style="display: block; color: var(--dorado-brillo); font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem;">
-                Comentario
-              </label>
-              <textarea id="comentario-texto" 
-                        name="texto" 
-                        rows="4" 
-                        placeholder="Escribí tu mensaje o apreciación sobre la realización de este traje..." 
-                        required 
-                        class="textarea-comentario"></textarea>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-              <span id="comentario-status" style="font-size: 0.88rem; color: var(--dorado-solido);"></span>
-              <button type="submit" id="btn-enviar-comentario" class="btn-dorado" style="cursor: pointer; padding: 0.75rem 1.8rem; font-size: 0.95rem;">
-                Enviar Comentario →
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div class="comentarios-lista-wrapper" style="margin-top: 2.5rem;">
-          <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <span>✨</span> Opiniones registradas (<span id="comentarios-contador">0</span>)
-          </h3>
-          <div id="comentarios-lista" class="comentarios-lista">
-            <!-- Cargado dinámicamente con JavaScript -->
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ==========================================================================
-       5. FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
-       ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      
-      <!-- Superior: Botones limpios de Contacto Directo -->
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
-        </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
-        </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
-        </a>
       </div>
 
-      <!-- Medio: Aviso Legal -->
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
+      <!-- 2.C Bloque de Créditos -->
+      <aside class="traje-creditos glass-card" style="padding: 2rem;" aria-label="Créditos técnicos del traje">
+        <div class="creditos-header" style="margin-bottom: 1.4rem;">
+          <span class="hero-badge" style="margin-bottom: 0.5rem;">Ficha Técnica</span>
+          <h3 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.35rem; color: var(--champan-hi, #f7ecd0); margin-top: 0.4rem;">
+            Créditos del Traje
+          </h3>
+        </div>
 
-      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
+        <ul class="creditos-list" style="display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 1.8rem; padding: 0; list-style: none;">
+          <li style="border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); padding-bottom: 0.75rem;">
+            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); margin-bottom: 0.3rem;">Diseño Original</span>
+            <span style="color: var(--perla, #eef0ff); font-size: 0.95rem;">{{ traje.diseno_original if traje.diseno_original else 'Hugo Fernández & Equipo de Arte' }}</span>
+          </li>
+          <li style="border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); padding-bottom: 0.75rem;">
+            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 0.3rem;">Confección</span>
+            <span style="color: var(--perla, #eef0ff); font-size: 0.95rem;">{{ traje.confeccion if traje.confeccion else 'Hugo Fernández' }}</span>
+          </li>
+          <li style="border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); padding-bottom: 0.75rem;">
+            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); margin-bottom: 0.3rem;">Estructura</span>
+            <span style="color: var(--perla, #eef0ff); font-size: 0.95rem;">{{ traje.estructura if traje.estructura else (traje.herreria_estructura if traje.herreria_estructura else 'Taller de Herrería Escénica (Duraluminio)') }}</span>
+          </li>
+          <li style="padding-bottom: 0.4rem;">
+            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--champan, #ead9b6); margin-bottom: 0.3rem;">Coordinación y Realización General</span>
+            <span style="color: var(--champan-hi, #f7ecd0); font-size: 1.05rem; font-weight: 600;">Hugo Fernández</span>
+          </li>
+        </ul>
+
+        <div style="background: rgba(4, 9, 17, 0.5); padding: 1rem; border-radius: 12px; border: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--niebla, #aab2d4);">Comparsa:</span>
+            <span style="color: var(--perla, #eef0ff); font-weight: 500;">{{ traje.comparsa }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--niebla, #aab2d4);">Categoría:</span>
+            <span style="color: var(--champan-hi, #f7ecd0);">{{ '★ Obra Maestra' if traje.es_obra_maestra else 'Catálogo Oficial' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--niebla, #aab2d4);">Rol Escénico:</span>
+            <span style="color: var(--perla, #eef0ff);">{{ traje.genero }}</span>
+          </div>
+        </div>
+      </aside>
 
     </div>
-  </footer>
 
-</body>
-</html>
+  </article>
+
+  <!-- Sección de Comentarios de la Comunidad -->
+  <section class="comentarios-section glass-card" id="seccion-comentarios" style="margin-top: 3rem; padding: clamp(1.8rem, 4vw, 2.8rem);" aria-label="Comentarios y opiniones del traje">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <span class="hero-badge" style="margin-bottom: 0.5rem;">Comunidad &amp; Reseñas</span>
+      <h2 class="dorado-titulo" style="font-size: 1.8rem;">Comentarios del Traje</h2>
+      <div class="section-divider" style="width: 50px; margin: 0.8rem auto;"></div>
+      <p style="color: var(--niebla, #aab2d4); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+        Dejá tus impresiones técnicas, recuerdos del desfile o consultas sobre la realización de este vestuario.
+      </p>
+    </div>
+
+    <div class="comentario-form-card" style="max-width: 720px; margin: 0 auto 2.5rem;">
+      <form id="form-comentario" class="form-comentario">
+        <div style="margin-bottom: 1.2rem;">
+          <label for="comentario-usuario" style="display: block; color: var(--champan, #ead9b6); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em;">
+            Nombre o Usuario
+          </label>
+          <input type="text" 
+                 id="comentario-usuario" 
+                 name="usuario" 
+                 placeholder="Tu nombre o figura comparsera (ej: Mariana C., Pasista)..." 
+                 required 
+                 class="input-comentario">
+        </div>
+
+        <div style="margin-bottom: 1.2rem;">
+          <label for="comentario-texto" style="display: block; color: var(--champan, #ead9b6); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em;">
+            Comentario
+          </label>
+          <textarea id="comentario-texto" 
+                    name="texto" 
+                    rows="4" 
+                    placeholder="Escribí tu mensaje o apreciación sobre la realización de este traje..." 
+                    required 
+                    class="textarea-comentario"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <span id="comentario-status" style="font-size: 0.88rem; color: var(--champan, #ead9b6);"></span>
+          <button type="submit" id="btn-enviar-comentario" class="btn-dorado" style="cursor: pointer; padding: 0.75rem 1.8rem;">
+            Enviar Comentario →
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="comentarios-lista-wrapper" style="max-width: 720px; margin: 0 auto;">
+      <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>✨</span> Opiniones registradas (<span id="comentarios-contador">0</span>)
+      </h3>
+      <div id="comentarios-lista" class="comentarios-lista">
+        <!-- Cargado dinámicamente con JavaScript -->
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/detalle.js') }}" defer></script>
+{% endblock %}

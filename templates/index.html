@@ -25,13 +25,13 @@
         <h3 class="hero-h3-julius">Profesor de Historia (IFD N°1)</h3>
       </div>
 
-      <!-- Perfil técnico (abre modal), obras destacadas y galería -->
+      <!-- Perfil técnico (abre modal), obras destacadas y galería (Botones estáticos con hover tradicional) -->
       <div class="hero-actions hero-action-buttons" data-reveal style="--rd:.65s">
-        <button type="button" class="btn-perfil-tecnico" id="btn-perfil-tecnico" aria-haspopup="dialog" data-magnetic>
+        <button type="button" class="btn-perfil-tecnico" id="btn-perfil-tecnico" aria-haspopup="dialog">
           <span>✦</span> Conocer Perfil Técnico
         </button>
-        <a href="/destaques" class="btn-perfil-tecnico" data-magnetic><span>✦</span> Ver Obras Destacadas</a>
-        <a href="/trajes" class="btn-hero-primary" data-magnetic><span>✦</span> Ver Galería de Trajes</a>
+        <a href="/destaques" class="btn-perfil-tecnico"><span>✦</span> Ver Obras Destacadas</a>
+        <a href="/trajes" class="btn-hero-primary"><span>✦</span> Ver Galería de Trajes</a>
       </div>
     </div>
 
@@ -81,9 +81,9 @@
 <!-- ==========================================================================
      OFICIO — manifiesto con placa fotográfica en parallax (texto del perfil técnico)
      ========================================================================== -->
-<section class="oficio wrap" id="oficios" aria-label="El oficio">
+<section class="oficio wrap" id="oficios" aria-label="Aptitudes">
   <div class="oficio-copy">
-    <span class="eyebrow" data-reveal>El oficio</span>
+    <span class="eyebrow" data-reveal>Aptitudes</span>
     <h2 class="oficio-title" data-split>Una arquitectura de plumas, metal y <em>luz</em> que se baila.</h2>
     <div class="oficio-pillars">
       <article class="pillar" data-reveal style="--rd:.05s">
@@ -102,7 +102,7 @@
         <p>Inventivo y visionario en las ideas centrales sobre temáticas específicas de representación en el ámbito del carnaval.</p>
       </article>
     </div>
-    <a href="/materiales" class="btn-ver-ficha" data-reveal>Explorar materiales y técnicas <span class="arrow-icon">→</span></a>
+    <button type="button" class="btn-ver-ficha" id="btn-explorar-tecnicas" aria-haspopup="dialog" aria-controls="modal-aptitudes-taller" data-reveal>Aptitudes <span class="arrow-icon">✦</span></button>
   </div>
 
   <div class="oficio-visual" aria-hidden="true">
@@ -196,8 +196,7 @@
      LLAMADO A LA COMUNIDAD
      ========================================================================== -->
 <section class="cta-comunidad wrap" aria-label="Comunidad comparsera">
-  <div class="cta-card" data-spot>
-    <div class="cta-glow" aria-hidden="true"></div>
+  <div class="cta-card">
     <span class="eyebrow">Archivo vivo del carnaval</span>
     <h2 data-split>¿Luciste un diseño coordinado o realizado por <span class="hugo-highlight">Hugo</span>?</h2>
     <p>Celebramos trajes de cualquier año, edición o época coordinados o realizados en el taller de Hugo Fernández. Si desfilaste con una de nuestras creaciones en la calzada, este archivo es tuyo: compartí tus fotografías, bocetos y recuerdos del corsódromo.</p>
@@ -267,6 +266,139 @@
     <div class="modal-actions-bar">
       <a href="/trajes" class="btn-hero-primary" id="modal-comp-link"><span>✦</span> Ver Trajes en Catálogo</a>
       <button type="button" class="btn-hero-secondary" id="modal-btn-cerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL DE APTITUDES & TÉCNICAS DEL TALLER (DISEÑO CATÁLOGO DE MATERIALES)
+     Tarjetas oscuras con bordes dorados, tipografía de alta costura y detalles técnicos
+     ========================================================================== -->
+<div class="modal-glass-backdrop" id="modal-aptitudes-taller" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-glass-content glass-card modal-aptitudes-dialog">
+    <button type="button" class="modal-close-btn" id="modal-aptitudes-close" aria-label="Cerrar ventana de aptitudes">✕</button>
+
+    <div class="modal-aptitudes-header">
+      <span class="comparsa-card-badge">✦ Taller Hugo Fernández</span>
+      <h2 class="dorado-titulo modal-perfil-title">Aptitudes</h2>
+      <p class="modal-perfil-sub">Confección artesanal, orfebrería de fantasía y dirección técnica de vestuarios de carnaval</p>
+    </div>
+
+    <div class="modal-aptitudes-grid">
+      <!-- Tarjeta 1: Confección Artesanal -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Confección Artesanal</h3>
+          <span class="aptitud-card-tag">Técnica Principal</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Realizador de vestuario con técnicas variadas y especialidad en estilo artesanal. Rigurosidad en terminaciones a mano para soportar la exigencia física y dinamismo de la calzada.
+        </p>
+      </article>
+
+      <!-- Tarjeta 2: Jurado y Criterio Técnico -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Jurado &amp; Evaluación</h3>
+          <span class="aptitud-card-tag">Criterio Técnico</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Capacidad integral para jurar sobre la realización de vestuario en el ámbito del carnaval. Análisis de volumetría, balance de peso, caída de plumas y resistencia estructural.
+        </p>
+      </article>
+
+      <!-- Tarjeta 3: Visibilización de Técnicas -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Visibilización Técnica</h3>
+          <span class="aptitud-card-tag">Especialización</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Facilidad para visibilizar y aplicar técnicas específicas en las confecciones: orfebrería ligera, engarce de cristales checos, calado y armado de espaldares móviles.
+        </p>
+      </article>
+
+      <!-- Tarjeta 4: Guía y Coordinación -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Guía y Coordinación</h3>
+          <span class="aptitud-card-tag">Dirección de Taller</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Experiencia comprobable de desempeño en la guía de la confección de vestuario de carnaval para cuerpos de baile, destaques y solistas de instituciones de primer nivel.
+        </p>
+      </article>
+
+      <!-- Tarjeta 5: Innovación en Materiales -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Innovación en Materiales</h3>
+          <span class="aptitud-card-tag">Materia Prima</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Posibilidad y gestión de fácil acceso a nuevos materiales: cristalería facetada boreal, plumas exóticas importadas y polímeros termoformables de ultra ligereza.
+        </p>
+      </article>
+
+      <!-- Tarjeta 6: Vestuarios Premiados -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Vestuarios Premiados</h3>
+          <span class="aptitud-card-tag">Trayectoria</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Confeccionista de vestuarios galardonados en la Capital Nacional del Carnaval, certámenes del interior provincial y fiestas nacionales, avalados por jurados oficiales.
+        </p>
+      </article>
+
+      <!-- Tarjeta 7: Puesta en Escena -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Puesta en Escena</h3>
+          <span class="aptitud-card-tag">Fantasía Visual</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Constante aporte de ideas en lo que respecta a las representaciones de vestuarios de fantasía y dramaturgia visual en las instituciones de carnaval intervenidas.
+        </p>
+      </article>
+
+      <!-- Tarjeta 8: Bajada de Diseños -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Bajada a la Realidad</h3>
+          <span class="aptitud-card-tag">Ejecución Fiel</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Amplio conocimiento de la realización y bajada a la realidad de bocetos de diseño, con insistencia en la elección correcta de materiales, texturas, formas y técnicas específicas.
+        </p>
+      </article>
+
+      <!-- Tarjeta 9: Vestuarios de Espectáculos -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Vestuario de Espectáculos</h3>
+          <span class="aptitud-card-tag">Versatilidad</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Confeccionista y realizador de vestuario para espectáculos integrales, danzas escénicas, teatro de revista y puestas coreográficas de gran escala.
+        </p>
+      </article>
+
+      <!-- Tarjeta 10: Visión Temática & Vanguardia -->
+      <article class="aptitud-material-card">
+        <div class="aptitud-card-header">
+          <h3 class="aptitud-card-nombre">Visión Escénica &amp; Tema</h3>
+          <span class="aptitud-card-tag">Concepto Creativo</span>
+        </div>
+        <p class="aptitud-card-desc">
+          Inventivo y visionario en lo que respecta a ideas centrales sobre temáticas específicas de representación narrativa y estética en el ámbito del carnaval.
+        </p>
+      </article>
+    </div>
+
+    <div class="modal-actions-bar">
+      <a href="/trajes" class="btn-hero-primary"><span>✦</span> Ver Galería de Trajes</a>
+      <button type="button" class="btn-hero-secondary" id="modal-aptitudes-btn-cerrar">Cerrar</button>
     </div>
   </div>
 </div>

@@ -22,7 +22,8 @@ def register_modules(app):
         # Permite habilitar o deshabilitar el acceso al módulo mediante variable de entorno
         atelier_habilitado = os.getenv("ENABLE_ATELIER", "true").lower() in ("true", "1", "yes")
         return {
-            "ATELIER_ENABLED": atelier_habilitado
+            "ATELIER_ENABLED": atelier_habilitado,
+            "ENABLE_ATELIER": atelier_habilitado
         }
 
     # Registro del módulo Atelier Horacio Gómez

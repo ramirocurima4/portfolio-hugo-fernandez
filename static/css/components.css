@@ -133,6 +133,84 @@ label { font: 600 .74rem/1.4 var(--f-label); letter-spacing: .1em; text-transfor
 .modal-aptitud-item:hover { border-color: var(--linea-fuerte); transform: translateX(6px); }
 .modal-aptitud-bullet { color: var(--rio); flex-shrink: 0; }
 
+/* ── Modal de Aptitudes del Taller (Estilo Catálogo de Materiales: tarjetas oscuras con bordes dorados) ── */
+.modal-aptitudes-dialog { width: min(920px, 96vw); max-height: 90vh; }
+.modal-aptitudes-header { display: flex; flex-direction: column; gap: 0.35rem; }
+.modal-aptitudes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.1rem;
+  margin-top: 0.4rem;
+}
+.aptitud-material-card {
+  background: var(--ink-2);
+  border: 1px solid rgba(230, 213, 184, 0.35);
+  border-radius: var(--r-md);
+  padding: 1.3rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+  transition: transform 0.35s var(--ease-spring), border-color 0.3s ease, box-shadow 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+.aptitud-material-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--grad-champan);
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+.aptitud-material-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--champan);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(230, 213, 184, 0.22);
+}
+.aptitud-material-card:hover::before {
+  opacity: 1;
+}
+.aptitud-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.5rem;
+}
+.aptitud-card-nombre {
+  font-family: var(--f-display);
+  color: var(--champan);
+  background: var(--grad-champan);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+.aptitud-card-tag {
+  font: 600 0.6rem/1 var(--f-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rio);
+  background: rgba(94, 242, 224, 0.08);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(94, 242, 224, 0.22);
+  white-space: nowrap;
+}
+.aptitud-card-desc {
+  color: var(--niebla);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 300;
+}
+
 /* ── Comparador Antes / Después (boceto vs traje) ───────────────────────── */
 .ba-slider-container { position: relative; width: 100%; height: 100%; min-height: 260px; overflow: hidden; background: var(--void); touch-action: pan-y; }
 .ba-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }

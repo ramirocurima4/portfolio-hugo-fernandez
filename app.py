@@ -341,89 +341,8 @@ app.jinja_env.globals.update(coincide_genero=coincide_genero_filter)
 
 
 # ==============================================================================
-# METADATOS CULTURALES DEL CARNAVAL CORRENTINO (FASE 14 - MÓDULO 2)
+# CONSULTAS DINÁMICAS DE COMPARSAS Y TRAYECTORIA DESDE SQLITE
 # ==============================================================================
-
-COMPARSAS_OFICIALES = [
-    {
-        "nombre": "Arandú Beleza",
-        "slug": "arandu-beleza",
-        "apodo": "La Verde y Blanca",
-        "categoria": "Comparsa de Primera Categoría • Corrientes Capital",
-        "colores": "Verde Esmeralda, Blanco y Dorado",
-        "historia": (
-            "Fundada en 2005 en la Capital Nacional del Carnaval, Arandú Beleza ('Sabiduría y Belleza' en guaraní-portugués) "
-            "irrumpió en el Corsódromo Nolo Alías con una impronta filosófica, mística y teatral inconfundible, destacándose "
-            "por la audacia de sus diseños y la potencia de su escuela de samba."
-        ),
-    },
-    {
-        "nombre": "Sapucay",
-        "slug": "sapucay",
-        "apodo": "El Gallo del Carnaval",
-        "categoria": "Comparsa de Primera Categoría • Corrientes Capital",
-        "colores": "Rojo Rubí, Amarillo Oro y Negro",
-        "historia": (
-            "Nacida en 1980, Sapucay ('Grito Triunfal' en guaraní) es sinónimo de majestuosidad escénica, opulencia "
-            "en carros alegóricos y perfección artesanal en herrería y plumaje de faisán dentro de la calzada del Nolo Alías."
-        ),
-    },
-    {
-        "nombre": "Ará Berá",
-        "slug": "ara-bera",
-        "apodo": "El Rayo",
-        "categoria": "Comparsa de Primera Categoría • Corrientes Capital",
-        "colores": "Rojo Fuego, Blanco Nieve y Plata",
-        "historia": (
-            "Fundada en 1961, Ará Berá ('Luz del Cielo' o 'Relámpago' en guaraní) electriza cada edición de los Carnavales "
-            "Correntinos con el fervor de su hinchada, su mística histórica y la luminosidad de sus trajes bordados en cristal."
-        ),
-    },
-    {
-        "nombre": "Samba Total",
-        "slug": "samba-total",
-        "apodo": "La Aplanadora del Ritmo",
-        "categoria": "Agrupación Musical Multicampeona • Corrientes Capital",
-        "colores": "Azul Francia, Blanco y Plata",
-        "historia": (
-            "Máximo referente histórico entre las Agrupaciones Musicales del carnaval correntino. Sus vestuarios exigen "
-            "ingeniería ergonómica de peso ultraliviano y articulación total para acompañar su arrolladora cadencia de batería."
-        ),
-    },
-    {
-        "nombre": "Copacabana",
-        "slug": "copacabana",
-        "apodo": "La Decana de los Carnavales Correntinos",
-        "categoria": "Comparsa Pionera • Corrientes Capital",
-        "colores": "Oro Imperial, Turquesa y Blanco",
-        "historia": (
-            "Pionera absoluta desde 1960 y cuna del esplendor del Carnaval de Corrientes. Copacabana representa la escuela "
-            "clásica de alta costura artesanal, el lujo en pedrería fina y los grandes espaldares imperiales."
-        ),
-    },
-    {
-        "nombre": "Imperio Bahiano",
-        "slug": "imperio-bahiano",
-        "apodo": "La Fuerza Bahiana",
-        "categoria": "Agrupación Musical • Corrientes Capital",
-        "colores": "Verde Tropical, Amarillo Sol y Dorado",
-        "historia": (
-            "Agrupación musical de energía vibrante e identidad afro-bahiana que enciende las tribunas del corsódromo "
-            "con percusión de alto impacto y vestuarios de gran destello cromático."
-        ),
-    },
-    {
-        "nombre": "Panambí",
-        "slug": "panambi",
-        "apodo": "El Origen en San Roque",
-        "categoria": "Comparsa Tradicional • San Roque, Corrientes",
-        "colores": "Dorado, Turquesa y Coral",
-        "historia": (
-            "La comparsa barrial de San Roque donde Hugo Fernández dio sus primeros pasos como comparsero en la calzada, "
-            "forjando la sensibilidad técnica y el amor por el carnaval que hoy define a su taller."
-        ),
-    },
-]
 
 
 def normalizar_texto_comparacion(texto):
@@ -438,23 +357,61 @@ def normalizar_texto_comparacion(texto):
     return " ".join(sin_tildes.lower().split())
 
 
+def _coincide_nombre_comparsa(nombre_a, nombre_b):
+    """Compara dos nombres de comparsa en forma normalizada, contemplando el prefijo opcional 'Comparsa '."""
+    na = normalizar_texto_comparacion(nombre_a)
+    nb = normalizar_texto_comparacion(nombre_b)
+    if not na or not nb:
+        return False
+    if na == nb:
+        return True
+    sa = re.sub(r"^comparsa\s+", "", na).strip()
+    sb = re.sub(r"^comparsa\s+", "", nb).strip()
+    if sa and sb and (sa == sb or sa in sb or sb in sa):
+        return True
+    return False
+
+
 def obtener_info_comparsa(nombre_raw):
-    """Retorna el diccionario de metadatos culturales de una comparsa a partir de su nombre o slug."""
-    clave = normalizar_texto_comparacion(nombre_raw)
-    for comp in COMPARSAS_OFICIALES:
-        if clave in (
-            normalizar_texto_comparacion(comp["nombre"]),
-            normalizar_texto_comparacion(comp["slug"]),
-        ) or normalizar_texto_comparacion(comp["nombre"]) in clave:
-            return comp
+    """Consulta SQLite (tabla trayectoria) para obtener los metadatos de una comparsa del currículum de Hugo Fernández."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, nombre, ciudad, anios, badge, rol, rol_snippet, descripcion, anio_inicio, anio_fin, es_actual
+            FROM trayectoria
+            ORDER BY es_actual DESC, anio_fin DESC, anio_inicio DESC, id ASC
+        """)
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        for comp in rows:
+            if _coincide_nombre_comparsa(nombre_raw, comp["nombre"]):
+                norm_nombre = normalizar_texto_comparacion(comp["nombre"])
+                comp["slug"] = norm_nombre.replace(" ", "-")
+                comp["categoria"] = comp["badge"]
+                comp["apodo"] = comp["rol_snippet"]
+                comp["colores"] = f"{comp['ciudad']} ({comp['anios']})"
+                comp["historia"] = comp["descripcion"]
+                return comp
+    except Exception as e:
+        registrar_error_bd("obtener_info_comparsa", str(e))
 
     nombre_formateado = str(nombre_raw).replace("-", " ").strip().title()
     return {
         "nombre": nombre_formateado,
         "slug": normalizar_texto_comparacion(nombre_raw).replace(" ", "-"),
-        "apodo": "Agrupación del Carnaval Correntino",
-        "categoria": "Carnaval Oficial • Corrientes",
-        "colores": "Dorado Escénico & Alta Costura",
+        "ciudad": "Corrientes / Chaco",
+        "anios": "Trayectoria Oficial",
+        "badge": "Catálogo Hugo Fernández",
+        "rol": "Realización y Coordinación de Vestuario",
+        "rol_snippet": "Realización y Coordinación de Vestuario",
+        "descripcion": (
+            f"Colección de vestuarios, estructuras de herrería y tocados realizados y coordinados "
+            f"para las figuras de {nombre_formateado}."
+        ),
+        "categoria": "Catálogo Hugo Fernández",
+        "apodo": "Realización y Coordinación de Vestuario",
+        "colores": "Corrientes / Chaco",
         "historia": (
             f"Colección de vestuarios, estructuras de herrería y tocados realizados y coordinados "
             f"para las figuras de {nombre_formateado}."
@@ -478,152 +435,31 @@ def obtener_trayectoria_ordenada():
         """)
         rows = [dict(r) for r in cursor.fetchall()]
         conn.close()
-        if rows:
-            return rows
-    except Exception:
-        pass
-
-    # Fallback ordenado de más reciente/actual a más antigua si la tabla aún no fue migrada
-    return [
-        {
-            "nombre": "Atelier HG",
-            "ciudad": "Corrientes Capital",
-            "anios": "Producción Continua",
-            "badge": "Corrientes Capital • Actualidad",
-            "rol": "Miembro del Grupo Creativo",
-            "rol_snippet": "Espectáculos Teatrales, Circo & Carnaval",
-            "descripcion": "Miembro del grupo creativo en “Atelier HG”. Realización de vestuarios para carnaval y espectáculos (teatrales, circense, revisteriles y más). Realización de ornamentos decorativos con materiales y técnicas específicas de confección estilo carnaval Corrientes Capital.",
-            "anio_inicio": 2010,
-            "anio_fin": 2026,
-            "es_actual": 1,
-        },
-        {
-            "nombre": "Comparsa Marabú",
-            "ciudad": "Quitilipi (Chaco)",
-            "anios": "2024 / 2025",
-            "badge": "Quitilipi, Chaco • 2024 / 2025",
-            "rol": "Coordinador General de Vestuario y Creativo",
-            "rol_snippet": "Coordinador General de Vestuario y Creativo",
-            "descripcion": "2024 / 2025: Coordinador General de Vestuario y Creativo de la comparsa Marabú Quitilipi, Chaco.",
-            "anio_inicio": 2024,
-            "anio_fin": 2025,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Arandú Beleza",
-            "ciudad": "Corrientes Capital",
-            "anios": "2023 / 2025",
-            "badge": "Corrientes Capital • 2023 / 2025",
-            "rol": "Coordinador General de Vestuario y Miembro del Equipo Creativo",
-            "rol_snippet": "Coordinador General & Equipo Creativo",
-            "descripcion": "2023 / 2025: Coordinador General de Vestuario y miembro del equipo creativo de la comparsa Arandú Beleza Corrientes Capital.",
-            "anio_inicio": 2023,
-            "anio_fin": 2025,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Samba Total",
-            "ciudad": "Corrientes Capital",
-            "anios": "2022 / 2025",
-            "badge": "Corrientes Capital • 2022 / 2025",
-            "rol": "Coordinador General de Vestuario",
-            "rol_snippet": "Coordinador General de Vestuario",
-            "descripcion": "2022 / 2025: Coordinador General de Vestuario Agrupación Musical “Samba Total” (Corrientes Capital).",
-            "anio_inicio": 2022,
-            "anio_fin": 2025,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Comparsa Cordialísima",
-            "ciudad": "Fontana (Chaco)",
-            "anios": "2020 / 2024",
-            "badge": "Fontana, Chaco • 2020 / 2024",
-            "rol": "Diseñador. Coordinador General de Vestuario. Grupo Artístico",
-            "rol_snippet": "Diseñador & Coordinador General de Vestuario",
-            "descripcion": "2020 / 2024: Diseñador. Coordinador General de Vestuario. Miembro del grupo artístico de la comparsa “Cordialísima” de la localidad de Fontana (Chaco).",
-            "anio_inicio": 2020,
-            "anio_fin": 2024,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Comparsa Panambí",
-            "ciudad": "San Roque (Corrientes)",
-            "anios": "1990 / 2024",
-            "badge": "San Roque • 1990 / 2024",
-            "rol": "Diseñador, Coordinador General de Vestuario. Director de Puesta en Escena",
-            "rol_snippet": "Diseñador, Coordinador General & Puesta en Escena",
-            "descripcion": "1990 / 2024: Diseñador, Coordinador General de Vestuario. Director de Puesta en Escena de comparsa “Panambí” de la localidad de San Roque (Corrientes).",
-            "anio_inicio": 1990,
-            "anio_fin": 2024,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Comparsa Amistad",
-            "ciudad": "Margarita Belén (Chaco)",
-            "anios": "2017 / 2020",
-            "badge": "Margarita Belén, Chaco • 2017 / 2020",
-            "rol": "Coordinador General de Vestuario. Mentor de Temáticas",
-            "rol_snippet": "Mentor Temático & Logística Artística",
-            "descripcion": "2017 / 2020: Coordinador General de Vestuario. Mentor de las temáticas realizadas. Miembro de la logística y artística de comparsa “Amistad” de la localidad de Margarita Belén (Chaco).",
-            "anio_inicio": 2017,
-            "anio_fin": 2020,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Sapucay del Taragüí",
-            "ciudad": "Capital (Corrientes)",
-            "anios": "2015 / 2020",
-            "badge": "Corrientes Capital • 2015 / 2020",
-            "rol": "Coordinador de Vestuario. Realizador. Coordinador General de Vestuario",
-            "rol_snippet": "Coordinador General & Vestuarios Premiados",
-            "descripcion": "2015 / 2020: Coordinador de vestuario. Realizador. Coordinador General de Vestuario comparsa “Sapucay del Taragüí” de la localidad de Capital (Corrientes). Miembro colaborador del grupo artístico de la comparsa. Realizador y confeccionista de vestuarios premiados en el carnaval Correntino.",
-            "anio_inicio": 2015,
-            "anio_fin": 2020,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Comparsa Bahía",
-            "ciudad": "Villa Ángela (Chaco)",
-            "anios": "2017 / 2018",
-            "badge": "Villa Ángela, Chaco • 2017 / 2018",
-            "rol": "Coordinador General de Vestuario",
-            "rol_snippet": "Coordinador General de Vestuario",
-            "descripcion": "2017 / 2018: Coordinador General de Vestuario comparsa “Bahía” de la localidad de Villa Ángela (Chaco).",
-            "anio_inicio": 2017,
-            "anio_fin": 2018,
-            "es_actual": 0,
-        },
-        {
-            "nombre": "Perla Alma Sambera",
-            "ciudad": "Charata (Chaco)",
-            "anios": "2016 / 2018",
-            "badge": "Charata, Chaco • 2016 / 2018",
-            "rol": "Coordinador General de Vestuario. Grupo Artístico",
-            "rol_snippet": "Coordinador General de Vestuario & Artística",
-            "descripcion": "2016 / 2018: Coordinador General de Vestuario. Miembro del grupo artístico de comparsa “Perla Alma Sambera” de la localidad de Charata (Chaco).",
-            "anio_inicio": 2016,
-            "anio_fin": 2018,
-            "es_actual": 0,
-        },
-    ]
+        return rows
+    except Exception as e:
+        registrar_error_bd("obtener_trayectoria_ordenada", str(e))
+        return []
 
 
 def obtener_comparsas_unicas():
     """
-    Consulta estricta a la tabla trajes para inyectar la lista dinámica de comparsas únicas:
-    SELECT DISTINCT comparsa FROM trajes WHERE estado = 'publicado'
+    Consulta SQLite para obtener los nombres de las comparsas registradas en el catálogo
+    del currículum de Hugo Fernández (tabla trayectoria).
     """
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            "SELECT comparsa, MAX(id) as max_id FROM trajes WHERE estado = 'publicado' AND comparsa IS NOT NULL AND TRIM(comparsa) != '' GROUP BY comparsa ORDER BY max_id DESC, comparsa ASC"
-        )
-        comparsas_unicas = [row["comparsa"] for row in cursor.fetchall()]
+        cursor.execute("""
+            SELECT nombre
+            FROM trayectoria
+            ORDER BY es_actual DESC, anio_fin DESC, anio_inicio DESC, id ASC
+        """)
+        comparsas_unicas = [row["nombre"] for row in cursor.fetchall() if row["nombre"]]
         conn.close()
         return comparsas_unicas
-    except Exception:
-        return [c["nombre"] for c in COMPARSAS_OFICIALES]
+    except Exception as e:
+        registrar_error_bd("obtener_comparsas_unicas", str(e))
+        return []
 
 
 @app.context_processor
@@ -641,13 +477,20 @@ def inyectar_comparsas_unicas():
 
 def obtener_comparsas_agrupadas():
     """
-    Consulta a SQLite para extraer la información agrupada de las agrupaciones de carnaval:
-    total de trajes publicados, trajes destacados y foto de muestra,
-    ordenada de más reciente/actual a más antigua, enriquecida con los metadatos de cada comparsa.
+    Consulta SQLite (tabla trayectoria y conteo de trajes publicados) para obtener
+    únicamente las comparsas registradas en el catálogo (las del currículum de Hugo Fernández),
+    ordenadas de más reciente/actual a más antigua.
     """
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, nombre, ciudad, anios, badge, rol, rol_snippet, descripcion, anio_inicio, anio_fin, es_actual
+            FROM trayectoria
+            ORDER BY es_actual DESC, anio_fin DESC, anio_inicio DESC, id ASC
+        """)
+        trayectoria_rows = [dict(r) for r in cursor.fetchall()]
+
         cursor.execute("""
             SELECT comparsa, 
                    COUNT(*) as total_trajes,
@@ -657,92 +500,53 @@ def obtener_comparsas_agrupadas():
             FROM trajes
             WHERE estado = 'publicado' AND comparsa IS NOT NULL AND TRIM(comparsa) != ''
             GROUP BY comparsa
-            ORDER BY ultimo_traje_id DESC, comparsa ASC
         """)
-        rows = cursor.fetchall()
-
-        comparsas_map = {}
-        for r in rows:
-            nombre_limpio = r["comparsa"].strip()
-            norm = normalizar_texto_comparacion(nombre_limpio)
-            comparsas_map[norm] = {
-                "nombre": nombre_limpio,
-                "total_trajes": r["total_trajes"],
-                "destaques": r["destaques"] or 0,
-                "foto_muestra": r["foto_muestra"],
-                "ultimo_traje_id": r["ultimo_traje_id"] or 0,
-            }
+        trajes_rows = [dict(r) for r in cursor.fetchall()]
         conn.close()
     except Exception as e:
         registrar_error_bd("obtener_comparsas_agrupadas", str(e))
-        comparsas_map = {}
-
-    # Mapa de años de trayectoria (más reciente/actual a más antigua)
-    prioridad_anios = {
-        "arandu beleza": (2025, 2023, "2023 / 2025"),
-        "samba total": (2025, 2022, "2022 / 2025"),
-        "panambi": (2024, 1990, "1990 / 2024"),
-        "sapucay": (2020, 2015, "2015 / 2020"),
-        "ara bera": (2025, 2020, "Carnaval Oficial"),
-        "copacabana": (2025, 2019, "Carnaval Oficial"),
-        "imperio bahiano": (2025, 2021, "Carnaval Oficial"),
-    }
+        return []
 
     comparsas_resultado = []
+    for item in trayectoria_rows:
+        nombre_comparsa = item["nombre"]
+        total_trajes = 0
+        destaques = 0
+        foto_muestra = None
+        ultimo_traje_id = 0
 
-    # Enriquecer con las comparsas oficiales registradas
-    for oficial in COMPARSAS_OFICIALES:
-        nombre_oficial = oficial["nombre"]
-        norm = normalizar_texto_comparacion(nombre_oficial)
-        db_data = comparsas_map.pop(norm, None)
-
-        if not db_data:
-            for k in list(comparsas_map.keys()):
-                if norm in k or k in norm:
-                    db_data = comparsas_map.pop(k)
-                    break
-
-        anio_fin, anio_inicio, periodo_txt = prioridad_anios.get(norm, (2024, 2020, "Carnaval Oficial"))
+        for tr in trajes_rows:
+            if _coincide_nombre_comparsa(tr["comparsa"], nombre_comparsa):
+                total_trajes += tr["total_trajes"] or 0
+                destaques += tr["destaques"] or 0
+                if not foto_muestra and tr["foto_muestra"]:
+                    foto_muestra = tr["foto_muestra"]
+                if (tr["ultimo_traje_id"] or 0) > ultimo_traje_id:
+                    ultimo_traje_id = tr["ultimo_traje_id"] or 0
 
         comparsas_resultado.append({
-            "nombre": nombre_oficial,
-            "slug": oficial.get("slug") or normalizar_texto_comparacion(nombre_oficial).replace(" ", "-"),
-            "apodo": oficial.get("apodo", "Agrupación del Carnaval"),
-            "categoria": oficial.get("categoria", "Carnaval Oficial • Corrientes"),
-            "colores": oficial.get("colores", "Dorado & Brillo"),
-            "historia": oficial.get("historia", ""),
-            "periodo": periodo_txt,
-            "anio_fin": anio_fin,
-            "anio_inicio": anio_inicio,
-            "total_trajes": db_data["total_trajes"] if db_data else 0,
-            "destaques": db_data["destaques"] if db_data else 0,
-            "foto_muestra": db_data["foto_muestra"] if db_data else None,
-            "ultimo_traje_id": db_data["ultimo_traje_id"] if db_data else 0,
+            "id": item["id"],
+            "nombre": nombre_comparsa,
+            "slug": normalizar_texto_comparacion(nombre_comparsa).replace(" ", "-"),
+            "ciudad": item["ciudad"],
+            "anios": item["anios"],
+            "badge": item["badge"],
+            "rol": item["rol"],
+            "rol_snippet": item["rol_snippet"],
+            "descripcion": item["descripcion"],
+            "categoria": item["badge"],
+            "apodo": item["rol_snippet"],
+            "colores": f"{item['ciudad']} ({item['anios']})",
+            "historia": item["descripcion"],
+            "periodo": item["anios"],
+            "anio_inicio": item["anio_inicio"],
+            "anio_fin": item["anio_fin"],
+            "es_actual": item["es_actual"],
+            "total_trajes": total_trajes,
+            "destaques": destaques,
+            "foto_muestra": foto_muestra,
+            "ultimo_traje_id": ultimo_traje_id,
         })
-
-    # Agregar comparsas adicionales encontradas en la BD que no estaban en COMPARSAS_OFICIALES
-    for norm, db_data in comparsas_map.items():
-        comparsas_resultado.append({
-            "nombre": db_data["nombre"],
-            "slug": normalizar_texto_comparacion(db_data["nombre"]).replace(" ", "-"),
-            "apodo": "Agrupación del Carnaval",
-            "categoria": "Carnaval Oficial",
-            "colores": "Tradición y Pasión",
-            "historia": f"Vestuarios y realizaciones artesanales de alta costura para {db_data['nombre']}.",
-            "periodo": "Edición Reciente",
-            "anio_fin": 2026,
-            "anio_inicio": 2024,
-            "total_trajes": db_data["total_trajes"],
-            "destaques": db_data["destaques"],
-            "foto_muestra": db_data["foto_muestra"],
-            "ultimo_traje_id": db_data["ultimo_traje_id"],
-        })
-
-    # Ordenar de más reciente/actual a más antigua
-    comparsas_resultado.sort(
-        key=lambda c: (c.get("anio_fin", 0), c.get("anio_inicio", 0), c.get("ultimo_traje_id", 0)),
-        reverse=True
-    )
 
     return comparsas_resultado
 
@@ -858,6 +662,13 @@ def enriquecer_traje(cursor, row):
     t["foto"] = foto_val
     t["foto_url"] = foto_val
     t["comparsa"] = (t.get("comparsa") or "").strip()
+    estructura_val = (t.get("estructura") or t.get("herreria_estructura") or "").strip()
+    t["estructura"] = estructura_val
+    t["herreria_estructura"] = estructura_val
+    t["confeccion"] = (t.get("confeccion") or "Hugo Fernández").strip()
+    t["diseno_original"] = (t.get("diseno_original") or "").strip()
+    t["descripcion"] = (t.get("descripcion") or "").strip()
+    t["materiales"] = (t.get("materiales") or "").strip()
     return t
 
 
@@ -1018,11 +829,8 @@ def ver_trajes_feed():
     cursor.execute("SELECT * FROM trajes WHERE estado = 'publicado' ORDER BY id DESC")
     rows = cursor.fetchall()
     todos_los_trajes = [enriquecer_traje(cursor, r) for r in rows]
-
-    cursor.execute("SELECT DISTINCT comparsa FROM trajes WHERE estado = 'publicado' ORDER BY comparsa ASC")
-    db_comps = [r["comparsa"] for r in cursor.fetchall() if r["comparsa"]]
-    comparsas_unicas = list(dict.fromkeys([c["nombre"] for c in COMPARSAS_OFICIALES] + db_comps))
     conn.close()
+    comparsas_unicas = obtener_comparsas_unicas()
 
     genero_norm = normalizar_texto_comparacion(genero_param)
     if genero_norm in ("", "todos", "all"):
@@ -1148,29 +956,32 @@ def vista_comparsa(nombre=None, nombre_comparsa=None):
         trajes_comparsa.append(enriquecer_traje(cursor, r))
         ids_registrados.add(r["id"])
 
-    # 2. Resiliencia adicional de normalización cultural (acentos, ej. Panambí vs Panambi)
+    # 2. Resiliencia adicional de normalización cultural (acentos y prefijos, ej. Comparsa Panambí vs Panambi)
     cursor.execute("SELECT * FROM trajes WHERE estado = 'publicado' ORDER BY id DESC")
     todos = cursor.fetchall()
     for r in todos:
         if r["id"] not in ids_registrados:
             comp_norm = normalizar_texto_comparacion(r["comparsa"])
-            if comp_norm == clave_buscada or comp_norm == clave_raw:
+            if (
+                comp_norm == clave_buscada
+                or comp_norm == clave_raw
+                or _coincide_nombre_comparsa(r["comparsa"], nombre_oficial)
+                or _coincide_nombre_comparsa(r["comparsa"], nombre_objetivo)
+            ):
                 trajes_comparsa.append(enriquecer_traje(cursor, r))
                 ids_registrados.add(r["id"])
 
-    # comparsas_unicas para navegación y pills
-    cursor.execute("SELECT DISTINCT comparsa FROM trajes WHERE estado = 'publicado' ORDER BY comparsa ASC")
-    db_comparsas = [row["comparsa"] for row in cursor.fetchall() if row["comparsa"]]
-    comparsas_unicas = list(dict.fromkeys([c["nombre"] for c in COMPARSAS_OFICIALES] + db_comparsas))
-
     conn.close()
+
+    comparsas = obtener_comparsas_agrupadas()
+    comparsas_unicas = obtener_comparsas_unicas()
 
     return render_template(
         "comparsa.html",
         nombre_comparsa=nombre_oficial,
         info_comparsa=info_comparsa,
         trajes=trajes_comparsa,
-        comparsas_oficiales=COMPARSAS_OFICIALES,
+        comparsas=comparsas,
         comparsas_unicas=comparsas_unicas,
     )
 
@@ -1180,6 +991,9 @@ app.add_url_rule("/comparsa/<path:nombre_comparsa>", endpoint="ver_comparsa", vi
 app.add_url_rule("/comparsas/<path:nombre_comparsa>", endpoint="ver_comparsas_plural", view_func=vista_comparsa)
 
 
+@app.route("/comunidad", methods=["GET", "POST"])
+@app.route("/comunidad.html", methods=["GET", "POST"])
+@app.route("/pages/comunidad.html", methods=["GET", "POST"])
 @app.route("/comunidad/subir", methods=["GET", "POST"])
 @app.route("/pages/comunidad-subir.html", methods=["GET", "POST"])
 def comunidad_subir():
@@ -1194,7 +1008,7 @@ def comunidad_subir():
             "comunidad_subir.html",
             exito=enviado,
             traje_enviado=None,
-            comparsas_oficiales=COMPARSAS_OFICIALES,
+            comparsas=obtener_comparsas_agrupadas(),
         )
 
     # Procesar POST de la comunidad
@@ -1202,10 +1016,12 @@ def comunidad_subir():
     comparsero = (data_source.get("comparsero") or "").strip()
     comparsa = (data_source.get("comparsa") or "").strip()
     genero = (data_source.get("genero") or "Femenino").strip()
-    materiales = (data_source.get("materiales") or "Cristales, plumas y estructura artesanal de carnaval").strip()
+    materiales = (data_source.get("materiales") or "").strip()
     descripcion = (data_source.get("descripcion") or "").strip()
     diseno_original = (data_source.get("diseno_original") or "").strip()
-    herreria_estructura = (data_source.get("herreria_estructura") or "").strip()
+    confeccion = (data_source.get("confeccion") or "").strip()
+    estructura = (data_source.get("estructura") or data_source.get("herreria_estructura") or "").strip()
+    herreria_estructura = estructura
 
     wants_json = (
         request.is_json
@@ -1219,7 +1035,7 @@ def comunidad_subir():
         return render_template(
             "comunidad_subir.html",
             error="Por favor completá el nombre de la figura/comparsero y la comparsa.",
-            comparsas_oficiales=COMPARSAS_OFICIALES,
+            comparsas=obtener_comparsas_agrupadas(),
         ), 400
 
     files = [f for f in request.files.getlist("fotos") if f and f.filename != ""]
@@ -1261,12 +1077,12 @@ def comunidad_subir():
     cursor.execute("""
         INSERT INTO trajes (
             comparsero, comparsa, genero, materiales, foto_url,
-            descripcion, diseno_original, herreria_estructura, es_obra_maestra, estado, fotos_json
+            descripcion, diseno_original, herreria_estructura, estructura, confeccion, es_obra_maestra, estado, fotos_json
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 'pendiente', ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'pendiente', ?)
     """, (
         comparsero, comparsa, genero, materiales, foto_principal_url,
-        descripcion, diseno_original, herreria_estructura, fotos_json_val
+        descripcion, diseno_original, herreria_estructura, estructura, confeccion, fotos_json_val
     ))
     nuevo_id = cursor.lastrowid
 
@@ -1292,7 +1108,7 @@ def comunidad_subir():
         "comunidad_subir.html",
         exito=True,
         traje_enviado=traje_creado,
-        comparsas_oficiales=COMPARSAS_OFICIALES,
+        comparsas=obtener_comparsas_agrupadas(),
     ), 201
 
 
@@ -1443,6 +1259,9 @@ def admin_panel():
     cursor.execute("SELECT * FROM entrevistas ORDER BY id DESC")
     entrevistas = [dict(r) for r in cursor.fetchall()]
 
+    cursor.execute("SELECT * FROM obras_atelier ORDER BY id DESC")
+    obras_atelier = [dict(r) for r in cursor.fetchall()]
+
     cursor.execute("""
         SELECT c.id, c.traje_id, c.usuario, c.texto, c.fecha, t.comparsero 
         FROM comentarios c 
@@ -1459,6 +1278,7 @@ def admin_panel():
         trajes=trajes,
         trajes_pendientes=trajes_pendientes,
         entrevistas=entrevistas,
+        obras_atelier=obras_atelier,
         comentarios=comentarios,
         traje_editar=None,
         metricas=metricas
@@ -1495,6 +1315,9 @@ def admin_editar_traje(id):
     cursor.execute("SELECT * FROM entrevistas ORDER BY id DESC")
     entrevistas = [dict(r) for r in cursor.fetchall()]
 
+    cursor.execute("SELECT * FROM obras_atelier ORDER BY id DESC")
+    obras_atelier = [dict(r) for r in cursor.fetchall()]
+
     cursor.execute("""
         SELECT c.id, c.traje_id, c.usuario, c.texto, c.fecha, t.comparsero 
         FROM comentarios c 
@@ -1511,6 +1334,7 @@ def admin_editar_traje(id):
         trajes=trajes,
         trajes_pendientes=trajes_pendientes,
         entrevistas=entrevistas,
+        obras_atelier=obras_atelier,
         comentarios=comentarios,
         traje_editar=traje_editar,
         metricas=metricas
@@ -1719,7 +1543,9 @@ def post_traje():
     materiales = (request.form.get("materiales") or "").strip()
     descripcion = (request.form.get("descripcion") or "").strip()
     diseno_original = (request.form.get("diseno_original") or "").strip()
-    herreria_estructura = (request.form.get("herreria_estructura") or "").strip()
+    confeccion = (request.form.get("confeccion") or "").strip()
+    estructura = (request.form.get("estructura") or request.form.get("herreria_estructura") or "").strip()
+    herreria_estructura = estructura
     es_destaque = parsear_checkbox_destaque(request.form)
     enlace_boceto = subir_boceto_si_existe(request.files, request.form)
 
@@ -1759,13 +1585,13 @@ def post_traje():
     cursor.execute("""
         INSERT INTO trajes (
             comparsero, comparsa, genero, materiales, foto_url,
-            descripcion, diseno_original, herreria_estructura, 
+            descripcion, diseno_original, herreria_estructura, estructura, confeccion,
             es_obra_maestra, es_destaque, enlace_boceto, estado, fotos_json
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicado', ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicado', ?)
     """, (
         comparsero, comparsa, genero, materiales, foto_principal_url,
-        descripcion, diseno_original, herreria_estructura, 
+        descripcion, diseno_original, herreria_estructura, estructura, confeccion,
         es_destaque, es_destaque, enlace_boceto, fotos_json_val
     ))
     nuevo_id = cursor.lastrowid
@@ -1816,7 +1642,9 @@ def editar_traje(id):
     materiales = (data_source.get("materiales") if "materiales" in data_source else (traje_actual["materiales"] or "")).strip()
     descripcion = (data_source.get("descripcion") if "descripcion" in data_source else (traje_actual["descripcion"] or "")).strip()
     diseno_original = (data_source.get("diseno_original") if "diseno_original" in data_source else (traje_actual["diseno_original"] or "")).strip()
-    herreria_estructura = (data_source.get("herreria_estructura") if "herreria_estructura" in data_source else (traje_actual["herreria_estructura"] or "")).strip()
+    confeccion = (data_source.get("confeccion") if "confeccion" in data_source else (traje_actual["confeccion"] if "confeccion" in traje_actual.keys() and traje_actual["confeccion"] else "")).strip()
+    estructura = (data_source.get("estructura") if "estructura" in data_source else (data_source.get("herreria_estructura") if "herreria_estructura" in data_source else ((traje_actual["estructura"] if "estructura" in traje_actual.keys() and traje_actual["estructura"] else traje_actual["herreria_estructura"]) or ""))).strip()
+    herreria_estructura = estructura
     es_destaque = parsear_checkbox_destaque(data_source)
     enlace_boceto = subir_boceto_si_existe(
         request.files, 
@@ -1931,6 +1759,8 @@ def editar_traje(id):
             foto_url = ?,
             descripcion = ?,
             diseno_original = ?,
+            confeccion = ?,
+            estructura = ?,
             herreria_estructura = ?,
             es_obra_maestra = ?,
             es_destaque = ?,
@@ -1939,7 +1769,7 @@ def editar_traje(id):
         WHERE id = ?
     """, (
         comparsero, comparsa, genero, materiales, foto_principal_url,
-        descripcion, diseno_original, herreria_estructura, 
+        descripcion, diseno_original, confeccion, estructura, herreria_estructura, 
         es_destaque, es_destaque, enlace_boceto, fotos_json_val, id
     ))
 
@@ -2232,6 +2062,184 @@ def api_delete_entrevista(id):
 
 
 # ==============================================================================
+# API REST & CRUD: ATELIER HORACIO GÓMEZ (ADMINISTRACIÓN)
+# ==============================================================================
+
+@app.route("/api/atelier", methods=["GET"])
+def api_get_atelier():
+    """Retorna la lista de todas las obras de Atelier Horacio Gómez registradas en SQLite."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM obras_atelier ORDER BY id DESC")
+    rows = [dict(r) for r in cursor.fetchall()]
+    conn.close()
+    return jsonify(rows), 200
+
+
+@app.route("/api/atelier", methods=["POST"])
+@app.route("/admin/atelier/subir", methods=["POST"])
+def api_post_atelier():
+    """
+    Crea una nueva obra en Atelier Horacio Gómez (protegido por sesión de administrador).
+    Aplica el límite estricto de máximo 6 archivos y 20MB por archivo, con enlace a Google Drive.
+    """
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
+
+    data = request.form if request.form else (request.get_json(silent=True) or {})
+    titulo = (data.get("titulo") or "").strip()
+    descripcion = (data.get("descripcion") or "").strip()
+    drive_url = (data.get("drive_url") or data.get("enlace_drive") or "").strip()
+
+    if not titulo:
+        return jsonify({"error": "El título de la obra es obligatorio"}), 400
+
+    # Límite estricto de archivos: máximo 6 archivos y 20MB por archivo
+    archivos = request.files.getlist("fotos") or request.files.getlist("archivos") or request.files.getlist("foto")
+    archivos_validos = [f for f in archivos if f and getattr(f, "filename", "")]
+
+    fotos_guardadas = []
+    if archivos_validos:
+        fotos_guardadas = guardar_archivos_fisicos(archivos_validos)
+
+    foto_principal = fotos_guardadas[0]["ruta_imagen"] if fotos_guardadas else ""
+    fotos_json = json.dumps([f["ruta_imagen"] for f in fotos_guardadas]) if fotos_guardadas else ""
+
+    if not drive_url and fotos_guardadas:
+        drive_url = foto_principal
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO obras_atelier (titulo, descripcion, drive_url, foto_url, fotos_json, categoria)
+        VALUES (?, ?, ?, ?, ?, 'Atelier Horacio Gómez')
+    """, (titulo, descripcion, drive_url, foto_principal, fotos_json))
+    conn.commit()
+    nuevo_id = cursor.lastrowid
+    cursor.execute("SELECT * FROM obras_atelier WHERE id = ?", (nuevo_id,))
+    nueva_obra = dict(cursor.fetchone())
+    conn.close()
+
+    # Si fue petición AJAX / fetch
+    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest" or "api" in request.path:
+        return jsonify({
+            "success": True,
+            "mensaje": "Obra guardada exitosamente en Atelier Horacio Gómez",
+            "obra": nueva_obra,
+            "id": nuevo_id
+        }), 201
+
+    # Redirección normal si vino de formulario HTML
+    return redirect("/admin#seccion-atelier")
+
+
+@app.route("/api/atelier/<int:id>", methods=["GET"])
+def api_get_obra_atelier(id):
+    """Retorna una obra específica de Atelier Horacio Gómez."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM obras_atelier WHERE id = ?", (id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return jsonify({"error": "Obra no encontrada"}), 404
+    return jsonify(dict(row)), 200
+
+
+@app.route("/api/atelier/<int:id>", methods=["PUT", "POST"])
+@app.route("/admin/atelier/editar/<int:id>", methods=["POST"])
+def api_update_obra_atelier(id):
+    """
+    Actualiza una obra existente en Atelier Horacio Gómez (CRUD: Update).
+    Aplica el límite estricto de máximo 6 archivos y 20MB por archivo, con enlace a Google Drive.
+    """
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM obras_atelier WHERE id = ?", (id,))
+    obra_existente = cursor.fetchone()
+    if not obra_existente:
+        conn.close()
+        return jsonify({"error": "Obra no encontrada"}), 404
+
+    obra_existente = dict(obra_existente)
+    data = request.form if request.form else (request.get_json(silent=True) or {})
+    titulo = (data.get("titulo") or obra_existente.get("titulo") or "").strip()
+    descripcion = (data.get("descripcion") or "").strip()
+    drive_url = (data.get("drive_url") or data.get("enlace_drive") or obra_existente.get("drive_url") or "").strip()
+
+    if not titulo:
+        conn.close()
+        return jsonify({"error": "El título de la obra es obligatorio"}), 400
+
+    # Límite estricto de archivos: máximo 6 archivos y 20MB por archivo
+    archivos = request.files.getlist("fotos") or request.files.getlist("archivos") or request.files.getlist("foto")
+    archivos_validos = [f for f in archivos if f and getattr(f, "filename", "")]
+
+    fotos_guardadas = []
+    if archivos_validos:
+        fotos_guardadas = guardar_archivos_fisicos(archivos_validos)
+
+    if fotos_guardadas:
+        foto_principal = fotos_guardadas[0]["ruta_imagen"]
+        fotos_json = json.dumps([f["ruta_imagen"] for f in fotos_guardadas])
+        if not drive_url:
+            drive_url = foto_principal
+        cursor.execute("""
+            UPDATE obras_atelier
+            SET titulo = ?, descripcion = ?, drive_url = ?, foto_url = ?, fotos_json = ?
+            WHERE id = ?
+        """, (titulo, descripcion, drive_url, foto_principal, fotos_json, id))
+    else:
+        cursor.execute("""
+            UPDATE obras_atelier
+            SET titulo = ?, descripcion = ?, drive_url = ?
+            WHERE id = ?
+        """, (titulo, descripcion, drive_url, id))
+
+    conn.commit()
+    cursor.execute("SELECT * FROM obras_atelier WHERE id = ?", (id,))
+    obra_actualizada = dict(cursor.fetchone())
+    conn.close()
+
+    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest" or "api" in request.path or request.method == "PUT":
+        return jsonify({
+            "success": True,
+            "mensaje": f"Obra #{id} actualizada correctamente",
+            "obra": obra_actualizada
+        }), 200
+
+    return redirect("/admin#seccion-atelier")
+
+
+@app.route("/api/atelier/<int:id>", methods=["DELETE"])
+@app.route("/admin/atelier/eliminar/<int:id>", methods=["POST", "DELETE"])
+def api_delete_obra_atelier(id):
+    """Elimina una obra de Atelier Horacio Gómez por ID."""
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, titulo FROM obras_atelier WHERE id = ?", (id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return jsonify({"error": "Obra no encontrada"}), 404
+
+    cursor.execute("DELETE FROM obras_atelier WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
+    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.method == "DELETE":
+        return jsonify({"success": True, "mensaje": f"Obra #{id} eliminada con éxito", "id": id}), 200
+
+    return redirect("/admin#seccion-atelier")
+
+
+# ==============================================================================
 # RUTAS DE SERVICIO DE INTERFAZ WEB, VIDEOS Y ARCHIVOS ESTÁTICOS
 # ==============================================================================
 
@@ -2264,11 +2272,9 @@ def ver_entrevistas():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM entrevistas ORDER BY id DESC")
     entrevistas = [dict(r) for r in cursor.fetchall()]
-
-    cursor.execute("SELECT DISTINCT comparsa FROM trajes WHERE estado = 'publicado' ORDER BY comparsa ASC")
-    db_comps = [r["comparsa"] for r in cursor.fetchall() if r["comparsa"]]
-    comparsas_unicas = list(dict.fromkeys([c["nombre"] for c in COMPARSAS_OFICIALES] + db_comps))
     conn.close()
+
+    comparsas_unicas = obtener_comparsas_unicas()
 
     return render_template(
         "entrevistas.html",
@@ -2292,11 +2298,13 @@ def ver_materiales():
 @app.route("/pages/arandu-beleza.html")
 def ver_catalogo_comparsas():
     """
-    Renderiza el directorio interactivo de comparsas consultando la información agrupada
-    desde SQLite y pasándola a la plantilla Jinja2 (comparsas=comparsas).
+    Renderiza el directorio interactivo de comparsas ejecutando un SELECT a la base de datos SQLite
+    para obtener únicamente las comparsas registradas en el catálogo (las del currículum de Hugo Fernández)
+    y pasando esa lista a la plantilla Jinja2 (comparsas=comparsas).
     """
     comparsas = obtener_comparsas_agrupadas()
-    return render_template("comparsas.html", comparsas=comparsas)
+    comparsas_unicas = [c["nombre"] for c in comparsas]
+    return render_template("comparsas.html", comparsas=comparsas, comparsas_unicas=comparsas_unicas)
 
 
 @app.route("/assets/videos/<path:filename>")

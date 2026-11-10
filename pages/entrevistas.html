@@ -1,354 +1,173 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Entrevistas de televisión, cobertura de prensa y notas audiovisuales a Hugo Fernández sobre el arte del vestuario de carnaval.">
-  <title>Prensa y Entrevistas | Hugo Fernández Arte Creativo</title>
-  <link rel="stylesheet" href="/css/estilos.css">
-  <link rel="stylesheet" href="../css/estilos.css">
-  <style>
-    /* Estilos Glassmorphism para Tarjetas de Artículos Escritos */
-    .entrevista-card-articulo {
-      background: rgba(11, 21, 40, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(230, 213, 184, 0.28);
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-      transition: all 0.35s ease;
-      position: relative;
-    }
+{% extends "base.html" %}
+{% set nav_active = 'entrevistas' %}
 
-    .entrevista-card-articulo::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #E6D5B8, transparent);
-      opacity: 0.8;
-    }
+{% block title %}Prensa y Entrevistas | Hugo Fernández Arte Creativo{% endblock %}
+{% block description %}Entrevistas de televisión, cobertura de prensa y notas audiovisuales a Hugo Fernández sobre el arte del vestuario de carnaval.{% endblock %}
 
-    .entrevista-card-articulo:hover {
-      transform: translateY(-5px);
-      border-color: #E6D5B8;
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 22px rgba(230, 213, 184, 0.2);
-    }
+{% block extra_css %}
+<style>
+  .entrevistas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    margin: 2rem auto;
+  }
+  .entrevista-card, .entrevista-card-articulo {
+    background: linear-gradient(145deg, rgba(24, 34, 86, .42), rgba(8, 12, 34, .5)) !important;
+    backdrop-filter: blur(20px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+    border: 1px solid var(--linea, rgba(176, 190, 255, 0.12)) !important;
+    border-radius: 16px !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 18px 50px -15px rgba(0, 0, 0, 0.85);
+    transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .entrevista-card:hover, .entrevista-card-articulo:hover {
+    transform: translateY(-4px);
+    border-color: var(--rio, #5ef2e0) !important;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px -10px rgba(94, 242, 224, 0.35);
+  }
+  .video-responsive-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    background: #000;
+  }
+  .video-responsive-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .entrevista-body, .articulo-card-inner {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .entrevista-meta, .articulo-badge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--niebla, #aab2d4);
+  }
+  .entrevista-medio, .articulo-plataforma-pill {
+    font: 600 .7rem/1 var(--f-label, 'Syne', sans-serif);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--rio, #5ef2e0);
+    background: rgba(94, 242, 224, 0.08);
+    border: 1px solid rgba(94, 242, 224, 0.25);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+  }
+  .entrevista-titulo, .articulo-titulo {
+    font-family: var(--f-display, 'Fraunces', serif);
+    font-size: 1.35rem;
+    color: var(--champan-hi, #f7ecd0);
+    line-height: 1.3;
+    margin: 0.4rem 0;
+  }
+  .entrevista-desc, .articulo-extracto {
+    font-size: 0.88rem;
+    color: var(--niebla, #aab2d4);
+    line-height: 1.55;
+  }
+</style>
+{% endblock %}
 
-    .articulo-card-inner {
-      padding: 2.2rem 1.8rem;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      box-sizing: border-box;
-    }
+{% block content %}
+<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1240px; width: 100%; margin: 0 auto;">
 
-    .articulo-badge-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.2rem;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .articulo-plataforma-pill {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 0.35rem 0.85rem;
-      background: rgba(230, 213, 184, 0.14);
-      border: 1px solid rgba(230, 213, 184, 0.4);
-      border-radius: 20px;
-      color: #E6D5B8;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .articulo-formato-tag {
-      font-size: 0.74rem;
-      color: #94a3b8;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.25rem 0.65rem;
-      border-radius: 4px;
-      font-weight: 500;
-    }
-
-    .articulo-titulo {
-      font-family: 'Julius Sans One', serif;
-      font-size: 1.3rem;
-      line-height: 1.45;
-      color: #ffffff;
-      margin: 0 0 1rem;
-      letter-spacing: 0.5px;
-    }
-
-    .articulo-extracto {
-      font-size: 0.94rem;
-      line-height: 1.65;
-      color: #cbd5e1;
-      margin-bottom: 2rem;
-      flex-grow: 1;
-    }
-
-    .articulo-card-footer {
-      margin-top: auto;
-      padding-top: 1.2rem;
-      border-top: 1px solid rgba(230, 213, 184, 0.16);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-
-    .btn-leer-entrevista {
-      background: linear-gradient(135deg, #E6D5B8 0%, #d4af37 100%);
-      color: #040911 !important;
-      font-weight: 700;
-      font-size: 0.88rem;
-      letter-spacing: 0.5px;
-      padding: 0.7rem 1.45rem;
-      border-radius: 30px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(230, 213, 184, 0.25);
-    }
-
-    .btn-leer-entrevista:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(230, 213, 184, 0.5);
-      background: linear-gradient(135deg, #ffffff 0%, #E6D5B8 100%);
-      color: #000000 !important;
-    }
-  </style>
-  <script src="/js/main.js" defer></script>
-</head>
-<body>
-
-  <!-- ==========================================================================
-       HEADER STICKY (CON LOGO A LA DERECHA Y RUTAS RELATIVAS)
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
-      </a>
-    </div>
-
-    <div class="header-container">
-      
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <!-- Navegación simétrica principal: EXACTAMENTE Inicio | Comparsas | Trajes | Comunidad | Entrevistas | Contacto -->
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for comparsa in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=comparsa) }}">{{ comparsa }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link active">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Logo / Marca en la esquina superior derecha -->
-      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
-        <span class="brand-name">Hugo Fernández</span>
-        <span class="brand-sub">Arte Creativo</span>
-      </a>
-
-    </div>
+  <!-- Encabezado de la página -->
+  <header class="page-header is-center">
+    <span class="hero-badge" style="margin-bottom: 0.8rem;">Archivo Audiovisual & Prensa</span>
+    <h1 class="dorado-titulo">Hugo en los Medios & Videos de Taller</h1>
+    <div class="section-divider"></div>
+    <p>
+      Cobertura periodística, notas audiovisuales y registros reales en pasarela y taller donde Hugo Fernández comparte los secretos del armado de estructuras, plumaje y alta costura del Carnaval Correntino.
+    </p>
   </header>
 
-  <main>
-    <div class="container">
-      
-      <!-- Encabezado de la página -->
-      <header class="page-header slide-up">
-        <span class="hero-badge" style="margin-bottom: 0.8rem;">Archivo Audiovisual & Prensa</span>
-        <h1 class="dorado-titulo">Hugo en los Medios & Videos de Taller</h1>
-        <div class="section-divider"></div>
-        <p>
-          Cobertura periodística, notas audiovisuales y registros reales en pasarela y taller donde Hugo Fernández comparte los secretos del armado de estructuras, plumaje y alta costura del Carnaval Correntino.
-        </p>
-      </header>
+  <!-- Grilla Híbrida de Entrevistas -->
+  <section class="entrevistas-grid" aria-label="Notas audiovisuales y artículos de prensa">
+    {% if entrevistas %}
+      {% for e in entrevistas %}
+        {% set url_destino = e.url_enlace or e.enlace_youtube_o_diario %}
+        {% set es_video = (e.tipo_medio == 'video') or (not e.tipo_medio and (url_destino | es_youtube or url_destino | es_video)) %}
 
-      <!-- ==========================================================================
-           GRILLA HÍBRIDA DE ENTREVISTAS (VIDEOS CON IFRAME & ARTÍCULOS GLASSMORPHISM)
-           ========================================================================== -->
-      <section class="entrevistas-grid" aria-label="Notas audiovisuales y artículos de prensa">
-
-        {% if entrevistas %}
-          {% for e in entrevistas %}
-            {% set url_destino = e.url_enlace or e.enlace_youtube_o_diario %}
-            {% set es_video = (e.tipo_medio == 'video') or (not e.tipo_medio and (url_destino | es_youtube or url_destino | es_video)) %}
-
-            {% if es_video %}
-              <!-- TARJETA FORMATO VIDEO / AUDIOVISUAL (CON IFRAME RESPONSIVO) -->
-              <article class="entrevista-card reveal delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ e.id }}" data-tipo="video">
-                <div class="video-responsive-container">
-                  <iframe src="{{ url_destino | adaptar_url_video }}" 
-                          title="{{ e.titulo }}" 
-                          frameborder="0" 
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                          allowfullscreen 
-                          loading="lazy">
-                  </iframe>
-                </div>
-                <div class="entrevista-body">
-                  <div class="entrevista-meta">
-                    <span class="entrevista-medio">
-                      {% if e.plataforma == 'Instagram' %}📸 Instagram
-                      {% elif e.plataforma == 'YouTube' %}▶ YouTube
-                      {% elif e.plataforma == 'Podcast' %}🎙️ Podcast
-                      {% elif e.plataforma == 'Taller' %}✂️ Taller
-                      {% else %}📺 {{ e.plataforma or e.medio or 'Audiovisual' }}
-                      {% endif %}
-                    </span>
-                    <span class="entrevista-fecha">{{ e.fecha }}</span>
-                  </div>
-                  <h2 class="entrevista-titulo">{{ e.titulo }}</h2>
-                  {% if e.descripcion %}
-                  <p class="entrevista-desc">
-                    {{ e.descripcion }}
-                  </p>
+        {% if es_video %}
+          <article class="entrevista-card glass-card" data-id="{{ e.id }}" data-tipo="video">
+            <div class="video-responsive-container">
+              <iframe src="{{ url_destino | adaptar_url_video }}" 
+                      title="{{ e.titulo }}" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                      allowfullscreen 
+                      loading="lazy">
+              </iframe>
+            </div>
+            <div class="entrevista-body">
+              <div class="entrevista-meta">
+                <span class="entrevista-medio">
+                  {% if e.plataforma == 'Instagram' %}📸 Instagram
+                  {% elif e.plataforma == 'YouTube' %}▶ YouTube
+                  {% elif e.plataforma == 'Podcast' %}🎙️ Podcast
+                  {% elif e.plataforma == 'Taller' %}✂️ Taller
+                  {% else %}📺 {{ e.plataforma or e.medio or 'Audiovisual' }}
                   {% endif %}
-                </div>
-              </article>
-            {% else %}
-              <!-- TARJETA GLASSMORPHISM FORMATO ARTÍCULO ESCRITO -->
-              <article class="entrevista-card-articulo reveal delay-{{ (loop.index0 % 3) + 1 }}" data-id="{{ e.id }}" data-tipo="articulo">
-                <div class="articulo-card-inner">
-                  <div class="articulo-badge-header">
-                    <span class="articulo-plataforma-pill">
-                      📰 {{ e.plataforma or e.medio or 'Prensa' }}
-                    </span>
-                    <span class="articulo-formato-tag">Artículo Escrito</span>
-                  </div>
-
-                  <h2 class="articulo-titulo">{{ e.titulo }}</h2>
-
-                  {% if e.descripcion %}
-                  <p class="articulo-extracto">{{ e.descripcion }}</p>
-                  {% endif %}
-
-                  <div class="articulo-card-footer">
-                    <span class="entrevista-fecha" style="font-size: 0.8rem; color: #94a3b8;">📅 {{ e.fecha }}</span>
-                    <a href="{{ url_destino }}" target="_blank" rel="noopener noreferrer" class="btn-leer-entrevista">
-                      <span>Leer Entrevista</span>
-                      <span style="font-size: 1.1rem; line-height: 1;">↗</span>
-                    </a>
-                  </div>
-                </div>
-              </article>
-            {% endif %}
-          {% endfor %}
+                </span>
+                <span class="entrevista-fecha">{{ e.fecha }}</span>
+              </div>
+              <div>
+                <h2 class="entrevista-titulo">{{ e.titulo }}</h2>
+                {% if e.descripcion %}
+                <p class="entrevista-desc">{{ e.descripcion }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </article>
         {% else %}
-          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(230, 213, 184, 0.2); border-radius: 12px;">
-            <p style="font-size: 1.1rem; color: #E6D5B8; margin-bottom: 0.5rem;">✦ No hay entrevistas publicadas aún.</p>
-            <span style="font-size: 0.85rem; color: #94a3b8;">Las coberturas y videos de taller agregados desde el CMS aparecerán aquí automáticamente.</span>
-          </div>
+          <article class="entrevista-card-articulo glass-card" data-id="{{ e.id }}" data-tipo="articulo">
+            <div class="articulo-card-inner">
+              <div>
+                <div class="articulo-badge-header" style="margin-bottom: 0.8rem;">
+                  <span class="articulo-plataforma-pill">
+                    📰 {{ e.plataforma or e.medio or 'Prensa' }}
+                  </span>
+                  <span style="font-size: 0.75rem; color: var(--niebla, #aab2d4);">Artículo Escrito</span>
+                </div>
+                <h2 class="articulo-titulo">{{ e.titulo }}</h2>
+                {% if e.descripcion %}
+                <p class="articulo-extracto">{{ e.descripcion }}</p>
+                {% endif %}
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--linea, rgba(176, 190, 255, 0.12));">
+                <span style="font-size: 0.78rem; color: var(--niebla, #aab2d4);">📅 {{ e.fecha }}</span>
+                <a href="{{ url_destino }}" target="_blank" rel="noopener noreferrer" class="btn-hero-primary" style="padding: 0.5rem 1rem; font-size: 0.76rem;">
+                  <span>Leer Nota</span> ↗
+                </a>
+              </div>
+            </div>
+          </article>
         {% endif %}
-
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ==========================================================================
-       FOOTER (ESTRUCTURA EXACTA: SUPERIOR, MEDIO Y FIRMA INFERIOR)
-       ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      
-      <!-- Superior: Botones limpios de Contacto Directo -->
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
-        </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
-        </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
-        </a>
+      {% endfor %}
+    {% else %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: rgba(14, 20, 52, 0.4); border: 1px solid rgba(230, 213, 184, 0.2); border-radius: 16px;">
+        <p style="font-size: 1.1rem; color: var(--champan-hi, #f7ecd0); margin-bottom: 0.5rem;">✦ No hay entrevistas publicadas aún.</p>
+        <span style="font-size: 0.85rem; color: var(--niebla, #aab2d4);">Las coberturas y videos de taller agregados desde el CMS aparecerán aquí automáticamente.</span>
       </div>
+    {% endif %}
+  </section>
 
-      <!-- Medio: Aviso Legal -->
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
-
-      <!-- Inferior: Firma centrado, minúsculo y sutil al final de todo -->
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
-
-    </div>
-  </footer>
-
-</body>
-</html>
+</div>
+{% endblock %}

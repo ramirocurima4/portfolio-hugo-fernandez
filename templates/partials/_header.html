@@ -19,7 +19,7 @@
 
   <div class="header-container">
     <a href="/" class="header-logo" title="Hugo Fernández">
-      <span class="brand-mark" aria-hidden="true">HF</span>
+      <img src="{{ url_for('static', filename='assets/img/logo.png') }}" alt="Hugo Fernández" class="brand-logo-img header-logo-img" style="max-height: 45px; width: auto; object-fit: contain; display: block;">
       <span class="brand-text">
         <span class="brand-name">Hugo Fernández</span>
         <span class="brand-sub">Arte Creativo</span>
@@ -55,7 +55,7 @@
 
         <li class="nav-item"><a href="/comunidad/subir" class="nav-link {% if nav_active == 'comunidad' %}active{% endif %}">Comunidad</a></li>
         <li class="nav-item"><a href="/entrevistas" class="nav-link {% if nav_active == 'entrevistas' %}active{% endif %}">Entrevistas</a></li>
-        {% if ATELIER_ENABLED %}<li class="nav-item"><a href="/atelier" class="nav-link {% if nav_active == 'atelier' %}active{% endif %}">Atelier</a></li>{% endif %}
+        <li class="nav-item"><a href="/atelier" class="nav-link {% if nav_active == 'atelier' %}active{% endif %}">Atelier</a></li>
         <li class="nav-item"><a href="#contacto" class="nav-link">Contacto</a></li>
       </ul>
     </nav>

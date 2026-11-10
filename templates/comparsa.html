@@ -1,202 +1,80 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Vestuarios, figuras y obras de carnaval de {{ nombre_comparsa }} ({{ info_comparsa.apodo }}) en el Carnaval de Corrientes.">
-  <title>{{ nombre_comparsa }} ({{ info_comparsa.apodo }}) | Trajes & Figuras | Hugo Fernández</title>
-  <link rel="stylesheet" href="/static/css/estilos.css">
-  <link rel="stylesheet" href="../css/estilos.css">
-  <script src="/static/js/main.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set nav_active = 'comparsas' %}
 
-  <!-- ==========================================================================
-       HEADER STICKY CON LOGO A LA DERECHA Y NAVEGACIÓN PROFESIONAL
-       ========================================================================== -->
-  <header class="site-header">
-    <div class="carnaval-countdown-bar" aria-label="Cuenta regresiva para el próximo Carnaval Correntino">
-      <span class="carnaval-countdown-label">
-        <span>🎭</span> Rumbo al Carnaval de Corrientes 2027 (Nolo Alías):
-      </span>
-      <div class="carnaval-countdown-timer" id="carnaval-countdown-timer">
-        <span class="countdown-unit"><span id="cd-dias">00</span><small>d</small></span>
-        <span class="countdown-unit"><span id="cd-horas">00</span><small>h</small></span>
-        <span class="countdown-unit"><span id="cd-min">00</span><small>m</small></span>
-        <span class="countdown-unit"><span id="cd-seg">00</span><small>seg</small></span>
-      </div>
-      <a href="/comunidad/subir" class="carnaval-countdown-cta">
-        ✨ SUBÍ TU TRAJE
-      </a>
-    </div>
+{% block title %}{{ nombre_comparsa }} ({{ info_comparsa.ciudad }}) | Trajes & Figuras | Hugo Fernández{% endblock %}
+{% block description %}Vestuarios, figuras y obras de carnaval de {{ nombre_comparsa }} ({{ info_comparsa.ciudad }}) en el catálogo de Hugo Fernández Arte Creativo.{% endblock %}
 
-    <div class="header-container">
-      
-      <button class="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+{% block content %}
+<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1200px; width: 100%; margin: 0 auto;">
 
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="/" class="nav-link">Inicio</a>
-          </li>
-          
-          <!-- Desplegable: Comparsas -->
-          <li class="nav-item dropdown">
-            <a href="/comparsas" class="nav-link active">
-              Comparsas <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/comparsas">Catálogo de Comparsas</a></li>
-              {% for c in comparsas_unicas %}
-              <li><a href="{{ url_for('vista_comparsa', nombre=c) }}">{{ c }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
+  <!-- Selector Rápido de Agrupaciones desde SQLite -->
+  <nav class="comparsas-pills-nav" aria-label="Cambiar de comparsa" style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;">
+    <a href="/comparsas" class="comparsa-pill">✦ Todas</a>
+    {% for comparsa in comparsas %}
+    <a href="{{ url_for('vista_comparsa', nombre=comparsa.nombre) }}" 
+       class="comparsa-pill {% if comparsa.nombre|lower == nombre_comparsa|lower %}active{% endif %}">
+      🎭 {{ comparsa.nombre }}
+    </a>
+    {% endfor %}
+  </nav>
 
-          <!-- Desplegable: Trajes -->
-          <li class="nav-item dropdown">
-            <a href="/trajes" class="nav-link">
-              Trajes <span class="dropdown-icon">▼</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/trajes">Todos los Trajes</a></li>
-              <li><a href="/trajes?genero=Femenino">Vestuarios Femeninos</a></li>
-              <li><a href="/trajes?genero=Masculino">Vestuarios Masculinos</a></li>
-              <li><a href="/trajes?genero=Unisex+%2F+Sin+G%C3%A9nero">Unisex / Sin Género</a></li>
-              <li><a href="/destaques">✦ Obras Destacadas</a></li>
-              <li><a href="/pages/coordinacion.html">✦ Obras Maestras</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a href="/comunidad/subir" class="nav-link">Comunidad</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/entrevistas" class="nav-link">Entrevistas</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/#contacto" class="nav-link">Contacto</a>
-          </li>
-        </ul>
-      </nav>
-
-      <a href="/" class="header-logo" title="Hugo Fernández Arte Creativo">
-        <span class="brand-name">Hugo Fernández</span>
-        <span class="brand-sub">Arte Creativo</span>
-      </a>
-
-    </div>
+  <!-- Encabezado Dinámico de la Comparsa (SQLite) -->
+  <header class="page-header is-center">
+    <span class="hero-badge" style="margin-bottom: 0.8rem;">{{ info_comparsa.badge }}</span>
+    <h1 class="dorado-titulo">{{ nombre_comparsa }}</h1>
+    <p style="color: var(--champan-hi, #f7ecd0); font-weight: 500; margin-bottom: 0.5rem;">
+      {{ info_comparsa.rol }} • {{ info_comparsa.ciudad }} ({{ info_comparsa.anios }})
+    </p>
+    <div class="section-divider"></div>
+    <p>{{ info_comparsa.descripcion }}</p>
   </header>
 
-  <main>
-    <div class="container">
-
-      <!-- Selector Rápido de Agrupaciones del Carnaval Correntino -->
-      <nav class="comparsas-pills-nav slide-up" aria-label="Cambiar de comparsa">
-        <a href="/comparsas" class="comparsa-pill">✦ Todas</a>
-        {% for comparsa in comparsas_unicas %}
-        <a href="{{ url_for('vista_comparsa', nombre=comparsa) }}" 
-           class="comparsa-pill {% if comparsa|lower == nombre_comparsa|lower %}active{% endif %}">
-          🎭 {{ comparsa }}
-        </a>
-        {% endfor %}
-      </nav>
-
-      <!-- Encabezado Dinámico de la Comparsa (FASE 14 - Módulo 2) -->
-      <header class="page-header comparsa-hero-banner slide-up">
-        <span class="hero-badge" style="margin-bottom: 0.8rem;">{{ info_comparsa.categoria }}</span>
-        <h1 class="dorado-titulo">{{ nombre_comparsa }}</h1>
-        <p class="comparsa-apodo-subtitle">« {{ info_comparsa.apodo }} » • Colores: {{ info_comparsa.colores }}</p>
-        <div class="section-divider"></div>
-        <p>{{ info_comparsa.historia }}</p>
-      </header>
-
-      <!-- Grilla de Trajes Publicados de esta Comparsa -->
-      <section class="comparseros-grid" aria-label="Trajes publicados de {{ nombre_comparsa }}">
-        {% if trajes %}
-          {% for traje in trajes %}
-          <article class="comparsero-card reveal visible delay-{{ (loop.index0 % 3) + 1 }} {% if traje.es_obra_maestra %}obra-maestra-glitter{% endif %}" data-id="{{ traje.id }}">
-            <div class="comparsero-thumb">
-              <span class="comparsero-badge">
-                {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_obra_maestra %} • ★ Obra Maestra{% endif %}
-              </span>
-              <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
-                   alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy">
-            </div>
-            <div class="comparsero-body">
-              <div>
-                <h2 class="comparsero-title">{{ traje.comparsero }}</h2>
-                <p class="comparsero-subtitle">
-                  <span>🎭</span> {{ traje.comparsa }} • <span>⚙️</span> {{ traje.herreria_estructura if traje.herreria_estructura else traje.genero }}
-                </p>
-                {% if traje.descripcion %}
-                <p style="font-size: 0.88rem; color: var(--texto-gris-claro); margin-top: 0.6rem; line-height: 1.5;">
-                  {{ traje.descripcion[:150] }}{% if traje.descripcion|length > 150 %}...{% endif %}
-                </p>
-                {% endif %}
-              </div>
-              <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-ver-ficha">
-                Ver Ficha del Traje <span class="arrow-icon">→</span>
-              </a>
-            </div>
-          </article>
-          {% endfor %}
-        {% else %}
-          <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem 1.5rem; background: rgba(10, 25, 47, 0.65); border: 1px solid rgba(191, 149, 63, 0.35); border-radius: 12px;">
-            <p style="font-size: 1.2rem; color: var(--dorado-brillo); margin-bottom: 0.6rem;">
-              ✦ Aún no hay trajes publicados para {{ nombre_comparsa }}.
-            </p>
-            <p style="font-size: 0.95rem; color: var(--texto-gris-claro); margin-bottom: 1.4rem;">
-              ¿Formás parte de {{ nombre_comparsa }}? Sé el primero en compartir tu vestuario con la comunidad.
-            </p>
-            <a href="/comunidad/subir" class="btn-dorado">📸 Subir Traje de {{ nombre_comparsa }} →</a>
-          </div>
-        {% endif %}
-      </section>
-
-      <!-- Call to Action Social para Comparseros de la Agrupación -->
-      <section class="comparsa-comunidad-cta reveal visible">
-        <div>
-          <h3>¿Desfilaste en {{ nombre_comparsa }}?</h3>
-          <p>Sumá tu traje, boceto y fotografías al archivo vivo del Carnaval Correntino.</p>
+  <!-- Grilla de Trajes Publicados de esta Comparsa -->
+  <section class="comparseros-grid" aria-label="Trajes publicados de {{ nombre_comparsa }}" style="margin-top: 2rem;">
+    {% if trajes %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; width: 100%;">
+      {% for traje in trajes %}
+      <article class="comparsero-card glass-card" data-id="{{ traje.id }}" style="overflow: hidden; display: flex; flex-direction: column;">
+        <div class="comparsero-thumb" style="position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--ink-2, #0a0f26);">
+          <span style="position: absolute; top: 12px; left: 12px; z-index: 2; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); background: rgba(4, 9, 17, 0.75); padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(94, 242, 224, 0.3);">
+            {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_obra_maestra %} • ★ Obra Maestra{% endif %}
+          </span>
+          <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
+               alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ==========================================================================
-       PIE DE PÁGINA PROFESIONAL
-       ========================================================================== -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-contact-buttons" id="contacto">
-        <a href="https://wa.me/5493794698368" target="_blank" rel="noopener noreferrer" class="btn-footer-contact btn-footer-whatsapp" aria-label="Contactar por WhatsApp a Hugo Fernández">
-          💬 Contactar por WhatsApp
-        </a>
-        <a href="mailto:Hugof28@hotmail.com" class="btn-footer-contact" aria-label="Email Hugo Fernández">
-          ✉️ Hugof28@hotmail.com
-        </a>
-        <a href="https://instagram.com/hugofernandez05" target="_blank" rel="noopener noreferrer" class="btn-footer-contact" aria-label="Instagram @hugofernandez05">
-          📷 @hugofernandez05
-        </a>
+        <div class="comparsero-body" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 1rem;">
+          <div>
+            <h2 class="comparsero-title" style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.35rem; color: var(--champan-hi, #f7ecd0); margin: 0 0 0.4rem 0;">
+              {{ traje.comparsero }}
+            </h2>
+            <p style="font-size: 0.82rem; color: var(--niebla, #aab2d4);">
+              <span>🎭</span> {{ traje.comparsa }} • <span>⚙️</span> {{ traje.herreria_estructura if traje.herreria_estructura else traje.genero }}
+            </p>
+            {% if traje.descripcion %}
+            <p style="font-size: 0.88rem; color: var(--perla, #eef0ff); margin-top: 0.6rem; line-height: 1.5;">
+              {{ traje.descripcion[:150] }}{% if traje.descripcion|length > 150 %}...{% endif %}
+            </p>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('detalle_traje', id=traje.id) }}" class="btn-ver-ficha">
+            Ver Ficha del Traje <span class="arrow-icon">→</span>
+          </a>
+        </div>
+      </article>
+      {% endfor %}
       </div>
+    {% else %}
+      <div style="text-align: center; padding: 3.5rem 1.5rem; background: rgba(14, 20, 52, 0.4); border: 1px solid rgba(230, 213, 184, 0.25); border-radius: 16px;">
+        <p style="font-size: 1.2rem; color: var(--champan-hi, #f7ecd0); margin-bottom: 0.6rem;">
+          ✦ Aún no hay trajes publicados para {{ nombre_comparsa }}.
+        </p>
+        <p style="font-size: 0.95rem; color: var(--niebla, #aab2d4); margin-bottom: 1.4rem;">
+          ¿Formás parte de {{ nombre_comparsa }}? Sé el primero en compartir tu vestuario con la comunidad.
+        </p>
+        <a href="/comunidad/subir" class="btn-dorado">📸 Subir Traje de {{ nombre_comparsa }} →</a>
+      </div>
+    {% endif %}
+  </section>
 
-      <p class="footer-legal-notice">
-        Las imágenes de los trajes y personas exhibidas pertenecen a sus respectivos dueños y agrupaciones. Se utilizan en este sitio exclusivamente con fines de exhibición de portfolio profesional.
-      </p>
-
-      <p class="footer-signature">
-        Diseñado por Ramiro Curima/Estudiante Tec. Desarrollo de Software Asistencia : Gemini & Antigravity
-      </p>
-    </div>
-  </footer>
-
-</body>
-</html>
+</div>
+{% endblock %}

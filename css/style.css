@@ -1,0 +1,672 @@
+/* ==========================================================================
+   STYLE.CSS — Sistema Global de Alta Costura, Glassmorphism y Tokens
+   Hugo Fernández Arte Creativo
+   Heredado globalmente por todas las vistas: /inicio, /comparsas, /trajes, /comunidad, etc.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Hanken+Grotesk:wght@300..700&family=Syne:wght@500..800&family=Dancing+Script:wght@600;700&family=Julius+Sans+One&display=swap');
+
+:root {
+  color-scheme: dark;
+
+  /* ── 1. Paleta "Deep Abyss" (Fondo del escenario antes de abrirse el telón) ── */
+  --deep-abyss:              #040911;
+  --deep-abyss-card:         rgba(255, 255, 255, 0.05);
+  --deep-abyss-surface:      rgba(4, 9, 17, 0.85);
+  --negro-fondo:             #040911;
+  --azul-noche:              #040911;
+  --azul-noche-card:         rgba(255, 255, 255, 0.05);
+  --azul-noche-transparente: rgba(4, 9, 17, 0.65);
+  --azul-noche-solido:       #040911;
+
+  --void:        #03040a;
+  --ink:         #060916;
+  --ink-2:       #0a0f26;
+  --ink-3:       #101842;
+  --ink-4:       #17215a;
+
+  /* ── 2. Tono Champagne y Herencia de Oro Artesanal ── */
+  --champagne:        #E6D5B8;
+  --champagne-light:  #F4EAD9;
+  --champagne-brillo: #FCF6BA;
+  --champagne-suave:  #E6D5B8;
+  --champagne-borde:  rgba(230, 213, 184, 0.4);
+  --champagne-border: rgba(230, 213, 184, 0.25);
+  --champagne-glow:   rgba(230, 213, 184, 0.25);
+  --champan:          #ead9b6;
+  --champan-hi:       #f7ecd0;
+  --oro:              #c9a75e;
+
+  /* Gradiente Dorado de Identidad */
+  --dorado-gradiente: linear-gradient(45deg, #E6D5B8, #FCF6BA, #B38728, #FBF5B7);
+  --dorado-solido:    #E6D5B8;
+  --dorado-brillo:    #FCF6BA;
+  --dorado-suave:     #E6D5B8;
+  --dorado-borde:     rgba(230, 213, 184, 0.35);
+  --dorado-glow:      rgba(230, 213, 184, 0.25);
+  --dorado:           var(--champan);
+  --dorado-light:     var(--champan-hi);
+
+  /* ── 3. Azules y Neones de Alta Costura ── */
+  --ultramar:    #3040ff;
+  --cobalto:     #1f2fd8;
+  --zafiro:      #0f1d78;
+  --lapislazuli: #1a2a9e;
+  --rio:         #5ef2e0;
+  --orquidea:    #9d6cff;
+  --fucsia:      #ff4fa3;
+
+  /* ── 4. Tipografía y Textos ── */
+  --texto-blanco:      #ffffff;
+  --texto-tiza:        #f8fafc;
+  --texto-gris-claro:  #e2e8f0;
+  --texto-gris-medio:  #94a3b8;
+  --texto-gris-oscuro: #64748b;
+  --perla:             #eef0ff;
+  --niebla:            #aab2d4;
+  --bruma:             #6d759c;
+
+  --f-display:      'Fraunces', serif;
+  --f-body:         'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --f-label:        'Syne', sans-serif;
+  --f-script:       'Dancing Script', cursive;
+  --f-julius:       'Julius Sans One', sans-serif;
+  --fuente-titulos: 'Fraunces', serif;
+  --fuente-cuerpo:  'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* ── 5. Superficies Glassmorphism Real ── */
+  --glass:        rgba(14, 20, 52, 0.46);
+  --glass-strong: rgba(10, 15, 40, 0.72);
+  --glass-hi:     rgba(130, 150, 255, 0.07);
+  --glass-bg:     rgba(255, 255, 255, 0.05);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --linea:        rgba(176, 190, 255, 0.12);
+  --linea-fuerte: rgba(176, 190, 255, 0.24);
+  --brillo:       rgba(255, 255, 255, 0.06);
+
+  /* ── 6. Gradientes Líquidos ── */
+  --grad-licuado: linear-gradient(115deg, var(--ultramar) 0%, var(--orquidea) 48%, var(--rio) 100%);
+  --grad-aurora:  radial-gradient(120% 90% at 20% 0%, rgba(48, 64, 255, .55), transparent 60%),
+                  radial-gradient(90% 80% at 90% 20%, rgba(157, 108, 255, .38), transparent 55%),
+                  radial-gradient(80% 70% at 60% 100%, rgba(94, 242, 224, .22), transparent 60%);
+  --grad-champan: linear-gradient(115deg, #fbf1d6 0%, var(--champan) 35%, var(--oro) 70%, var(--champan-hi) 100%);
+  --grad-borde:   linear-gradient(135deg, rgba(176,190,255,.45), rgba(176,190,255,.06) 40%, rgba(94,242,224,.28));
+
+  /* ── 7. Sombras & Luces ── */
+  --sombra-1:      0 18px 50px -15px rgba(0, 0, 0, .85);
+  --sombra-2:      0 30px 80px -20px rgba(0, 0, 0, .92);
+  --sombra-card:   0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --sombra-dorada: 0 0 25px rgba(191, 149, 63, 0.2);
+  --luz-azul:      0 0 50px -10px rgba(48, 64, 255, .45);
+  --luz-rio:       0 0 50px -10px rgba(94, 242, 224, .45);
+  --luz-oro:       0 0 50px -10px rgba(201, 167, 94, .4);
+
+  --radio-borde: 8px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 14px; --r-lg: 22px; --r-xl: 32px; --r-pill: 999px;
+  --transicion-suave: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(.16, 1, .3, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* ==========================================================================
+   HERENCIA FORZOSA GLOBAL: FONDO OSCURO Y TIPOGRAFÍA PREMIUM
+   ========================================================================== */
+html, body {
+  background-color: #060916 !important;
+  background: #060916 !important;
+  color: #eef0ff !important;
+  font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  overflow-x: hidden !important;
+  max-width: 100vw;
+  width: 100%;
+}
+
+body::before {
+  display: none !important;
+}
+
+main, .site-main, .main-symmetric-container, .main-content {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #eef0ff !important;
+  font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* ==========================================================================
+   REGLA DE ORO: LOGOTIPO HUGO FERNÁNDEZ (CERO DESBORDES NI LOGO GIGANTE)
+   ========================================================================== */
+img.brand-logo-img,
+.header-logo-img,
+.footer-logo-img,
+.header-logo img,
+.footer-logo-ring img,
+.footer-brand-badge img,
+.site-header img,
+.site-footer img,
+.site-header .brand-logo-img,
+.site-footer .brand-logo-img,
+.header-logo .brand-logo-img,
+img.login-logo {
+  max-height: 45px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
+.header-logo {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  text-decoration: none !important;
+}
+
+.header-logo:hover .header-logo-img {
+  transform: scale(1.05);
+}
+
+.footer-logo-ring {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: conic-gradient(from 180deg, var(--rio), var(--ultramar), var(--champan), var(--rio));
+  padding: 2px;
+  box-shadow: 0 0 25px rgba(94, 242, 224, 0.35), 0 0 45px rgba(48, 64, 255, 0.3);
+  transition: transform 0.6s var(--ease-spring);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.footer-logo-ring:hover {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.footer-logo-img {
+  width: 100%;
+  height: 100%;
+  max-height: 42px !important;
+  max-width: 42px !important;
+  object-fit: contain !important;
+  border-radius: 50%;
+  background: var(--ink-2);
+  padding: 3px;
+  display: block;
+}
+
+/* ==========================================================================
+   SISTEMA GLASSMORPHISM REAL DE ALTA COSTURA
+   ========================================================================== */
+.glass-card,
+.glass-panel,
+.glass-surface,
+.hero-glass-card,
+.perfil-central-glass-card,
+.trayectoria-glass-section,
+.comparsa-btn-card,
+.modal-glass-content,
+.contacto-compacto-glass,
+.desglose-materiales,
+.traje-detalle-card,
+.traje-creditos,
+.servicio-card,
+.coordinacion-card,
+.admin-card,
+.login-card,
+.comunidad-form-card,
+.comparsa-card,
+.destaque-card,
+.destaques-glass-section,
+.material-card,
+.comparsero-card,
+.tarjeta-feed,
+.immersive-traje-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(24, 34, 86, .42), rgba(8, 12, 34, .5)) !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+  border: 1px solid var(--linea, rgba(176, 190, 255, 0.12)) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--sombra-1, 0 18px 50px -15px rgba(0, 0, 0, 0.85)), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  transition: border-color .4s, box-shadow .5s, transform .5s cubic-bezier(.16, 1, .3, 1) !important;
+}
+
+.glass-card:hover,
+.comparsa-btn-card:hover,
+.comparsa-card:hover,
+.destaque-card:hover,
+.servicio-card:hover,
+.coordinacion-card:hover,
+.comparsero-card:hover {
+  border-color: var(--linea-fuerte, rgba(176, 190, 255, 0.28)) !important;
+  box-shadow: var(--sombra-2, 0 30px 80px -20px rgba(0, 0, 0, 0.92)), var(--luz-azul, 0 0 50px -10px rgba(48, 64, 255, .45)) !important;
+  transform: translateY(-4px);
+}
+
+/* ==========================================================================
+   TIPOGRAFÍA Y TÍTULOS (DEEP ABYSS / CHAMPAGNE / LÍQUIDO)
+   ========================================================================== */
+.dorado-titulo, .text-liquid {
+  font-family: var(--f-display, 'Fraunces', serif);
+  background: var(--grad-licuado);
+  background-size: 200% 100%;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  letter-spacing: -.02em;
+  font-weight: 400;
+}
+
+.text-champan {
+  background: var(--grad-champan);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.section-divider {
+  width: 72px;
+  height: 2px;
+  margin: 1.2rem auto;
+  background: var(--grad-licuado);
+  box-shadow: 0 0 18px rgba(94, 242, 224, .6);
+  border-radius: 999px;
+}
+
+.eyebrow, .hero-badge, .destaques-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .6em;
+  font-family: var(--f-label, 'Syne', sans-serif);
+  font-size: var(--t-xs, 0.78rem);
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--rio, #5ef2e0);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(94, 242, 224, 0.08);
+  border: 1px solid rgba(94, 242, 224, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.page-header {
+  padding: clamp(2rem, 5vw, 4rem) 0 clamp(1rem, 3vw, 2rem);
+  max-width: 62rem;
+  margin-inline: auto;
+}
+
+.page-header.is-center {
+  text-align: center;
+}
+
+.page-header h1 {
+  font-family: var(--f-display, 'Fraunces', serif);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 300;
+  line-height: 1.05;
+  margin: 0.8rem 0;
+}
+
+.page-header p {
+  color: var(--niebla, #aab2d4);
+  font-size: clamp(0.95rem, 1vw, 1.15rem);
+  line-height: 1.6;
+  font-weight: 300;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+/* ==========================================================================
+   BOTONES PREMIUM DE ALTA COSTURA
+   ========================================================================== */
+.btn-hero-primary, .btn-hero-secondary, .btn-perfil-tecnico, .btn-dorado, .btn-back-nav,
+.btn-destaque-ver, .btn-leer-entrevista, .btn-whatsapp-share, .btn-compartir, .btn-trayectoria-control {
+  --b-pad-y: .85rem; --b-pad-x: 1.5rem;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: .65rem;
+  padding: var(--b-pad-y) var(--b-pad-x); border-radius: var(--r-pill, 999px); border: 1px solid transparent;
+  font: 600 .76rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  transition: transform .5s var(--ease-spring), box-shadow .4s, border-color .3s, color .3s, background-position .6s var(--ease-out);
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.btn-hero-primary, .btn-dorado {
+  color: #fff !important;
+  background: var(--grad-licuado) !important;
+  background-size: 220% 100% !important;
+  box-shadow: 0 14px 40px -14px rgba(48, 64, 255, .9), inset 0 1px 0 rgba(255, 255, 255, .35) !important;
+}
+
+.btn-hero-primary:hover, .btn-dorado:hover {
+  background-position: 100% 0 !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 20px 50px -14px rgba(94, 242, 224, .55), inset 0 1px 0 rgba(255, 255, 255, .4) !important;
+}
+
+.btn-hero-secondary, .btn-perfil-tecnico, .btn-back-nav {
+  color: var(--perla, #eef0ff) !important;
+  background: var(--glass, rgba(14, 20, 52, 0.46)) !important;
+  border-color: var(--linea-fuerte, rgba(176, 190, 255, 0.24)) !important;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+
+.btn-hero-secondary:hover, .btn-perfil-tecnico:hover, .btn-back-nav:hover {
+  border-color: var(--rio, #5ef2e0) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: var(--luz-rio, 0 0 50px -12px rgba(94, 242, 224, .5)) !important;
+  color: #fff !important;
+}
+
+.btn-ver-ficha {
+  display: inline-flex; align-items: center; gap: .7rem; width: fit-content;
+  font: 600 .72rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .16em; text-transform: uppercase; color: var(--perla, #eef0ff);
+  padding-bottom: .55rem; background: linear-gradient(var(--rio, #5ef2e0), var(--rio, #5ef2e0)) 0 100% / 0% 1px no-repeat;
+  transition: background-size .6s var(--ease-out), color .3s;
+  text-decoration: none !important;
+}
+
+.btn-ver-ficha:hover {
+  background-size: 100% 1px;
+  color: #fff;
+}
+
+.btn-ver-ficha .arrow-icon {
+  display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--linea-fuerte, rgba(176, 190, 255, 0.24));
+  transition: transform .5s var(--ease-spring), background .3s;
+}
+
+.btn-ver-ficha:hover .arrow-icon {
+  transform: translateX(4px);
+  background: var(--ultramar, #3040ff);
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   PÍLDORAS Y FILTROS (COMPARSAS / TRAJES / MATERIALES)
+   ========================================================================== */
+.comparsa-pill, .trajes-filter-btn, .material-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1.2rem;
+  border-radius: var(--r-pill, 999px);
+  font: 600 .72rem/1 var(--f-label, 'Syne', sans-serif);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--niebla, #aab2d4);
+  background: rgba(14, 20, 52, 0.46);
+  border: 1px solid var(--linea, rgba(176, 190, 255, 0.12));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: color .3s, background .3s, border-color .3s, transform .45s var(--ease-spring);
+  text-decoration: none !important;
+}
+
+.comparsa-pill:hover, .trajes-filter-btn:hover, .material-pill:hover {
+  color: #fff;
+  border-color: var(--rio, #5ef2e0);
+  background: rgba(48, 64, 255, .25);
+  transform: translateY(-2px);
+}
+
+.comparsa-pill.active, .trajes-filter-btn.active {
+  color: #fff !important;
+  background: var(--ultramar, #3040ff) !important;
+  border-color: transparent !important;
+  box-shadow: 0 10px 30px -10px rgba(48, 64, 255, .9) !important;
+}
+
+/* ==========================================================================
+   VISTA: COMUNIDAD FORMULARIO Y SUBIDA MULTIMEDIA
+   ========================================================================== */
+.comunidad-form-card {
+  max-width: 880px;
+  margin: 2rem auto;
+  padding: clamp(1.8rem, 4vw, 3rem);
+}
+
+.comunidad-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12));
+  margin-bottom: 2rem;
+}
+
+.comunidad-form-header h2 {
+  font-family: var(--f-display, 'Fraunces', serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--champan-hi, #f7ecd0);
+}
+
+.comunidad-badge-moderacion {
+  font: 600 .7rem/1 var(--f-label, 'Syne', sans-serif);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--rio, #5ef2e0);
+  background: rgba(94, 242, 224, 0.08);
+  border: 1px solid rgba(94, 242, 224, 0.25);
+  padding: .45rem .85rem;
+  border-radius: 999px;
+}
+
+.comunidad-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .comunidad-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.comunidad-field {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+}
+
+.comunidad-field.full-span {
+  grid-column: 1 / -1;
+}
+
+.comunidad-field label {
+  font: 600 .76rem/1 var(--f-label, 'Syne', sans-serif);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--champan, #ead9b6);
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.comunidad-field input,
+.comunidad-field select,
+.comunidad-field textarea {
+  width: 100%;
+  padding: .95rem 1.15rem;
+  border-radius: 12px;
+  font: 400 .95rem/1.4 var(--f-body, 'Hanken Grotesk', sans-serif);
+  color: var(--perla, #eef0ff);
+  background: rgba(6, 9, 26, .75);
+  border: 1px solid var(--linea-fuerte, rgba(176, 190, 255, 0.24));
+  transition: border-color .3s, box-shadow .3s, background .3s;
+}
+
+.comunidad-field input:focus,
+.comunidad-field select:focus,
+.comunidad-field textarea:focus {
+  outline: none;
+  border-color: var(--rio, #5ef2e0);
+  background: rgba(6, 9, 26, .95);
+  box-shadow: 0 0 0 3px rgba(94, 242, 224, .15), 0 0 25px -5px rgba(94, 242, 224, .4);
+}
+
+.comunidad-upload-zone {
+  background: rgba(14, 20, 52, 0.35);
+  border: 2px dashed var(--linea-fuerte, rgba(176, 190, 255, 0.24));
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: border-color .3s, background .3s;
+}
+
+.comunidad-upload-zone:hover {
+  border-color: var(--rio, #5ef2e0);
+  background: rgba(94, 242, 224, 0.04);
+}
+
+.upload-zone-title {
+  font: 600 .95rem/1.4 var(--f-label, 'Syne', sans-serif);
+  color: var(--perla, #eef0ff);
+  margin-bottom: .6rem;
+}
+
+.upload-zone-hint {
+  font-size: .8rem;
+  color: var(--niebla, #aab2d4);
+  line-height: 1.5;
+  margin-top: .6rem;
+}
+
+.comunidad-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.comunidad-preview-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--linea-fuerte, rgba(176, 190, 255, 0.24));
+  aspect-ratio: 1;
+  background: var(--ink-2, #0a0f26);
+}
+
+.comunidad-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comunidad-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2.2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--linea, rgba(176, 190, 255, 0.12));
+}
+
+.comunidad-alert-success,
+.comunidad-alert-error {
+  max-width: 880px;
+  margin: 1.5rem auto;
+  padding: 1.4rem 1.8rem;
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.comunidad-alert-success {
+  background: rgba(12, 45, 30, 0.7);
+  border: 1px solid rgba(61, 220, 151, 0.4);
+  color: #e6fffa;
+}
+
+.comunidad-alert-error {
+  background: rgba(60, 15, 20, 0.75);
+  border: 1px solid rgba(255, 93, 115, 0.45);
+  color: #fff0f2;
+}
+
+/* ==========================================================================
+   VISTA: TRAJES FEED INMERSIVO
+   ========================================================================== */
+.feed-trajes-mobile {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1240px;
+  margin: 1.5rem auto;
+}
+
+.immersive-traje-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.immersive-traje-img-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--ink-2, #0a0f26);
+}
+
+.immersive-traje-img-box img,
+.immersive-traje-img-box video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-out);
+}
+
+.immersive-traje-card:hover .immersive-traje-img-box img {
+  transform: scale(1.06);
+}
+
+.immersive-traje-overlay {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  gap: 1rem;
+}
+
+.immersive-badge {
+  font: 600 .66rem/1 var(--f-label, 'Syne', sans-serif);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--rio, #5ef2e0);
+}
+
+.immersive-title {
+  font-family: var(--f-display, 'Fraunces', serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--champan-hi, #f7ecd0);
+  margin: 0.35rem 0;
+}
+
+.immersive-desc {
+  font-size: .88rem;
+  color: var(--niebla, #aab2d4);
+  line-height: 1.55;
+}

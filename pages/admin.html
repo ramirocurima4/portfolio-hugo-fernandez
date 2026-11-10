@@ -29,23 +29,53 @@
       --sidebar-width: 260px;
     }
 
-    body {
+    html, body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
       font-size: 16px;
       margin: 0;
       padding: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
+      padding-bottom: 6rem;
+      position: static !important;
     }
+
+    /* Clases Utilitarias Globales (Compatibilidad Tailwind & Mobile First) */
+    .pb-24 { padding-bottom: 6rem !important; }
+    .w-full { width: 100% !important; }
+    .block { display: block !important; }
+    .fixed { position: fixed !important; }
+    .bottom-0 { bottom: 0 !important; }
+    .left-0 { left: 0 !important; }
+    .right-0 { right: 0 !important; }
+    .z-50 { z-index: 50 !important; }
+    .grid { display: grid !important; }
+    .grid-cols-1 { grid-template-columns: 1fr !important; }
+    .gap-2 { gap: 0.5rem !important; }
+    .overflow-x-auto { overflow-x: auto !important; }
+    .-webkit-overflow-scrolling-touch { -webkit-overflow-scrolling: touch !important; }
 
     /* Optimización Móvil Extrema (iOS/Android Touch Standard & Anti Auto-Zoom) */
     input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
     select,
-    textarea,
+    textarea {
+      width: 100%;
+      display: block;
+      min-height: 48px;
+      padding: 12px 14px;
+      font-size: 16px !important;
+      box-sizing: border-box;
+    }
+
     button {
       min-height: 48px;
       font-size: 16px;
@@ -158,19 +188,22 @@
     /* Notificación Toast */
     .status-toast {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      left: 1.5rem;
-      max-width: 520px;
-      margin-left: auto;
-      padding: 1.1rem 1.6rem;
+      bottom: 5.5rem;
+      right: 0;
+      left: 0;
+      width: 90%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 1.1rem 1.4rem;
       border-radius: 10px;
       font-size: 16px;
       font-weight: 700;
-      z-index: 1000;
+      z-index: 2100;
       display: none;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       animation: slideInUp 0.3s ease;
+      box-sizing: border-box;
+      text-align: center;
     }
 
     .status-toast.success {
@@ -197,6 +230,8 @@
       display: flex;
       flex-direction: column;
       gap: 2.5rem;
+      width: 100%;
+      min-width: 0;
     }
 
     .dashboard-card {
@@ -205,6 +240,9 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     .dashboard-card.edit-mode-card {
@@ -236,19 +274,26 @@
 
     .dashboard-card-body {
       padding: 2rem 1.8rem;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     /* Formulario */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.95rem;
+      width: 100%;
+      min-width: 0;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.4rem;
+      width: 100%;
+      min-width: 0;
     }
 
     .form-group.full-width {
@@ -256,12 +301,12 @@
     }
 
     .form-label {
-      font-size: 1rem;
+      font-size: 0.86rem;
       font-weight: 700;
       color: var(--dorado-light);
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.4rem;
     }
 
     .form-control {
@@ -269,7 +314,7 @@
       border: 1px solid rgba(255, 255, 255, 0.22);
       border-radius: 8px;
       min-height: 48px;
-      padding: 0.8rem 1rem;
+      padding: 12px 14px;
       color: #ffffff;
       font-family: inherit;
       font-size: 16px;
@@ -277,19 +322,23 @@
       transition: all 0.3s ease;
       box-sizing: border-box;
       width: 100%;
+      display: block;
     }
 
     .form-control:focus {
       outline: none;
       border-color: var(--dorado);
-      box-shadow: 0 0 12px rgba(191, 149, 63, 0.35);
+      box-shadow: 0 0 10px rgba(191, 149, 63, 0.35);
       background: rgba(5, 13, 26, 1);
     }
 
     textarea.form-control {
       resize: vertical;
-      min-height: 100px;
+      min-height: 90px;
+      padding: 12px 14px;
       font-size: 16px;
+      width: 100%;
+      display: block;
     }
 
     /* Checkbox Destacar en Sección Destaques */
@@ -306,6 +355,7 @@
       cursor: pointer;
       transition: all 0.25s ease;
       box-sizing: border-box;
+      width: 100%;
     }
 
     .obra-maestra-checkbox-card:hover {
@@ -342,25 +392,34 @@
     }
 
     /* Interfaz de Selección Múltiple de Archivos (FASE 13) */
-    .multi-upload-dropzone {
+    .multi-upload-dropzone,
+    .file-dropzone {
+      width: 100%;
       border: 2px dashed var(--dorado-border);
       border-radius: 10px;
-      padding: 1.5rem;
+      padding: 1.5rem 1rem;
       text-align: center;
       background: rgba(5, 13, 26, 0.6);
       transition: all 0.3s ease;
       margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
     }
 
-    .multi-upload-dropzone:hover {
+    .multi-upload-dropzone:hover,
+    .file-dropzone:hover {
       border-color: var(--dorado);
       background: rgba(191, 149, 63, 0.06);
     }
 
     .fotos-upload-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 1.2rem;
+      width: 100%;
     }
 
     .foto-upload-card {
@@ -452,32 +511,39 @@
       flex-shrink: 0;
     }
 
-    .btn-submit-traje {
+    .btn-submit-traje,
+    .btn-saas-primary {
+      width: 100%;
       background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728);
       color: #0a0a0a;
       border: none;
       border-radius: 8px;
       min-height: 54px;
-      padding: 1rem 2rem;
+      height: auto;
+      padding: 14px 20px;
       font-size: 16px;
       font-weight: 800;
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 0.3s ease;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.65rem;
       text-transform: uppercase;
+      white-space: normal;
+      text-align: center;
       box-sizing: border-box;
     }
 
-    .btn-submit-traje:hover {
+    .btn-submit-traje:hover,
+    .btn-saas-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(191, 149, 63, 0.4);
     }
 
-    .btn-submit-traje:disabled {
+    .btn-submit-traje:disabled,
+    .btn-saas-primary:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
@@ -491,29 +557,34 @@
       -webkit-overflow-scrolling: touch;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.12);
+      box-sizing: border-box;
     }
 
     .admin-table {
       width: 100%;
-      min-width: 780px;
+      min-width: 680px;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.96rem;
+      font-size: 0.88rem;
     }
 
     .admin-table th {
       background: rgba(15, 34, 64, 0.95);
       color: var(--dorado-light);
       font-weight: 700;
-      padding: 1rem 1.2rem;
+      padding: 0.75rem 0.85rem;
       border-bottom: 2px solid var(--dorado-border);
       white-space: nowrap;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .admin-table td {
-      padding: 1rem 1.2rem;
+      padding: 0.75rem 0.85rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       vertical-align: middle;
+      font-size: 0.86rem;
     }
 
     .admin-table tbody tr:hover {
@@ -521,20 +592,21 @@
     }
 
     .traje-table-thumb {
-      width: 64px;
-      height: 64px;
+      width: 44px;
+      height: 44px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 6px;
       border: 1px solid var(--dorado-border);
+      display: block;
     }
 
     .badge-obra-table {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.35rem 0.7rem;
+      gap: 0.3rem;
+      padding: 0.25rem 0.55rem;
       border-radius: 6px;
-      font-size: 0.84rem;
+      font-size: 0.78rem;
       font-weight: 700;
       background: rgba(191, 149, 63, 0.2);
       border: 1px solid var(--dorado);
@@ -544,41 +616,41 @@
 
     .badge-estandar-table {
       display: inline-block;
-      padding: 0.3rem 0.65rem;
+      padding: 0.25rem 0.55rem;
       border-radius: 6px;
-      font-size: 0.84rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       background: rgba(255, 255, 255, 0.06);
       white-space: nowrap;
     }
 
-    /* Botones de Acción Grandes, Separados (gap amplio) y con Iconos Claros */
+    /* Botones de Acción de Alta Densidad */
     .acciones-cell {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      flex-wrap: nowrap;
-      padding: 0.25rem 0;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      padding: 0.2rem 0;
     }
 
     .btn-edit-traje {
       background: rgba(191, 149, 63, 0.22);
-      border: 2px solid var(--dorado);
+      border: 1px solid var(--dorado);
       color: var(--dorado-light);
-      min-height: 48px;
-      min-width: 130px;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      font-size: 16px;
+      min-height: 32px;
+      min-width: 75px;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.35rem;
       white-space: nowrap;
       box-sizing: border-box;
     }
@@ -586,27 +658,27 @@
     .btn-edit-traje:hover {
       background: var(--dorado);
       color: #0a0a0a;
-      transform: scale(1.03);
-      box-shadow: 0 4px 12px rgba(191, 149, 63, 0.35);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(191, 149, 63, 0.35);
     }
 
     .btn-delete-comentario,
     .btn-delete-traje {
       background: rgba(230, 57, 70, 0.2);
-      border: 2px solid rgba(230, 57, 70, 0.75);
+      border: 1px solid rgba(230, 57, 70, 0.75);
       color: #ff8585;
-      min-height: 48px;
-      min-width: 135px;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      font-size: 16px;
+      min-height: 32px;
+      min-width: 75px;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.35rem;
       white-space: nowrap;
       box-sizing: border-box;
     }
@@ -615,27 +687,27 @@
     .btn-delete-traje:hover {
       background: var(--red-btn);
       color: #ffffff;
-      transform: scale(1.03);
-      box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(230, 57, 70, 0.4);
     }
 
     .btn-approve-traje {
       background: rgba(46, 204, 113, 0.22);
-      border: 2px solid #2ecc71;
+      border: 1px solid #2ecc71;
       color: #2ecc71;
-      min-height: 48px;
-      min-width: 135px;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      font-size: 16px;
+      min-height: 32px;
+      min-width: 75px;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.35rem;
       white-space: nowrap;
       box-sizing: border-box;
     }
@@ -643,8 +715,8 @@
     .btn-approve-traje:hover {
       background: #2ecc71;
       color: #05140b;
-      transform: scale(1.03);
-      box-shadow: 0 4px 14px rgba(46, 204, 113, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(46, 204, 113, 0.35);
     }
 
     .badge-pendiente-table {
@@ -1001,16 +1073,19 @@
     }
 
     .saas-main {
-      padding: 1.75rem;
+      padding: 1.75rem 1.75rem 6rem 1.75rem;
       flex: 1;
       max-width: 1400px;
       width: 100%;
+      min-width: 0;
       box-sizing: border-box;
       margin: 0 auto;
     }
 
     .saas-tab-pane {
       display: none;
+      width: 100%;
+      min-width: 0;
     }
 
     .saas-tab-pane.active-pane {
@@ -1029,6 +1104,8 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.25rem;
       margin-bottom: 1.75rem;
+      width: 100%;
+      min-width: 0;
     }
 
     .kpi-card {
@@ -1041,6 +1118,8 @@
       flex-direction: column;
       gap: 0.5rem;
       transition: transform 0.2s, border-color 0.2s;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     .kpi-card:hover {
@@ -1071,6 +1150,7 @@
       align-items: center;
       justify-content: center;
       border-radius: 8px;
+      flex-shrink: 0;
     }
 
     .kpi-main-val {
@@ -1091,6 +1171,8 @@
       grid-template-columns: 2fr 1.1fr;
       gap: 1.25rem;
       margin-bottom: 1.75rem;
+      width: 100%;
+      min-width: 0;
     }
 
     .chart-glass-panel,
@@ -1101,12 +1183,19 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       padding: 1.35rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .panel-header-clean {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       margin-bottom: 1.25rem;
       padding-bottom: 0.75rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -1135,12 +1224,24 @@
       border-radius: 12px;
       font-size: 0.72rem;
       font-weight: 600;
+      flex-shrink: 0;
     }
 
     .chart-canvas-wrapper {
       position: relative;
-      height: 270px;
       width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .chart-canvas-wrapper canvas {
+      width: 100% !important;
+      max-width: 280px !important;
+      height: auto !important;
     }
 
     .quick-stats-list {
@@ -1148,12 +1249,15 @@
       flex-direction: column;
       gap: 0.85rem;
       margin-bottom: 1.5rem;
+      width: 100%;
     }
 
     .quick-stat-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
       padding-bottom: 0.65rem;
       border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
       font-size: 0.88rem;
@@ -1175,23 +1279,32 @@
     .quick-buttons-row {
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      width: 100%;
+      gap: 0.5rem;
     }
 
     .btn-quick-action {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      width: 100%;
+      gap: 0.35rem;
       background: var(--champagne);
       color: #040911;
       border: none;
-      padding: 0.75rem 1rem;
+      white-space: normal;
+      word-break: break-word;
+      text-align: center;
+      height: auto;
+      padding: 12px 16px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      line-height: 1.35;
       cursor: pointer;
       transition: all 0.2s;
+      box-sizing: border-box;
     }
 
     .btn-quick-action:hover {
@@ -1214,15 +1327,21 @@
       display: grid;
       grid-template-columns: 1.5fr 1fr;
       gap: 1.25rem;
+      width: 100%;
+      min-width: 0;
     }
 
     .table-container-responsive {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .saas-table {
       width: 100%;
+      min-width: 520px;
       border-collapse: collapse;
       font-size: 0.86rem;
       text-align: left;
@@ -1240,7 +1359,7 @@
     }
 
     .saas-table td {
-      padding: 0.75rem 0.85rem;
+      padding: 0.85rem 0.85rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       color: var(--text-main);
       vertical-align: middle;
@@ -1289,25 +1408,32 @@
 
     .td-actions-cell {
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
     }
 
     .btn-saas-action {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.25rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 5px;
-      font-size: 0.78rem;
+      min-height: 38px;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       transition: all 0.2s;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
 
     .btn-saas-edit {
       background: rgba(230, 213, 184, 0.12);
       border: 1px solid var(--champagne-border);
       color: var(--champagne);
-      margin-right: 0.35rem;
+      margin-right: 0.25rem;
     }
 
     .btn-saas-edit:hover {
@@ -1370,13 +1496,69 @@
       background: transparent;
       border: none;
       color: var(--champagne);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       cursor: pointer;
-      padding: 0;
+      padding: 0.25rem 0.5rem;
+      min-height: 36px;
     }
 
     .link-champagne-btn:hover {
       text-decoration: underline;
+    }
+
+    /* Barra de Navegación Inferior Fija (Base & Mobile First) */
+    .saas-mobile-bottom-nav {
+      display: flex;
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      height: 64px;
+      background: #0a1128 !important;
+      border-top: 1px solid rgba(245, 158, 11, 0.2) !important;
+      z-index: 50 !important;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      box-sizing: border-box;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.65);
+    }
+
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.72rem;
+      flex: 1;
+      height: 100%;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .mobile-nav-item .nav-icon {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+    }
+
+    .mobile-nav-item.active,
+    .mobile-nav-item:hover {
+      color: #E6D5B8;
+    }
+
+    .mobile-nav-item .nav-badge {
+      position: absolute;
+      top: 6px;
+      right: calc(50% - 16px);
+      background: #ef4444;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: bold;
+      padding: 1px 5px;
+      border-radius: 999px;
     }
 
     /* Mobile First Breakpoints */
@@ -1426,7 +1608,7 @@
       }
 
       .saas-main {
-        padding: 1.25rem 0.9rem;
+        padding: 1.25rem 0.9rem 6rem 0.9rem !important;
       }
     }
 
@@ -1435,13 +1617,17 @@
         grid-template-columns: 1fr;
       }
       .saas-topbar {
-        padding: 0.85rem 1rem;
+        padding: 0.75rem 0.85rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
       }
     }
 
-    /* Mobile-First Touch & Thumb Optimization */
+    /* Mobile-First Touch & Thumb Optimization (360px a 768px) */
     @media (max-width: 768px) {
       .form-control,
+      .table-search-input,
+      .table-select-filter,
       .saas-topbar-action,
       .btn-submit-luxury,
       .btn-dorado,
@@ -1450,65 +1636,111 @@
       .btn-action-delete,
       .sidebar-menu-item {
         min-height: 48px;
+        padding: 12px 14px;
         font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
       }
-      .multi-upload-dropzone {
-        padding: 2.2rem 1.2rem;
+      .multi-upload-dropzone,
+      .file-dropzone {
+        width: 100%;
+        padding: 1.5rem 1rem;
         border-width: 2px;
         touch-action: manipulation;
+        box-sizing: border-box;
       }
       .saas-mobile-bottom-nav {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
         height: 64px;
-        background: rgba(4, 9, 17, 0.95);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-top: 1px solid rgba(230, 213, 184, 0.25);
-        z-index: 1000;
-        justify-content: space-around;
-        align-items: center;
-        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: #0a1128 !important;
+        border-top: 1px solid rgba(245, 158, 11, 0.2) !important;
+        z-index: 50 !important;
       }
-      .mobile-nav-item {
-        display: flex;
+      .saas-main,
+      .admin-main {
+        padding-bottom: 6rem !important;
+      }
+      .admin-modal-dialog {
+        width: 90% !important;
+        max-width: 400px !important;
+        margin: auto !important;
+      }
+      .status-toast {
+        width: 90% !important;
+        max-width: 400px !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 auto !important;
+        bottom: 5rem !important;
+      }
+      .admin-modal-footer {
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #94a3b8;
-        text-decoration: none;
-        font-size: 0.72rem;
-        flex: 1;
-        height: 100%;
-        position: relative;
-        transition: color 0.2s ease;
       }
-      .mobile-nav-item .nav-icon {
-        font-size: 1.25rem;
-        margin-bottom: 2px;
+      .admin-modal-footer button,
+      .admin-modal-footer .btn-admin-nav,
+      .admin-modal-footer .btn-submit-traje {
+        width: 100% !important;
       }
-      .mobile-nav-item.active,
-      .mobile-nav-item:hover {
-        color: #E6D5B8;
+      .btn-edit-traje,
+      .btn-delete-traje,
+      .btn-approve-traje,
+      .btn-delete-comentario,
+      .btn-saas-action {
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
       }
-      .mobile-nav-item .nav-badge {
-        position: absolute;
-        top: 6px;
-        right: calc(50% - 16px);
-        background: #ef4444;
-        color: #fff;
-        font-size: 0.65rem;
-        font-weight: bold;
-        padding: 1px 5px;
-        border-radius: 999px;
-      }
-      .saas-main {
-        padding-bottom: 88px !important;
+      .acciones-cell {
+        gap: 0.5rem;
+        padding: 0.35rem 0;
+        flex-wrap: nowrap;
       }
     }
+
+    @media (max-width: 480px) {
+      .saas-main {
+        padding: 1rem 0.75rem 6rem 0.75rem !important;
+      }
+      .chart-glass-panel,
+      .actions-glass-panel,
+      .table-glass-panel,
+      .dashboard-card-body {
+        padding: 1rem 0.85rem;
+      }
+      .dashboard-card-header {
+        padding: 0.95rem 0.85rem;
+      }
+      .admin-title-area {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .admin-title-area .btn-admin-nav {
+        width: 100%;
+        white-space: normal;
+        height: auto;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+      }
+      .admin-modal-backdrop {
+        padding: 0.5rem;
+      }
+      .admin-modal-dialog {
+        width: 90% !important;
+        max-width: 400px !important;
+        margin: auto !important;
+      }
+      .admin-modal-header,
+      .admin-modal-body,
+      .admin-modal-footer {
+        padding: 1rem;
+      }
+    }
+
     @media (min-width: 769px) {
       .saas-mobile-bottom-nav {
         display: none !important;
@@ -1524,6 +1756,7 @@
       gap: 0.75rem;
       margin-bottom: 1.25rem;
       align-items: center;
+      width: 100%;
     }
     .table-search-input {
       flex: 1;
@@ -1531,9 +1764,10 @@
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(230, 213, 184, 0.2);
       border-radius: 8px;
-      padding: 0.6rem 0.9rem;
+      padding: 12px 14px;
       color: #fff;
-      font-size: 0.88rem;
+      font-size: 16px;
+      box-sizing: border-box;
     }
     .table-search-input:focus {
       outline: none;
@@ -1544,10 +1778,11 @@
       background: #0b1526;
       border: 1px solid rgba(230, 213, 184, 0.2);
       border-radius: 8px;
-      padding: 0.6rem 0.8rem;
+      padding: 12px 14px;
       color: #e2e8f0;
-      font-size: 0.85rem;
+      font-size: 16px;
       cursor: pointer;
+      box-sizing: border-box;
     }
     .table-select-filter:focus {
       outline: none;
@@ -1565,7 +1800,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 1.2rem;
+      padding: 1rem;
       opacity: 0;
       transition: opacity 0.25s ease;
     }
@@ -1578,14 +1813,16 @@
       border: 1px solid var(--champagne-border);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(230, 213, 184, 0.12);
       border-radius: 14px;
-      width: 100%;
+      width: 90%;
       max-width: 760px;
       max-height: 90vh;
       overflow-y: auto;
+      margin: auto;
       position: relative;
       display: flex;
       flex-direction: column;
       animation: adminModalIn 0.25s ease forwards;
+      box-sizing: border-box;
     }
     @keyframes adminModalIn {
       from { transform: scale(0.94); opacity: 0; }
@@ -1615,8 +1852,9 @@
       background: none;
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: var(--text-muted);
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
+      min-height: 40px;
       border-radius: 8px;
       cursor: pointer;
       display: flex;
@@ -1646,7 +1884,7 @@
     }
   </style>
 </head>
-<body>
+<body class="pb-24">
 
   <!-- Layout SaaS Principal: Sidebar + Contenido -->
   <div class="saas-layout">
@@ -1679,6 +1917,11 @@
         <a href="#seccion-catalogo" class="sidebar-menu-item" data-tab="seccion-catalogo">
           <span class="menu-icon">🎭</span>
           <span class="menu-text">Gestionar Catálogo</span>
+        </a>
+        <a href="#seccion-atelier" class="sidebar-menu-item" data-tab="seccion-atelier">
+          <span class="menu-icon">👑</span>
+          <span class="menu-text">Gestionar Atelier</span>
+          <span class="sidebar-badge-pendientes" id="badge-sidebar-atelier" style="background: rgba(230, 213, 184, 0.2); color: var(--champagne); font-weight: 700;">{{ obras_atelier|length if obras_atelier else 0 }}</span>
         </a>
         <a href="#seccion-moderacion" class="sidebar-menu-item" data-tab="seccion-moderacion">
           <span class="menu-icon">🛡️</span>
@@ -1743,7 +1986,7 @@
       </header>
 
       <!-- Contenido Principal -->
-      <main class="saas-main">
+      <main class="saas-main pb-24">
         
         <!-- Notificación Toast Dinámica -->
         <div id="admin-toast" class="status-toast" role="alert"></div>
@@ -1813,7 +2056,7 @@
                 </div>
                 <span class="panel-badge-champagne">Chart.js</span>
               </div>
-              <div class="chart-canvas-wrapper">
+              <div class="chart-canvas-wrapper" style="width: 100%; max-width: 280px; margin: 0 auto; display: flex; justify-content: center;">
                 <canvas id="chartComparsas" role="img" aria-label="Distribución de trajes por comparsa"></canvas>
               </div>
             </div>
@@ -1843,18 +2086,18 @@
                   <span class="qs-val text-champagne">ADMIN_PASSWORD Activo</span>
                 </div>
               </div>
-              <div class="quick-buttons-row">
-                <button type="button" class="btn-quick-action" data-nav="seccion-subir">
-                  <span>+</span> Subir Nuevo Traje
+              <div class="quick-buttons-row grid grid-cols-1 gap-2 w-full" style="display: flex; flex-direction: column; width: 100%;">
+                <button type="button" class="btn-quick-action w-full" data-nav="seccion-subir" style="display: flex; flex-direction: column; width: 100%; white-space: normal; height: auto; padding: 12px 16px; font-size: 0.95rem;">
+                  <span>+ Subir Nuevo Traje</span>
                 </button>
-                <button type="button" class="btn-quick-action btn-quick-secondary" data-nav="seccion-catalogo">
-                  <span>🎭</span> Gestionar Catálogo
+                <button type="button" class="btn-quick-action btn-quick-secondary w-full" data-nav="seccion-catalogo" style="display: flex; flex-direction: column; width: 100%; white-space: normal; height: auto; padding: 12px 16px; font-size: 0.95rem;">
+                  <span>🎭 Gestionar Catálogo</span>
                 </button>
-                <button type="button" class="btn-quick-action btn-quick-secondary" data-nav="seccion-moderacion" style="border-color: rgba(245, 158, 11, 0.4); color: #f59e0b;">
-                  <span>🛡️</span> Bandeja de Moderación ({{ trajes_pendientes|length if trajes_pendientes else 0 }})
+                <button type="button" class="btn-quick-action btn-quick-secondary w-full" data-nav="seccion-moderacion" style="display: flex; flex-direction: column; width: 100%; white-space: normal; height: auto; padding: 12px 16px; font-size: 0.95rem; border-color: rgba(245, 158, 11, 0.4); color: #f59e0b;">
+                  <span>🛡️ Bandeja de Moderación ({{ trajes_pendientes|length if trajes_pendientes else 0 }})</span>
                 </button>
-                <button type="button" class="btn-quick-action btn-quick-secondary" data-nav="seccion-entrevistas">
-                  <span>🎙️</span> Gestor de Entrevistas
+                <button type="button" class="btn-quick-action btn-quick-secondary w-full" data-nav="seccion-entrevistas" style="display: flex; flex-direction: column; width: 100%; white-space: normal; height: auto; padding: 12px 16px; font-size: 0.95rem;">
+                  <span>🎙️ Gestor de Entrevistas</span>
                 </button>
               </div>
             </div>
@@ -1873,7 +2116,7 @@
                 </div>
                 <button type="button" class="link-champagne-btn" data-nav="seccion-catalogo">Ver todos →</button>
               </div>
-              <div class="table-container-responsive">
+              <div class="table-container-responsive overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
                 <table class="saas-table">
                   <thead>
                     <tr>
@@ -1926,7 +2169,7 @@
                 </div>
                 <button type="button" class="link-champagne-btn" data-nav="seccion-errores">Ver historial →</button>
               </div>
-              <div class="table-container-responsive">
+              <div class="table-container-responsive overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
                 {% if metricas and metricas.ultimos_errores and metricas.ultimos_errores|length > 0 %}
                   <table class="saas-table table-errors-theme">
                     <thead>
@@ -2038,17 +2281,12 @@
                        class="form-control" 
                        list="lista-comparsas" 
                        value="{{ traje_editar.comparsa if traje_editar else '' }}"
-                       placeholder="Ej: Arandú Beleza, Sapucay, Samba Total..." 
+                       placeholder="Ej: Arandú Beleza, Comparsa Marabú, Samba Total..." 
                        required>
                 <datalist id="lista-comparsas">
-                  <option value="Arandú Beleza">
-                  <option value="Sapucay">
-                  <option value="Ará Berá">
-                  <option value="Samba Total">
-                  <option value="Comparsa Panambí">
-                  <option value="Copacabana">
-                  <option value="Imperio Bahiano">
-                  <option value="Kamandukahia">
+                  {% for comparsa in comparsas %}
+                  <option value="{{ comparsa.nombre }}">
+                  {% endfor %}
                 </datalist>
               </div>
 
@@ -2064,32 +2302,6 @@
                 </select>
               </div>
 
-              <!-- Diseño Original -->
-              <div class="form-group">
-                <label for="diseno_original" class="form-label">
-                  <span>✏️</span> Diseño Original (Créditos de Boceto)
-                </label>
-                <input type="text" 
-                       id="diseno_original" 
-                       name="diseno_original" 
-                       class="form-control" 
-                       value="{{ (traje_editar.diseno_original or '') if traje_editar else '' }}"
-                       placeholder="Ej: Marcos Romero (Diseño Escénico)">
-              </div>
-
-              <!-- Herrería y Estructura -->
-              <div class="form-group">
-                <label for="herreria_estructura" class="form-label">
-                  <span>⚙️</span> Herrería / Estructura (Arnés, Material y Peso)
-                </label>
-                <input type="text" 
-                       id="herreria_estructura" 
-                       name="herreria_estructura" 
-                       class="form-control" 
-                       value="{{ (traje_editar.herreria_estructura or '') if traje_editar else '' }}"
-                       placeholder="Ej: Carlos Tito Gómez (3.8 kg duraluminio)">
-              </div>
-
               <!-- Checkbox Mostrar en Destaques -->
               <div class="form-group" style="justify-content: flex-end;">
                 <label class="obra-maestra-checkbox-card" for="es_destaque">
@@ -2103,6 +2315,55 @@
                     <span class="obra-maestra-label-sub">Muestra este traje en la sección destacada de la página principal.</span>
                   </div>
                 </label>
+              </div>
+
+              <!-- Créditos del Traje (Agrupados en Cuadrícula Compacta) -->
+              <div class="form-group full-width creditos-fieldset" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(191, 149, 63, 0.28); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.25rem 0;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(191, 149, 63, 0.2); padding-bottom: 0.45rem;">
+                  <span style="font-size: 1.1rem;">👑</span>
+                  <strong style="color: var(--champagne, #ead9b6); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.06em;">Créditos del Traje</strong>
+                  <span style="font-size: 0.76rem; color: var(--text-muted); margin-left: auto;">Diseñador, Confeccionista y Estructura</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem;">
+                  <!-- Diseño Original -->
+                  <div class="form-group">
+                    <label for="diseno_original" class="form-label" style="font-size: 0.82rem;">
+                      <span>✏️</span> Diseño Original
+                    </label>
+                    <input type="text" 
+                           id="diseno_original" 
+                           name="diseno_original" 
+                           class="form-control" 
+                           value="{{ (traje_editar.diseno_original or '') if traje_editar else '' }}"
+                           placeholder="(Autor del boceto/diseño)">
+                  </div>
+
+                  <!-- Confección -->
+                  <div class="form-group">
+                    <label for="confeccion" class="form-label" style="font-size: 0.82rem;">
+                      <span>🪡</span> Confección (Quién realizó el traje)
+                    </label>
+                    <input type="text" 
+                           id="confeccion" 
+                           name="confeccion" 
+                           class="form-control" 
+                           value="{{ (traje_editar.confeccion or '') if traje_editar else '' }}"
+                           placeholder="Quién confeccionó el vestuario">
+                  </div>
+
+                  <!-- Estructura -->
+                  <div class="form-group">
+                    <label for="estructura" class="form-label" style="font-size: 0.82rem;">
+                      <span>⚙️</span> Estructura
+                    </label>
+                    <input type="text" 
+                           id="estructura" 
+                           name="estructura" 
+                           class="form-control" 
+                           value="{{ ((traje_editar.estructura if traje_editar.estructura else traje_editar.herreria_estructura) or '') if traje_editar else '' }}"
+                           placeholder="Arnés, materiales y peso aproximado">
+                  </div>
+                </div>
               </div>
 
               <!-- Foto del Boceto (Opcional - Comparación Antes / Después) -->
@@ -2127,32 +2388,16 @@
                 {% endif %}
               </div>
 
-              <!-- Descripción de la Obra -->
+              <!-- Descripción de la Obra (Opcional) -->
               <div class="form-group full-width">
                 <label for="descripcion" class="form-label">
-                  <span>📜</span> Descripción de la Obra (Párrafo Inspiracional)
+                  <span>📜</span> Descripción de la Obra (Opcional)
                 </label>
                 <textarea id="descripcion" 
                           name="descripcion" 
                           class="form-control" 
                           rows="3" 
                           placeholder="Ej: Inspirado en la mística del río y el sol naciente sobre el litoral, combinando ergonomía de alta movilidad y destello reflectivo bajo las luces del corsódromo.">{{ (traje_editar.descripcion or '') if traje_editar else '' }}</textarea>
-              </div>
-
-              <!-- Desglose de Materiales -->
-              <div class="form-group full-width">
-                <label for="materiales" class="form-label">
-                  <span>💎</span> Desglose de Materiales Utilizados (Separados por coma)
-                </label>
-                <textarea id="materiales" 
-                          name="materiales" 
-                          class="form-control" 
-                          rows="3" 
-                          placeholder="Ej: Strass checo boreal, plumas amazónicas verde esmeralda, arnés de duraluminio 3.2 kg, corselete y botas bordadas a medida." 
-                          required>{{ (traje_editar.materiales or '') if traje_editar else '' }}</textarea>
-                <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
-                  * Estos materiales se separarán automáticamente en tags interactivos en la ficha técnica del traje.
-                </span>
               </div>
 
               <!-- Si estamos en Modo Edición: Mostrar Fotografías Existentes -->
@@ -2207,7 +2452,7 @@
                   <span>📸</span> {% if traje_editar %}Agregar Nuevas Fotografías a la Galería (Selección Múltiple){% else %}Galería de Fotografías del Traje (Selección Múltiple de Archivos){% endif %}
                 </label>
 
-                <div class="multi-upload-dropzone">
+                <div class="multi-upload-dropzone w-full">
                   <p style="margin: 0 0 0.7rem; color: var(--dorado-light); font-weight: 600;">
                     📂 Seleccioná una o múltiples imágenes o videos (.mp4) simultáneamente
                   </p>
@@ -2216,8 +2461,8 @@
                          name="fotos" 
                          accept="image/*,video/mp4" 
                          multiple 
-                         class="form-control" 
-                         style="max-width: 520px; margin: 0 auto; cursor: pointer;"
+                         class="form-control w-full block" 
+                         style="width: 100%; max-width: 520px; margin: 0 auto; cursor: pointer;"
                          {% if not traje_editar %}required{% endif %}>
                   <p style="margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
                     Podés elegir hasta 6 archivos a la vez manteniendo presionada la tecla <strong>Ctrl</strong> o <strong>Shift</strong> (máximo 20MB por archivo). Los archivos se sincronizarán directamente con Google Drive.
@@ -2231,14 +2476,14 @@
             </div>
 
             <!-- Botones de Envío -->
-            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
-              <span id="traje-submit-status" style="font-size: 0.9rem;"></span>
+            <div style="display: flex; flex-direction: column; align-items: stretch; gap: 0.85rem; margin-top: 1.5rem; width: 100%;">
+              <span id="traje-submit-status" style="font-size: 0.9rem; text-align: center;"></span>
               {% if traje_editar %}
-              <a href="/admin" class="btn-admin-nav" style="padding: 0.85rem 1.4rem;">
+              <a href="/admin" class="btn-admin-nav w-full" style="padding: 0.85rem 1.4rem; width: 100%;">
                 Cancelar
               </a>
               {% endif %}
-              <button type="submit" id="btn-submit-traje" class="btn-submit-traje">
+              <button type="submit" id="btn-submit-traje" class="btn-submit-traje w-full">
                 {% if traje_editar %}
                   <span>💾</span> Guardar Cambios del Traje
                 {% else %}
@@ -2296,17 +2541,9 @@
               
               <select id="filtro-comparsa-tabla" class="table-select-filter">
                 <option value="">✦ Todas las comparsas</option>
-                <option value="Arandú Beleza">Arandú Beleza</option>
-                <option value="Sapucay">Sapucay</option>
-                <option value="Ará Berá">Ará Berá</option>
-                <option value="Samba Total">Samba Total</option>
-                <option value="Copacabana">Copacabana</option>
-                <option value="Imperio Bahiano">Imperio Bahiano</option>
-                <option value="Panambí">Panambí</option>
-                <option value="Cordialísima">Cordialísima</option>
-                <option value="Marabú">Marabú</option>
-                <option value="Amistad">Amistad</option>
-                <option value="Perla Alma Sambera">Perla Alma Sambera</option>
+                {% for comparsa in comparsas %}
+                <option value="{{ comparsa.nombre }}">{{ comparsa.nombre }}</option>
+                {% endfor %}
               </select>
 
               <select id="filtro-genero-tabla" class="table-select-filter">
@@ -2323,17 +2560,17 @@
               </select>
             </div>
 
-            <div class="admin-table-wrapper">
+            <div class="admin-table-wrapper overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
               <table class="admin-table" id="tabla-trajes-admin">
                 <thead>
                   <tr>
-                    <th style="width: 55px;">ID</th>
-                    <th style="width: 80px;">Portada</th>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 56px;">Foto</th>
                     <th>Comparsero / Figura</th>
                     <th>Comparsa & Género</th>
-                    <th>Destacado</th>
-                    <th>Galería</th>
-                    <th style="width: 260px; text-align: center;">Acciones</th>
+                    <th>Créditos (Diseño / Confección / Estructura)</th>
+                    <th style="width: 105px;">Estado</th>
+                    <th style="width: 170px; text-align: center;">Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="tbody-trajes-admin">
@@ -2355,23 +2592,25 @@
                       </td>
                       <td>
                         <strong style="color: #fff;" id="nombre-traje-{{ t.id }}">{{ t.comparsero }}</strong>
-                        {% if t.diseno_original %}
-                          <br><span style="font-size: 0.78rem; color: var(--text-muted);" id="diseno-traje-{{ t.id }}">✏️ {{ t.diseno_original }}</span>
-                        {% endif %}
+                        <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem;">
+                          📸 {{ t.fotos|length if t.fotos else 1 }} foto(s)
+                        </div>
                       </td>
                       <td>
-                        <span id="comparsa-traje-{{ t.id }}">{{ t.comparsa }}</span><br>
+                        <span id="comparsa-traje-{{ t.id }}" style="font-weight: 600; color: #e2e8f0;">{{ t.comparsa }}</span><br>
                         <span style="font-size: 0.78rem; color: var(--dorado-light);" id="genero-traje-{{ t.id }}">{{ t.genero }}</span>
+                      </td>
+                      <td style="font-size: 0.8rem; color: #cbd5e1; max-width: 260px;">
+                        <div><span style="color: var(--dorado-light);">✏️</span> {{ t.diseno_original or '-' }}</div>
+                        <div><span style="color: #60a5fa;">🪡</span> {{ t.confeccion or '-' }}</div>
+                        <div><span style="color: #94a3b8;">⚙️</span> {{ t.estructura or t.herreria_estructura or '-' }}</div>
                       </td>
                       <td id="badge-destaque-td-{{ t.id }}">
                         {% if t.es_destaque or t.es_obra_maestra %}
                           <span class="badge-obra-table">★ Destaque</span>
                         {% else %}
-                          <span class="badge-estandar-table">Catálogo General</span>
+                          <span class="badge-estandar-table">Catálogo</span>
                         {% endif %}
-                      </td>
-                      <td style="font-size: 0.82rem; color: var(--text-muted);">
-                        📸 {{ t.fotos|length if t.fotos else 1 }} foto(s)
                       </td>
                       <td>
                         <div class="acciones-cell">
@@ -2446,17 +2685,18 @@
           </div>
 
           <div class="dashboard-card-body" style="padding: 1.2rem;">
-            <div class="admin-table-wrapper">
+            <div class="admin-table-wrapper overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
               <table class="admin-table" id="tabla-moderacion-pendientes">
                 <thead>
                   <tr>
-                    <th style="width: 55px;">ID</th>
-                    <th style="width: 80px;">Portada</th>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 56px;">Foto</th>
                     <th>Comparsero / Figura</th>
                     <th>Comparsa & Género</th>
-                    <th>Descripción & Materiales</th>
-                    <th>Estado</th>
-                    <th style="width: 260px; text-align: center;">Decisión de Moderación</th>
+                    <th>Créditos (Diseño / Confección / Estructura)</th>
+                    <th>Descripción</th>
+                    <th style="width: 100px;">Estado</th>
+                    <th style="width: 240px; text-align: center;">Acciones & Moderación</th>
                   </tr>
                 </thead>
                 <tbody id="tbody-trajes-pendientes">
@@ -2471,26 +2711,37 @@
                     </td>
                     <td>
                       <strong style="color: #fff;">{{ traje.comparsero }}</strong>
-                      {% if traje.diseno_original %}
-                        <br><span style="font-size: 0.78rem; color: var(--text-muted);">✏️ {{ traje.diseno_original }}</span>
-                      {% endif %}
-                      <br><span style="font-size: 0.76rem; color: var(--dorado-light);">📸 {{ traje.fotos|length if traje.fotos else 1 }} foto(s)</span>
+                      <div style="font-size: 0.74rem; color: var(--dorado-light); margin-top: 0.15rem;">
+                        📸 {{ traje.fotos|length if traje.fotos else 1 }} foto(s)
+                      </div>
                     </td>
                     <td>
-                      <span>{{ traje.comparsa }}</span><br>
+                      <span style="font-weight: 600; color: #e2e8f0;">{{ traje.comparsa }}</span><br>
                       <span style="font-size: 0.78rem; color: var(--dorado-light);">{{ traje.genero }}</span>
                     </td>
-                    <td style="max-width: 320px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
+                    <td style="font-size: 0.8rem; color: #cbd5e1; max-width: 240px;">
+                      <div><span style="color: var(--dorado-light);">✏️</span> {{ traje.diseno_original or '-' }}</div>
+                      <div><span style="color: #60a5fa;">🪡</span> {{ traje.confeccion or '-' }}</div>
+                      <div><span style="color: #94a3b8;">⚙️</span> {{ traje.estructura or traje.herreria_estructura or '-' }}</div>
+                    </td>
+                    <td style="max-width: 240px; font-size: 0.8rem; color: #94a3b8; line-height: 1.35;">
                       {% if traje.descripcion %}
-                        <div style="color: #e2e8f0; margin-bottom: 0.25rem;">{{ traje.descripcion[:110] }}{% if traje.descripcion|length > 110 %}...{% endif %}</div>
+                        <div style="color: #e2e8f0;">{{ traje.descripcion[:95] }}{% if traje.descripcion|length > 95 %}...{% endif %}</div>
+                      {% else %}
+                        <span style="font-style: italic; color: #64748b;">(Sin descripción)</span>
                       {% endif %}
-                      <div>💎 {{ traje.materiales[:90] }}{% if traje.materiales and traje.materiales|length > 90 %}...{% endif %}</div>
                     </td>
                     <td>
                       <span class="badge-pendiente-table">⏳ PENDIENTE</span>
                     </td>
                     <td>
                       <div class="acciones-cell">
+                        <button type="button" 
+                                class="btn-edit-traje" 
+                                onclick="abrirModalEditarTraje({{ traje.id }})" 
+                                title="Editar y completar datos omitidos antes de aprobar">
+                          <span>✏️</span> Editar
+                        </button>
                         <button type="button"
                                 class="btn-approve-traje"
                                 data-id="{{ traje.id }}"
@@ -2542,7 +2793,7 @@
               <p>Cargando comentarios registrados en SQLite...</p>
             </div>
 
-            <div class="admin-table-wrapper">
+            <div class="admin-table-wrapper overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
               <table class="admin-table" id="tabla-comentarios">
                 <thead>
                   <tr>
@@ -2694,9 +2945,9 @@
 
               </div>
 
-              <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem;">
-                <span id="entrevista-submit-status" style="font-size: 0.9rem;"></span>
-                <button type="submit" id="btn-submit-entrevista" class="btn-submit-traje">
+              <div style="display: flex; flex-direction: column; align-items: stretch; gap: 0.85rem; margin-top: 1.5rem; width: 100%;">
+                <span id="entrevista-submit-status" style="font-size: 0.9rem; text-align: center;"></span>
+                <button type="submit" id="btn-submit-entrevista" class="btn-submit-traje w-full">
                   <span>✦</span> Publicar Entrevista en el Sitio
                 </button>
               </div>
@@ -2716,7 +2967,7 @@
           </div>
 
           <div class="dashboard-card-body" style="padding: 1.2rem;">
-            <div class="admin-table-wrapper">
+            <div class="admin-table-wrapper overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
               <table class="admin-table" id="tabla-entrevistas-admin">
                 <thead>
                   <tr>
@@ -2781,6 +3032,170 @@
     <!-- FIN PESTAÑA 5: GESTOR DE ENTREVISTAS -->
 
     <!-- ======================================================================
+         PESTAÑA ATELIER HORACIO GÓMEZ (CRUD & DRIVE)
+         ====================================================================== -->
+    <section id="seccion-atelier" class="saas-tab-pane" aria-label="Gestionar Atelier Horacio Gómez">
+      
+      <div class="admin-title-area" style="margin-bottom: 1.5rem;">
+        <div>
+          <h1 style="font-family: 'Julius Sans One', sans-serif; color: var(--champagne); font-size: 1.5rem; margin-bottom: 0.35rem;">
+            Gestor del Atelier Horacio Gómez
+          </h1>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Administración de obras de arte, bocetos monumentales, esculturas y herrería artística con sincronización a Google Drive.
+          </p>
+        </div>
+        <a href="/atelier" class="btn-admin-nav" target="_blank" style="border-color: var(--champagne); color: var(--champagne);">
+          <span>👑</span> Ver Atelier Público (/atelier) ↗
+        </a>
+      </div>
+
+      <div class="dashboard-layout">
+        
+        <!-- FORMULARIO DE CARGA DE OBRAS ATELIER -->
+        <section class="dashboard-card" aria-label="Cargar nueva obra de atelier" style="margin-bottom: 2rem;">
+          <div class="dashboard-card-header">
+            <h2>
+              <span>👑</span> Cargar Nueva Obra o Proyecto al Atelier
+            </h2>
+            <span style="font-size: 0.82rem; color: var(--dorado-light);">API REST • POST /api/atelier (Tope: 6 archivos / 20MB)</span>
+          </div>
+
+          <div class="dashboard-card-body" style="padding: 1.5rem;">
+            <form id="form-atelier-cms" method="POST" action="/admin/atelier/subir" enctype="multipart/form-data">
+              <div class="form-grid">
+                
+                <div class="form-group full-width">
+                  <label for="atelier-titulo" class="form-label">
+                    <span>✦</span> Título de la Obra o Escultura *
+                  </label>
+                  <input type="text" id="atelier-titulo" name="titulo" class="form-control" placeholder="Ej: Espaldar Monumental Panambí 2026 - Herrería TIG" required>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="atelier-descripcion" class="form-label">
+                    <span>📝</span> Descripción Artística &amp; Técnica *
+                  </label>
+                  <textarea id="atelier-descripcion" name="descripcion" class="form-control" rows="3" placeholder="Detalles de diseño, técnicas de herrería, confección artesanal, orfebrería o materiales empleados..." required></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="atelier-drive-url" class="form-label">
+                    <span>📁</span> Enlace a Carpeta o Archivo de Google Drive (Opcional)
+                  </label>
+                  <input type="url" id="atelier-drive-url" name="drive_url" class="form-control" placeholder="https://drive.google.com/drive/folders/... o https://drive.google.com/file/d/...">
+                  <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">
+                    * Podés ingresar directamente un link a Google Drive o subir archivos multimedia debajo para subirlos automáticamente.
+                  </span>
+                </div>
+
+                <!-- CARGA MULTIMEDIA CON LÍMITES ESTRICTOS (6 ARCHIVOS / 20MB) -->
+                <div class="form-group full-width">
+                  <label for="atelier-fotos" class="form-label">
+                    <span>📸</span> Fotografías y Registros de Obra (Máx. 6 archivos, hasta 20MB cada uno)
+                  </label>
+                  <div class="file-dropzone w-full" style="border: 2px dashed rgba(230, 213, 184, 0.3); border-radius: 8px; padding: 1.5rem; text-align: center; background: rgba(255, 255, 255, 0.02); width: 100%; box-sizing: border-box;">
+                    <input type="file" id="atelier-fotos" name="fotos" multiple accept="image/*,video/mp4" class="form-control w-full block" style="cursor: pointer; width: 100%;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                      Formatos permitidos: JPG, PNG, WEBP, MP4 • Límite estricto: hasta 6 archivos de 20MB.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-actions" style="margin-top: 1.5rem; display: flex; flex-direction: column; width: 100%; gap: 1rem;">
+                <button type="submit" class="btn-saas-primary w-full" id="btn-submit-atelier">
+                  <span>✦</span> Publicar en Atelier Horacio Gómez
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- TABLA DE OBRAS CARGADAS -->
+        <section class="dashboard-card" aria-label="Obras publicadas en el Atelier">
+          <div class="dashboard-card-header">
+            <h2>
+              <span>🏛️</span> Obras Registradas en Atelier Horacio Gómez
+              <span style="font-size: 0.85rem; color: var(--dorado-light); font-weight: 500;">
+                (<span id="total-atelier-admin">{{ obras_atelier|length if obras_atelier else 0 }}</span> obras activas)
+              </span>
+            </h2>
+          </div>
+
+          <div class="dashboard-card-body" style="padding: 1.2rem;">
+            <div class="admin-table-wrapper overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
+              <table class="admin-table" id="tabla-atelier-admin">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th>Título de la Obra</th>
+                    <th>Descripción</th>
+                    <th style="width: 150px;">Google Drive</th>
+                    <th style="width: 120px;">Fecha</th>
+                    <th style="width: 110px; text-align: center;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-atelier-admin">
+                  {% if obras_atelier %}
+                    {% for o in obras_atelier %}
+                    <tr id="fila-atelier-{{ o.id }}">
+                      <td style="color: var(--dorado-light); font-weight: 600;">#{{ o.id }}</td>
+                      <td>
+                        <strong style="color: #fff;">{{ o.titulo }}</strong>
+                        {% if o.foto_url %}
+                          <br><a href="{{ o.foto_url }}" target="_blank" style="color: var(--rio, #5ef2e0); font-size: 0.78rem;">Ver Media ↗</a>
+                        {% endif %}
+                      </td>
+                      <td style="font-size: 0.85rem; color: var(--text-muted); max-width: 280px;">
+                        {{ o.descripcion[:120] if o.descripcion else 'Sin descripción' }}{% if o.descripcion and o.descripcion|length > 120 %}...{% endif %}
+                      </td>
+                      <td>
+                        {% if o.drive_url %}
+                          <a href="{{ o.drive_url }}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">
+                            Abrir Drive ↗
+                          </a>
+                        {% else %}
+                          <span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>
+                        {% endif %}
+                      </td>
+                      <td style="font-size: 0.82rem; color: var(--text-muted);">{{ o.fecha_creacion[:10] if o.fecha_creacion else '-' }}</td>
+                      <td style="text-align: center; white-space: nowrap;">
+                        <button type="button" 
+                                class="btn-action-view" 
+                                data-id="{{ o.id }}"
+                                onclick="abrirModalEditarAtelier({{ o.id }})"
+                                title="Editar esta obra"
+                                style="margin-right: 0.35rem; padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--champagne-border); background: rgba(230, 213, 184, 0.1); color: var(--champagne); cursor: pointer;">
+                          <span>✏️</span> Editar
+                        </button>
+                        <button type="button" 
+                                class="btn-delete-traje" 
+                                data-id="{{ o.id }}"
+                                data-titulo="{{ o.titulo }}"
+                                onclick="eliminarObraAtelier({{ o.id }}, this.getAttribute('data-titulo'))"
+                                title="Eliminar esta obra">
+                          <span>🗑️</span> Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+
+            <div id="atelier-admin-vacio" class="admin-empty-state" style="display: {% if obras_atelier and obras_atelier|length > 0 %}none{% else %}block{% endif %};">
+              <p style="font-size: 1.05rem; color: var(--dorado-light);">No hay obras cargadas en el Atelier aún.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
          4. SECCIÓN REGISTRO DE ERRORES (AUDITORÍA & RESILIENCIA)
          ====================================================================== -->
     <section id="seccion-errores" class="saas-tab-pane" aria-label="Registro de Errores">
@@ -2810,7 +3225,7 @@
 
         <div class="dashboard-card-body" style="padding: 1.2rem;">
           {% if metricas and metricas.todos_los_errores and metricas.todos_los_errores|length > 0 %}
-            <div class="admin-table-wrapper">
+            <div class="admin-table-wrapper overflow-x-auto -webkit-overflow-scrolling-touch w-full" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
               <table class="admin-table">
                 <thead>
                   <tr>
@@ -2933,35 +3348,43 @@
               <input type="text" id="edit-foto-url" name="foto_url" class="form-control" placeholder="O pegá un enlace directo de Google Drive / imagen...">
             </div>
 
-            <!-- Materiales -->
-            <div class="form-group full-width">
-              <label for="edit-materiales" class="form-label">
-                <span>💎</span> Desglose de Materiales *
-              </label>
-              <textarea id="edit-materiales" name="materiales" class="form-control" rows="2" required></textarea>
+            <!-- Créditos del Traje (Agrupados en Cuadrícula Compacta) -->
+            <div class="form-group full-width creditos-fieldset" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(191, 149, 63, 0.28); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.25rem 0;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(191, 149, 63, 0.2); padding-bottom: 0.45rem;">
+                <span style="font-size: 1.1rem;">👑</span>
+                <strong style="color: var(--champagne, #ead9b6); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.06em;">Créditos del Traje</strong>
+                <span style="font-size: 0.76rem; color: var(--text-muted); margin-left: auto;">Completar datos omitidos por la comunidad</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem;">
+                <div class="form-group">
+                  <label for="edit-diseno-original" class="form-label" style="font-size: 0.82rem;">
+                    <span>✏️</span> Diseño Original
+                  </label>
+                  <input type="text" id="edit-diseno-original" name="diseno_original" class="form-control" placeholder="(Autor del boceto/diseño)">
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-confeccion" class="form-label" style="font-size: 0.82rem;">
+                    <span>🪡</span> Confección (Quién realizó el traje)
+                  </label>
+                  <input type="text" id="edit-confeccion" name="confeccion" class="form-control" placeholder="Quién confeccionó el vestuario">
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-estructura" class="form-label" style="font-size: 0.82rem;">
+                    <span>⚙️</span> Estructura
+                  </label>
+                  <input type="text" id="edit-estructura" name="estructura" class="form-control" placeholder="Arnés, materiales y peso aproximado">
+                </div>
+              </div>
             </div>
 
-            <!-- Descripción -->
+            <!-- Descripción Curatorial (Opcional) -->
             <div class="form-group full-width">
               <label for="edit-descripcion" class="form-label">
-                <span>📝</span> Descripción Curatorial
+                <span>📝</span> Descripción Curatorial (Opcional)
               </label>
-              <textarea id="edit-descripcion" name="descripcion" class="form-control" rows="2"></textarea>
-            </div>
-
-            <!-- Diseño Original y Herrería (Opcionales) -->
-            <div class="form-group">
-              <label for="edit-diseno-original" class="form-label">
-                <span>✏️</span> Diseño Original
-              </label>
-              <input type="text" id="edit-diseno-original" name="diseno_original" class="form-control">
-            </div>
-
-            <div class="form-group">
-              <label for="edit-herreria-estructura" class="form-label">
-                <span>⚙️</span> Herrería y Estructura
-              </label>
-              <input type="text" id="edit-herreria-estructura" name="herreria_estructura" class="form-control">
+              <textarea id="edit-descripcion" name="descripcion" class="form-control" rows="2" placeholder="Contexto escénico o narrativa del vestuario..."></textarea>
             </div>
 
             <!-- Boceto (Opcional) -->
@@ -2988,6 +3411,74 @@
     </div>
   </div>
 
+  <!-- ======================================================================
+       MODAL GLASSMORPHISM: EDITAR OBRA ATELIER HORACIO GÓMEZ (CRUD)
+       ====================================================================== -->
+  <div class="admin-modal-backdrop" id="modal-editar-atelier" aria-hidden="true" style="display: none;">
+    <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-edit-atelier-title">
+      
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title" id="modal-edit-atelier-title">
+          <span>👑</span> Editar Obra de Atelier <span id="modal-edit-atelier-id-badge" style="color: var(--champagne); font-size: 0.95rem;"></span>
+        </h2>
+        <button type="button" class="admin-modal-close" onclick="cerrarModalEditarAtelier()" aria-label="Cerrar ventana">✕</button>
+      </div>
+
+      <form id="form-modal-editar-atelier" method="POST" enctype="multipart/form-data">
+        <input type="hidden" id="edit-atelier-id" name="id">
+
+        <div class="admin-modal-body">
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label for="edit-atelier-titulo" class="form-label">
+                <span>✦</span> Título de la Obra *
+              </label>
+              <input type="text" id="edit-atelier-titulo" name="titulo" class="form-control" required>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="edit-atelier-descripcion" class="form-label">
+                <span>📝</span> Descripción Artística &amp; Técnica *
+              </label>
+              <textarea id="edit-atelier-descripcion" name="descripcion" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="edit-atelier-drive-url" class="form-label">
+                <span>📁</span> Enlace a Google Drive
+              </label>
+              <input type="url" id="edit-atelier-drive-url" name="drive_url" class="form-control" placeholder="https://drive.google.com/...">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="edit-atelier-fotos" class="form-label">
+                <span>📸</span> Subir Nuevas Fotografías (Opcional, máx. 6 archivos de hasta 20MB)
+              </label>
+              <div class="file-dropzone" style="border: 2px dashed rgba(230, 213, 184, 0.3); border-radius: 8px; padding: 1rem; text-align: center; background: rgba(255, 255, 255, 0.02);">
+                <input type="file" id="edit-atelier-fotos" name="fotos" multiple accept="image/*,video/mp4" class="form-control" style="cursor: pointer;">
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">
+                  Límite estricto: máximo 6 archivos y 20MB por archivo hacia Google Drive.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="admin-modal-footer">
+          <button type="button" class="btn-admin-nav" onclick="cerrarModalEditarAtelier()" style="padding: 0.65rem 1.25rem;">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-modal-guardar-atelier" class="btn-submit-traje" style="padding: 0.65rem 1.35rem; background: var(--champagne); color: #040911; font-weight: 700;">
+            <span>💾</span> Guardar Cambios
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
   <!-- Lógica JavaScript del CMS & Dashboard (FASE 13 & SAAS) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -2998,6 +3489,7 @@
       cargarTodosLosComentarios();
       initFiltrosTablaAdmin();
       initFormEntrevistaCMS();
+      initFormAtelierCMS();
       initModalEditarTrajeCMS();
 
       {% if traje_editar %}
@@ -3353,6 +3845,10 @@
           tr.setAttribute('data-genero', t.genero || '');
           tr.setAttribute('data-destaque', isDestaque ? 'destaque' : 'general');
 
+          const disenoVal = t.diseno_original ? escapeHTML(t.diseno_original) : '-';
+          const confVal = t.confeccion ? escapeHTML(t.confeccion) : '-';
+          const estVal = (t.estructura || t.herreria_estructura) ? escapeHTML(t.estructura || t.herreria_estructura) : '-';
+
           tr.innerHTML = `
             <td style="color: var(--dorado-light); font-weight: 600;">#${t.id}</td>
             <td>
@@ -3360,14 +3856,20 @@
             </td>
             <td>
               <strong style="color: #fff;" id="nombre-traje-${t.id}">${escapeHTML(t.comparsero)}</strong>
-              ${disenoTxt}
+              <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem;">
+                📸 ${cantFotos} foto(s)
+              </div>
             </td>
             <td>
-              <span id="comparsa-traje-${t.id}">${escapeHTML(t.comparsa)}</span><br>
+              <span id="comparsa-traje-${t.id}" style="font-weight: 600; color: #e2e8f0;">${escapeHTML(t.comparsa)}</span><br>
               <span style="font-size: 0.78rem; color: var(--dorado-light);" id="genero-traje-${t.id}">${escapeHTML(t.genero)}</span>
             </td>
+            <td style="font-size: 0.8rem; color: #cbd5e1; max-width: 260px;">
+              <div><span style="color: var(--dorado-light);">✏️</span> ${disenoVal}</div>
+              <div><span style="color: #60a5fa;">🪡</span> ${confVal}</div>
+              <div><span style="color: #94a3b8;">⚙️</span> ${estVal}</div>
+            </td>
             <td id="badge-destaque-td-${t.id}">${badgeObra}</td>
-            <td style="font-size: 0.82rem; color: var(--text-muted);">📸 ${cantFotos} foto(s)</td>
             <td>
               <div class="acciones-cell">
                 <button type="button" class="btn-edit-traje" onclick="abrirModalEditarTraje(${t.id})" title="Editar este traje">
@@ -3641,11 +4143,27 @@
         document.getElementById('edit-genero').value = traje.genero || 'Femenino';
         document.getElementById('edit-es-destaque').checked = Boolean(traje.es_destaque || traje.es_obra_maestra);
         document.getElementById('edit-foto-url').value = traje.foto_url || '';
-        document.getElementById('edit-materiales').value = traje.materiales || '';
-        document.getElementById('edit-descripcion').value = traje.descripcion || '';
-        document.getElementById('edit-diseno-original').value = traje.diseno_original || '';
-        document.getElementById('edit-herreria-estructura').value = traje.herreria_estructura || '';
-        document.getElementById('edit-enlace-boceto').value = traje.enlace_boceto || '';
+        if (document.getElementById('edit-materiales')) {
+          document.getElementById('edit-materiales').value = traje.materiales || '';
+        }
+        if (document.getElementById('edit-descripcion')) {
+          document.getElementById('edit-descripcion').value = traje.descripcion || '';
+        }
+        if (document.getElementById('edit-diseno-original')) {
+          document.getElementById('edit-diseno-original').value = traje.diseno_original || '';
+        }
+        if (document.getElementById('edit-confeccion')) {
+          document.getElementById('edit-confeccion').value = traje.confeccion || '';
+        }
+        if (document.getElementById('edit-estructura')) {
+          document.getElementById('edit-estructura').value = traje.estructura || traje.herreria_estructura || '';
+        }
+        if (document.getElementById('edit-herreria-estructura')) {
+          document.getElementById('edit-herreria-estructura').value = traje.estructura || traje.herreria_estructura || '';
+        }
+        if (document.getElementById('edit-enlace-boceto')) {
+          document.getElementById('edit-enlace-boceto').value = traje.enlace_boceto || '';
+        }
 
         const previewImg = document.getElementById('edit-img-preview');
         if (previewImg) {
@@ -3750,7 +4268,19 @@
             if (badgeTd) {
               badgeTd.innerHTML = (t.es_destaque || t.es_obra_maestra)
                 ? '<span class="badge-obra-table">★ Destaque</span>'
-                : '<span class="badge-estandar-table">Catálogo General</span>';
+                : '<span class="badge-estandar-table">Catálogo</span>';
+            }
+
+            const disenoVal = t.diseno_original ? escapeHTML(t.diseno_original) : '-';
+            const confVal = t.confeccion ? escapeHTML(t.confeccion) : '-';
+            const estVal = (t.estructura || t.herreria_estructura) ? escapeHTML(t.estructura || t.herreria_estructura) : '-';
+            const cells = fila.querySelectorAll('td');
+            if (cells.length >= 5) {
+              cells[4].innerHTML = `
+                <div><span style="color: var(--dorado-light);">✏️</span> ${disenoVal}</div>
+                <div><span style="color: #60a5fa;">🪡</span> ${confVal}</div>
+                <div><span style="color: #94a3b8;">⚙️</span> ${estVal}</div>
+              `;
             }
 
             fila.setAttribute('data-nombre', (t.comparsero || '').toLowerCase());
@@ -3759,6 +4289,24 @@
             fila.setAttribute('data-destaque', (t.es_destaque || t.es_obra_maestra) ? 'destaque' : 'general');
           } else {
             cargarTrajesDashboard();
+          }
+
+          const filaPendiente = document.getElementById(`fila-pendiente-${id}`);
+          if (filaPendiente) {
+            const cellsP = filaPendiente.querySelectorAll('td');
+            if (cellsP.length >= 6) {
+              const disenoVal = t.diseno_original ? escapeHTML(t.diseno_original) : '-';
+              const confVal = t.confeccion ? escapeHTML(t.confeccion) : '-';
+              const estVal = (t.estructura || t.herreria_estructura) ? escapeHTML(t.estructura || t.herreria_estructura) : '-';
+              cellsP[4].innerHTML = `
+                <div><span style="color: var(--dorado-light);">✏️</span> ${disenoVal}</div>
+                <div><span style="color: #60a5fa;">🪡</span> ${confVal}</div>
+                <div><span style="color: #94a3b8;">⚙️</span> ${estVal}</div>
+              `;
+              if (cellsP[5] && t.descripcion) {
+                cellsP[5].innerHTML = `<div style="color: #e2e8f0;">${escapeHTML(t.descripcion.slice(0, 95))}${t.descripcion.length > 95 ? '...' : ''}</div>`;
+              }
+            }
           }
         } catch (err) {
           console.error('Error al guardar edición de traje:', err);
@@ -3938,6 +4486,254 @@
     window.eliminarEntrevista = eliminarEntrevista;
 
     /**
+     * GESTOR DE ATELIER HORACIO GÓMEZ (Alta y Baja con límite estricto de 6 archivos y 20MB)
+     */
+    function initFormAtelierCMS() {
+      const form = document.getElementById('form-atelier-cms');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit-atelier');
+        const inputFotos = document.getElementById('atelier-fotos');
+
+        if (inputFotos && inputFotos.files) {
+          if (inputFotos.files.length > 6) {
+            mostrarToast('Límite excedido: Máximo 6 archivos permitidos por obra.', 'error');
+            return;
+          }
+          for (let i = 0; i < inputFotos.files.length; i++) {
+            if (inputFotos.files[i].size > 20 * 1024 * 1024) {
+              mostrarToast(`El archivo "${inputFotos.files[i].name}" supera el tope de 20MB.`, 'error');
+              return;
+            }
+          }
+        }
+
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> Subiendo a Atelier y Google Drive...';
+
+        try {
+          const formData = new FormData(form);
+          const res = await fetch('/api/atelier', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Error al guardar la obra en Atelier.');
+
+          mostrarToast('✦ Obra publicada con éxito en el Atelier Horacio Gómez', 'success');
+          form.reset();
+
+          const tbody = document.getElementById('tbody-atelier-admin');
+          const vacio = document.getElementById('atelier-admin-vacio');
+          if (vacio) vacio.style.display = 'none';
+
+          if (tbody && data.obra) {
+            const o = data.obra;
+            const tr = document.createElement('tr');
+            tr.id = `fila-atelier-${o.id}`;
+            const descTxt = o.descripcion ? escapeHTML(o.descripcion.slice(0, 120)) + (o.descripcion.length > 120 ? '...' : '') : 'Sin descripción';
+            const mediaTxt = o.foto_url ? `<br><a href="${escapeHTML(o.foto_url)}" target="_blank" style="color: var(--rio, #5ef2e0); font-size: 0.78rem;">Ver Media ↗</a>` : '';
+            const driveTxt = o.drive_url ? `<a href="${escapeHTML(o.drive_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">Abrir Drive ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>';
+            const fechaTxt = o.fecha_creacion ? escapeHTML(o.fecha_creacion.slice(0, 10)) : '-';
+
+            tr.innerHTML = `
+              <td style="color: var(--dorado-light); font-weight: 600;">#${o.id}</td>
+              <td>
+                <strong style="color: #fff;">${escapeHTML(o.titulo)}</strong>
+                ${mediaTxt}
+              </td>
+              <td style="font-size: 0.85rem; color: var(--text-muted); max-width: 280px;">${descTxt}</td>
+              <td>${driveTxt}</td>
+              <td style="font-size: 0.82rem; color: var(--text-muted);">${fechaTxt}</td>
+              <td style="text-align: center; white-space: nowrap;">
+                <button type="button" 
+                        class="btn-action-view" 
+                        data-id="${o.id}"
+                        onclick="abrirModalEditarAtelier(${o.id})"
+                        title="Editar esta obra"
+                        style="margin-right: 0.35rem; padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--champagne-border); background: rgba(230, 213, 184, 0.1); color: var(--champagne); cursor: pointer;">
+                  <span>✏️</span> Editar
+                </button>
+                <button type="button" class="btn-delete-traje" data-id="${o.id}" data-titulo="${escapeHTML(o.titulo)}" onclick="eliminarObraAtelier(${o.id}, this.getAttribute('data-titulo'))" title="Eliminar">
+                  <span>🗑️</span> Eliminar
+                </button>
+              </td>
+            `;
+            tbody.prepend(tr);
+
+            const totalSpan = document.getElementById('total-atelier-admin');
+            if (totalSpan) {
+              const actual = parseInt(totalSpan.textContent || '0', 10);
+              totalSpan.textContent = actual + 1;
+            }
+            const badgeSidebar = document.getElementById('badge-sidebar-atelier');
+            if (badgeSidebar) {
+              const actual = parseInt(badgeSidebar.textContent || '0', 10);
+              badgeSidebar.textContent = actual + 1;
+            }
+          }
+        } catch (err) {
+          mostrarToast(err.message || 'Error de conexión', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      });
+
+      const formEdit = document.getElementById('form-modal-editar-atelier');
+      if (formEdit) {
+        formEdit.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById('btn-modal-guardar-atelier');
+          const id = document.getElementById('edit-atelier-id').value;
+          const inputFotos = document.getElementById('edit-atelier-fotos');
+
+          if (inputFotos && inputFotos.files) {
+            if (inputFotos.files.length > 6) {
+              mostrarToast('Límite excedido: Máximo 6 archivos permitidos por obra.', 'error');
+              return;
+            }
+            for (let i = 0; i < inputFotos.files.length; i++) {
+              if (inputFotos.files[i].size > 20 * 1024 * 1024) {
+                mostrarToast(`El archivo "${inputFotos.files[i].name}" supera el tope de 20MB.`, 'error');
+                return;
+              }
+            }
+          }
+
+          const origHtml = btn.innerHTML;
+          btn.disabled = true;
+          btn.innerHTML = '<span>⏳</span> Guardando en Google Drive...';
+
+          try {
+            const formData = new FormData(formEdit);
+            const res = await fetch(`/api/atelier/${id}`, {
+              method: 'POST',
+              body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Error al actualizar la obra.');
+
+            mostrarToast('✦ Obra de Atelier actualizada con éxito', 'success');
+            cerrarModalEditarAtelier();
+
+            const tr = document.getElementById(`fila-atelier-${id}`);
+            if (tr && data.obra) {
+              const o = data.obra;
+              const descTxt = o.descripcion ? escapeHTML(o.descripcion.slice(0, 120)) + (o.descripcion.length > 120 ? '...' : '') : 'Sin descripción';
+              const mediaTxt = o.foto_url ? `<br><a href="${escapeHTML(o.foto_url)}" target="_blank" style="color: var(--rio, #5ef2e0); font-size: 0.78rem;">Ver Media ↗</a>` : '';
+              const driveTxt = o.drive_url ? `<a href="${escapeHTML(o.drive_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">Abrir Drive ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>';
+              const fechaTxt = o.fecha_creacion ? escapeHTML(o.fecha_creacion.slice(0, 10)) : '-';
+
+              tr.innerHTML = `
+                <td style="color: var(--dorado-light); font-weight: 600;">#${o.id}</td>
+                <td>
+                  <strong style="color: #fff;">${escapeHTML(o.titulo)}</strong>
+                  ${mediaTxt}
+                </td>
+                <td style="font-size: 0.85rem; color: var(--text-muted); max-width: 280px;">${descTxt}</td>
+                <td>${driveTxt}</td>
+                <td style="font-size: 0.82rem; color: var(--text-muted);">${fechaTxt}</td>
+                <td style="text-align: center; white-space: nowrap;">
+                  <button type="button" 
+                          class="btn-action-view" 
+                          data-id="${o.id}"
+                          onclick="abrirModalEditarAtelier(${o.id})"
+                          title="Editar esta obra"
+                          style="margin-right: 0.35rem; padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--champagne-border); background: rgba(230, 213, 184, 0.1); color: var(--champagne); cursor: pointer;">
+                    <span>✏️</span> Editar
+                  </button>
+                  <button type="button" class="btn-delete-traje" data-id="${o.id}" data-titulo="${escapeHTML(o.titulo)}" onclick="eliminarObraAtelier(${o.id}, this.getAttribute('data-titulo'))" title="Eliminar">
+                    <span>🗑️</span> Eliminar
+                  </button>
+                </td>
+              `;
+            }
+          } catch (err) {
+            mostrarToast(err.message || 'Error al actualizar', 'error');
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+          }
+        });
+      }
+    }
+
+    async function abrirModalEditarAtelier(id) {
+      try {
+        const res = await fetch(`/api/atelier/${id}`);
+        if (!res.ok) throw new Error('No se pudo obtener la información de la obra.');
+        const o = await res.json();
+
+        document.getElementById('edit-atelier-id').value = o.id;
+        document.getElementById('modal-edit-atelier-id-badge').textContent = `#${o.id}`;
+        document.getElementById('edit-atelier-titulo').value = o.titulo || '';
+        document.getElementById('edit-atelier-descripcion').value = o.descripcion || '';
+        document.getElementById('edit-atelier-drive-url').value = o.drive_url || '';
+        const inputFotos = document.getElementById('edit-atelier-fotos');
+        if (inputFotos) inputFotos.value = '';
+
+        const modal = document.getElementById('modal-editar-atelier');
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.classList.add('active');
+          modal.setAttribute('aria-hidden', 'false');
+        }
+      } catch (err) {
+        mostrarToast(err.message || 'Error al cargar la obra', 'error');
+      }
+    }
+
+    function cerrarModalEditarAtelier() {
+      const modal = document.getElementById('modal-editar-atelier');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    window.abrirModalEditarAtelier = abrirModalEditarAtelier;
+    window.cerrarModalEditarAtelier = cerrarModalEditarAtelier;
+
+    async function eliminarObraAtelier(id, titulo) {
+      if (!confirm(`¿Eliminar definitivamente la obra "${titulo || id}" de Atelier Horacio Gómez?`)) return;
+      try {
+        const res = await fetch(`/api/atelier/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          mostrarToast(`✓ Obra #${id} eliminada con éxito`, 'success');
+          const fila = document.getElementById(`fila-atelier-${id}`);
+          if (fila) fila.remove();
+          const totalSpan = document.getElementById('total-atelier-admin');
+          if (totalSpan) {
+            const actual = parseInt(totalSpan.textContent || '0', 10);
+            totalSpan.textContent = Math.max(0, actual - 1);
+          }
+          const badgeSidebar = document.getElementById('badge-sidebar-atelier');
+          if (badgeSidebar) {
+            const actual = parseInt(badgeSidebar.textContent || '0', 10);
+            badgeSidebar.textContent = Math.max(0, actual - 1);
+          }
+          const tbody = document.getElementById('tbody-atelier-admin');
+          const vacio = document.getElementById('atelier-admin-vacio');
+          if (tbody && tbody.children.length === 0 && vacio) {
+            vacio.style.display = 'block';
+          }
+        } else {
+          mostrarToast(data.error || 'No se pudo eliminar la obra', 'error');
+        }
+      } catch (e) {
+        mostrarToast('Error de red al intentar eliminar la obra', 'error');
+      }
+    }
+
+    window.eliminarObraAtelier = eliminarObraAtelier;
+
+    /**
      * NAVEGACIÓN SAAS: Pestañas de Área de Contenido y Menú Lateral Mobile First
      */
     function initSidebarNavigation() {
@@ -4081,7 +4877,7 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
           plugins: {
             legend: {
               position: 'bottom',
@@ -4132,7 +4928,7 @@
   </script>
 
   <!-- Barra de Navegación Rápida Móvil (Mobile-First Touch Bar) -->
-  <nav class="saas-mobile-bottom-nav" aria-label="Navegación Móvil de Administración">
+  <nav class="saas-mobile-bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-[#0a1128] border-t border-amber-500/20" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: #0a1128; border-top: 1px solid rgba(245, 158, 11, 0.2);" aria-label="Navegación Móvil de Administración">
     <a href="#seccion-dashboard" class="mobile-nav-item active" data-tab="seccion-dashboard">
       <span class="nav-icon">📊</span>
       <span class="nav-text">Panel</span>
@@ -4151,6 +4947,10 @@
     <a href="#seccion-entrevistas" class="mobile-nav-item" data-tab="seccion-entrevistas">
       <span class="nav-icon">🎙️</span>
       <span class="nav-text">Prensa</span>
+    </a>
+    <a href="#seccion-atelier" class="mobile-nav-item" data-tab="seccion-atelier">
+      <span class="nav-icon">👑</span>
+      <span class="nav-text">Atelier</span>
     </a>
     <a href="/" target="_blank" class="mobile-nav-item" title="Ver Sitio Público">
       <span class="nav-icon">🌐</span>
