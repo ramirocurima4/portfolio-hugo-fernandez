@@ -37,9 +37,9 @@
        GRILLA DE TARJETAS DE PRESENTACIÓN (CONEXIÓN DINÁMICA JINJA2 + SQLITE)
        ========================================================================== -->
   <section class="comparsas-catalogo-grid" aria-label="Directorio de Comparsas">
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; width: 100%;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: clamp(1rem, 3vw, 2rem); width: 100%;">
       {% for comparsa in comparsas %}
-      <article class="comparsa-card glass-card" style="padding: 2rem 1.8rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1.2rem;">
+      <article class="comparsa-card glass-card" style="padding: clamp(1.25rem, 3vw, 2rem) clamp(1.1rem, 3vw, 1.8rem); display: flex; flex-direction: column; justify-content: space-between; gap: 1.2rem; box-sizing: border-box; width: 100%; overflow-wrap: anywhere;">
         
         <!-- Cuerpo de Información de la Comparsa -->
         <div>

@@ -311,7 +311,7 @@
 }
 
 .footer-wordmark {
-  font: 300 italic clamp(2rem, 6.5vw, 4.2rem)/0.88 var(--f-display);
+  font: 300 italic clamp(1.55rem, 6.5vw, 4.2rem)/0.92 var(--f-display);
   letter-spacing: -0.04em;
   text-align: center;
   user-select: none;
@@ -320,7 +320,8 @@
   background-clip: text;
   color: transparent;
   margin: 0;
-  white-space: nowrap;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .footer-lead {

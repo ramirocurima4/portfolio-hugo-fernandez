@@ -2,7 +2,24 @@
 
 ## Estado Actual del Proyecto
 - **Fecha de Actualización:** Noviembre 2026
-- **Directiva Vigente:** Fase 15 - Migración Integral de Almacenamiento Multimedia a Supabase Storage (API REST liviana con `requests`).
+- **Directiva Vigente:** Fase 16 - Optimización Responsive Mobile-First de Fichas Técnicas, Galerías, Destaques, Comunidad y Modales (`<= 768px` y `<= 480px`).
+
+---
+
+### Fase 16: Optimización Responsive Mobile-First de Fichas Técnicas y Galerías
+**Estado:** COMPLETADA ✅
+**Hito Registrado:** Refactorización responsive en CSS puro (`@media (max-width: 768px)` y `@media (max-width: 480px)`) eliminando desbordamientos horizontales, recortes de texto y grillas rígidas en pantallas de 360px a 768px sin alterar la identidad visual, la base de datos ni Supabase Storage.
+
+#### Enfoque Arquitectural:
+1. **Ficha Técnica de Traje (`templates/traje-detalle.html`, `static/css/style.css`, `css/style.css`):**
+   - Migración de estilos inline rígidos (`grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr)`) a clases semánticas (`.traje-gallery`, `.traje-details`, `.traje-narrative`, `.desglose-materiales`, `.traje-creditos`, `.creditos-meta-box`, `.comentarios-section`).
+   - En `<= 768px`, las columnas de galería y detalles se apilan verticalmente en `1fr` con `width: 100%` y `box-sizing: border-box`.
+   - **Imagen principal y miniaturas en móvil:** `.gallery-main` ocupa el 100% del ancho con `max-height: 72vh` y `object-fit: contain` sobre fondo oscuro `#040911` para mostrar plumajes, espaldares y tocados completos sin recortes ni deformaciones; `.gallery-thumbs` se convierte en tira horizontal deslizable táctil (`scroll-snap-type: x proximity`).
+   - **Prevención de cortes y desbordes de texto:** `overflow-wrap: anywhere` y `word-wrap: break-word` en títulos, badges, descripciones, píldoras de materiales, créditos, filas de metadatos (apiladas en `<= 480px`) y comentarios de la comunidad.
+2. **Galería, Destaques, Comunidad, Comparsas y Modales (`templates/destaques.html`, `templates/comunidad_subir.html`, `templates/comparsa.html`, `templates/comparsas.html`, `templates/arandu-beleza.html`, `templates/coordinacion.html`, `templates/atelier/index.html`, `templates/materiales.html`, `templates/entrevistas.html`, `static/css/components.css`, `static/css/layout.css`):**
+   - Reemplazo de grillas con mínimo fijo (`minmax(320px/340px, 1fr)`) por `minmax(min(300px/320px, 100%), 1fr)` y columna única (`1fr`) en `<= 768px`, eliminando el scroll horizontal en dispositivos de 360px–430px.
+   - Adaptación de tarjetas de Destaques, Feed de Trajes, Comparsas y formulario de Comunidad (encabezado de créditos con `flex-wrap`, inputs en 1 columna, alertas apiladas y botones full-width en `<= 480px`).
+   - Blindaje responsive de modales (`.modal-glass-content`, `.modal-aptitudes-grid`, `.aptitud-card-header`, `.modal-actions-bar`), botones y píldoras (`white-space: normal`, `max-width: 100%`) y `.footer-wordmark`.
 
 ---
 

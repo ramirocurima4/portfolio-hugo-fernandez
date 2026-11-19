@@ -25,11 +25,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1240px; width: 100%; margin: 0 auto;">
+<div class="wrap traje-detalle-wrap">
 
   <!-- Barra de navegación contextual y botón para compartir por WhatsApp (FASE 14) -->
-  <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
-    <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center;">
+  <div class="traje-nav-bar">
+    <div class="traje-nav-links">
       <a href="/comparsa/{{ traje.comparsa }}" class="btn-back-nav">
         🎭 Ver más de {{ traje.comparsa }}
       </a>
@@ -50,35 +50,34 @@
   <article class="traje-showcase" data-traje-id="{{ traje.id }}">
 
     <!-- 1. Galería Dinámica: 1 Foto Grande + Miniaturas -->
-    <div class="traje-gallery" style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div class="traje-gallery">
       
       <!-- Foto Principal Grande -->
-      <div class="gallery-main glass-card" style="overflow: hidden; position: relative; aspect-ratio: 3/4;">
-        <span class="gallery-badge" id="gallery-badge-txt" style="position: absolute; top: 14px; left: 14px; z-index: 2; font: 600 .7rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); background: rgba(4, 9, 17, 0.8); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(94, 242, 224, 0.3);">
+      <div class="gallery-main glass-card">
+        <span class="gallery-badge" id="gallery-badge-txt">
           {{ fotos[0].titulo if (fotos and fotos[0].titulo) else 'Vista Principal' }}
         </span>
         <img id="detalle-imagen" 
              class="detalle-imagen"
              src="{{ traje.foto_url | media_url }}" 
              alt="{{ traje.comparsero }}" 
-             loading="lazy"
-             style="width: 100%; height: 100%; object-fit: cover;">
+             loading="lazy">
       </div>
 
-      <!-- Miniaturas en Grilla al lado -->
-      <div class="gallery-thumbs" id="gallery-thumbs-container" style="display: flex; flex-direction: column; gap: 0.8rem; overflow-y: auto; max-height: 550px;">
+      <!-- Miniaturas en Grilla al lado (Desktop) / Carrusel horizontal (Móvil) -->
+      <div class="gallery-thumbs" id="gallery-thumbs-container">
         {% if fotos and fotos|length > 0 %}
           {% for f in fotos %}
-            <div class="gallery-thumb-item glass-card" style="cursor: pointer; overflow: hidden; border-radius: 10px; aspect-ratio: 4/3;" title="Click para ampliar: {{ f.titulo or 'Detalle' }}">
+            <div class="gallery-thumb-item glass-card" title="Click para ampliar: {{ f.titulo or 'Detalle' }}">
               <img src="{{ f.ruta_imagen | media_url }}" 
-                   alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                   alt="{{ f.titulo or 'Detalle de obra' }}" loading="lazy">
               <span class="thumb-caption" style="display: none;">{{ f.titulo or ('Vista Principal' if f.es_principal else 'Detalle') }}</span>
             </div>
           {% endfor %}
         {% else %}
-          <div class="gallery-thumb-item glass-card" style="cursor: pointer; overflow: hidden; border-radius: 10px; aspect-ratio: 4/3;" title="Click para ampliar detalle">
+          <div class="gallery-thumb-item glass-card" title="Click para ampliar detalle">
             <img src="{{ traje.foto_url | media_url }}" 
-                 alt="{{ traje.comparsero }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                 alt="{{ traje.comparsero }}" loading="lazy">
             <span class="thumb-caption" style="display: none;">Vista Principal</span>
           </div>
         {% endif %}
@@ -87,21 +86,21 @@
     </div>
 
     <!-- 2. Contenedor de Detalles (Narrativa + Desglose de Materiales + Bloque de Créditos) -->
-    <div class="traje-details" style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr); gap: 2rem; align-items: start;">
+    <div class="traje-details">
 
       <!-- Columna Izquierda / Principal -->
       <div class="traje-content-main">
 
         <!-- 2.A Narrativa -->
-        <div class="traje-narrative glass-card" style="padding: 2rem; margin-bottom: 2rem;">
-          <h1 class="dorado-titulo traje-title" id="detalle-titulo" style="font-size: clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom: 0.8rem;">
+        <div class="traje-narrative glass-card">
+          <h1 class="dorado-titulo traje-title" id="detalle-titulo">
             {{ traje.comparsero }} - {{ traje.comparsa }}
           </h1>
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+          <div class="traje-meta-row">
+            <div class="traje-tags-group">
               <span class="traje-rol-tag">{{ traje.genero }} • {{ traje.comparsa }}</span>
               {% if traje.es_obra_maestra %}
-              <span class="traje-rol-tag" style="background: rgba(230, 213, 184, 0.15); border: 1px solid var(--champagne); color: var(--champan-hi, #f7ecd0);">
+              <span class="traje-rol-tag traje-rol-tag--destaque">
                 ★ Obra Maestra Destacada
               </span>
               {% endif %}
@@ -114,7 +113,7 @@
             ✓ ¡Enlace copiado al portapapeles!
           </div>
           
-          <div id="traje-desc-paragraphs" style="color: var(--niebla, #aab2d4); font-size: 1rem; line-height: 1.7;">
+          <div id="traje-desc-paragraphs" class="traje-desc-paragraphs">
             {% if traje.descripcion %}
               <p>{{ traje.descripcion }}</p>
             {% else %}
@@ -130,12 +129,12 @@
 
         <!-- 2.B Desglose de Materiales (Condicional si existen materiales registrados) -->
         {% if traje.materiales and traje.materiales.strip() %}
-        <section class="desglose-materiales glass-card" style="padding: 2rem; margin-bottom: 2rem;" aria-label="Desglose técnico de materiales">
-          <h2 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.4rem; color: var(--champan-hi, #f7ecd0); margin-bottom: 1.2rem;">
+        <section class="desglose-materiales glass-card" aria-label="Desglose técnico de materiales">
+          <h2 class="traje-section-heading">
             <span style="color: var(--rio, #5ef2e0);">✦</span> Materiales Utilizados
           </h2>
 
-          <div class="materiales-pills-container" id="detalle-materiales" style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+          <div class="materiales-pills-container" id="detalle-materiales">
             {% if materiales_lista %}
               {% for material in materiales_lista %}
               <span class="material-pill">
@@ -156,45 +155,45 @@
       </div>
 
       <!-- 2.C Bloque de Créditos -->
-      <aside class="traje-creditos glass-card" style="padding: 2rem;" aria-label="Créditos técnicos del traje">
-        <div class="creditos-header" style="margin-bottom: 1.4rem;">
+      <aside class="traje-creditos glass-card" aria-label="Créditos técnicos del traje">
+        <div class="creditos-header">
           <span class="hero-badge" style="margin-bottom: 0.5rem;">Ficha Técnica</span>
-          <h3 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.35rem; color: var(--champan-hi, #f7ecd0); margin-top: 0.4rem;">
+          <h3 class="creditos-title">
             Créditos del Traje
           </h3>
         </div>
 
-        <ul class="creditos-list" style="display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 1.8rem; padding: 0; list-style: none;">
-          <li style="border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); padding-bottom: 0.75rem;">
-            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); margin-bottom: 0.3rem;">Diseño Original</span>
-            <span style="color: var(--perla, #eef0ff); font-size: 0.95rem;">{{ traje.diseno_original if traje.diseno_original else 'Hugo Fernández & Equipo de Arte' }}</span>
+        <ul class="creditos-list">
+          <li class="creditos-item">
+            <span class="creditos-label creditos-label--rio">Diseño Original</span>
+            <span class="creditos-value">{{ traje.diseno_original if traje.diseno_original else 'Hugo Fernández & Equipo de Arte' }}</span>
           </li>
-          <li style="border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); padding-bottom: 0.75rem;">
-            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 0.3rem;">Confección</span>
-            <span style="color: var(--perla, #eef0ff); font-size: 0.95rem;">{{ traje.confeccion if traje.confeccion else 'Hugo Fernández' }}</span>
+          <li class="creditos-item">
+            <span class="creditos-label creditos-label--blue">Confección</span>
+            <span class="creditos-value">{{ traje.confeccion if traje.confeccion else 'Hugo Fernández' }}</span>
           </li>
-          <li style="border-bottom: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); padding-bottom: 0.75rem;">
-            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); margin-bottom: 0.3rem;">Estructura</span>
-            <span style="color: var(--perla, #eef0ff); font-size: 0.95rem;">{{ traje.estructura if traje.estructura else (traje.herreria_estructura if traje.herreria_estructura else 'Taller de Herrería Escénica (Duraluminio)') }}</span>
+          <li class="creditos-item">
+            <span class="creditos-label creditos-label--rio">Estructura</span>
+            <span class="creditos-value">{{ traje.estructura if traje.estructura else (traje.herreria_estructura if traje.herreria_estructura else 'Taller de Herrería Escénica (Duraluminio)') }}</span>
           </li>
-          <li style="padding-bottom: 0.4rem;">
-            <span style="display: block; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--champan, #ead9b6); margin-bottom: 0.3rem;">Coordinación y Realización General</span>
-            <span style="color: var(--champan-hi, #f7ecd0); font-size: 1.05rem; font-weight: 600;">Hugo Fernández</span>
+          <li class="creditos-item creditos-item--last">
+            <span class="creditos-label creditos-label--gold">Coordinación y Realización General</span>
+            <span class="creditos-value creditos-value--highlight">Hugo Fernández</span>
           </li>
         </ul>
 
-        <div style="background: rgba(4, 9, 17, 0.5); padding: 1rem; border-radius: 12px; border: 1px solid var(--linea, rgba(176, 190, 255, 0.12)); display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;">
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--niebla, #aab2d4);">Comparsa:</span>
-            <span style="color: var(--perla, #eef0ff); font-weight: 500;">{{ traje.comparsa }}</span>
+        <div class="creditos-meta-box">
+          <div class="creditos-meta-row">
+            <span class="creditos-meta-key">Comparsa:</span>
+            <span class="creditos-meta-val">{{ traje.comparsa }}</span>
           </div>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--niebla, #aab2d4);">Categoría:</span>
-            <span style="color: var(--champan-hi, #f7ecd0);">{{ '★ Obra Maestra' if traje.es_obra_maestra else 'Catálogo Oficial' }}</span>
+          <div class="creditos-meta-row">
+            <span class="creditos-meta-key">Categoría:</span>
+            <span class="creditos-meta-val creditos-meta-val--gold">{{ '★ Obra Maestra' if traje.es_obra_maestra else 'Catálogo Oficial' }}</span>
           </div>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--niebla, #aab2d4);">Rol Escénico:</span>
-            <span style="color: var(--perla, #eef0ff);">{{ traje.genero }}</span>
+          <div class="creditos-meta-row">
+            <span class="creditos-meta-key">Rol Escénico:</span>
+            <span class="creditos-meta-val">{{ traje.genero }}</span>
           </div>
         </div>
       </aside>
@@ -204,20 +203,20 @@
   </article>
 
   <!-- Sección de Comentarios de la Comunidad -->
-  <section class="comentarios-section glass-card" id="seccion-comentarios" style="margin-top: 3rem; padding: clamp(1.8rem, 4vw, 2.8rem);" aria-label="Comentarios y opiniones del traje">
-    <div style="text-align: center; margin-bottom: 2rem;">
+  <section class="comentarios-section glass-card" id="seccion-comentarios" aria-label="Comentarios y opiniones del traje">
+    <div class="comentarios-header">
       <span class="hero-badge" style="margin-bottom: 0.5rem;">Comunidad &amp; Reseñas</span>
-      <h2 class="dorado-titulo" style="font-size: 1.8rem;">Comentarios del Traje</h2>
+      <h2 class="dorado-titulo comentarios-title">Comentarios del Traje</h2>
       <div class="section-divider" style="width: 50px; margin: 0.8rem auto;"></div>
-      <p style="color: var(--niebla, #aab2d4); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+      <p class="comentarios-subtitle">
         Dejá tus impresiones técnicas, recuerdos del desfile o consultas sobre la realización de este vestuario.
       </p>
     </div>
 
-    <div class="comentario-form-card" style="max-width: 720px; margin: 0 auto 2.5rem;">
+    <div class="comentario-form-card">
       <form id="form-comentario" class="form-comentario">
-        <div style="margin-bottom: 1.2rem;">
-          <label for="comentario-usuario" style="display: block; color: var(--champan, #ead9b6); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em;">
+        <div class="comentario-field-group">
+          <label for="comentario-usuario" class="comentario-label">
             Nombre o Usuario
           </label>
           <input type="text" 
@@ -228,8 +227,8 @@
                  class="input-comentario">
         </div>
 
-        <div style="margin-bottom: 1.2rem;">
-          <label for="comentario-texto" style="display: block; color: var(--champan, #ead9b6); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em;">
+        <div class="comentario-field-group">
+          <label for="comentario-texto" class="comentario-label">
             Comentario
           </label>
           <textarea id="comentario-texto" 
@@ -240,7 +239,7 @@
                     class="textarea-comentario"></textarea>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div class="comentario-submit-row">
           <span id="comentario-status" style="font-size: 0.88rem; color: var(--champan, #ead9b6);"></span>
           <button type="submit" id="btn-enviar-comentario" class="btn-dorado" style="cursor: pointer; padding: 0.75rem 1.8rem;">
             Enviar Comentario →
@@ -249,8 +248,8 @@
       </form>
     </div>
 
-    <div class="comentarios-lista-wrapper" style="max-width: 720px; margin: 0 auto;">
-      <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+    <div class="comentarios-lista-wrapper">
+      <h3 class="comentarios-lista-heading">
         <span>✨</span> Opiniones registradas (<span id="comentarios-contador">0</span>)
       </h3>
       <div id="comentarios-lista" class="comentarios-lista">

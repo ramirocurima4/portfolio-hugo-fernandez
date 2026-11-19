@@ -8,10 +8,15 @@
 <style>
   .entrevistas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+    gap: clamp(1.1rem, 3vw, 2rem);
     width: 100%;
     margin: 2rem auto;
+  }
+  @media (max-width: 768px) {
+    .entrevistas-grid { grid-template-columns: 1fr; }
+    .entrevista-body, .articulo-card-inner { padding: 1.15rem; }
+    .entrevista-meta, .articulo-badge-header { flex-wrap: wrap; gap: 0.45rem; }
   }
   .entrevista-card, .entrevista-card-articulo {
     background: linear-gradient(145deg, rgba(24, 34, 86, .42), rgba(8, 12, 34, .5)) !important;

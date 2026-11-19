@@ -5,7 +5,7 @@
 {% block description %}Galería exclusiva de Obras Destacadas de Hugo Fernández. Vestuarios de alta costura, trajes insignia, coordinación técnica y fantasía de carnaval.{% endblock %}
 
 {% block content %}
-<div class="wrap" style="padding: clamp(2rem, 4vw, 4rem) 1.2rem; max-width: 1200px; width: 100%; margin: 0 auto;">
+<div class="wrap destaques-page-wrap">
   
   <div style="margin-bottom: 1.5rem; text-align: left;">
     <a href="/" class="btn-back-nav" style="text-decoration: none;">
@@ -26,12 +26,12 @@
   </header>
 
   <!-- Grilla de Tarjetas Glassmorphism -->
-  <section class="destaques-glass-section glass-card" style="width: 100%; margin: 2rem auto; padding: 2rem 1.5rem;" aria-label="Trajes Destacados">
+  <section class="destaques-glass-section glass-card" aria-label="Trajes Destacados">
     {% if trajes and trajes|length > 0 %}
-      <div class="destaques-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+      <div class="destaques-grid">
         {% for traje in trajes %}
-          <article class="destaque-card glass-card" style="overflow: hidden; display: flex; flex-direction: column;">
-            <div class="destaque-media-wrapper" style="position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; background: var(--ink-2, #0a0f26);">
+          <article class="destaque-card glass-card">
+            <div class="destaque-media-wrapper">
               {% if traje.foto_url | es_video or traje.foto | es_video %}
                 <video controls width="100%" preload="metadata" class="destaque-video-player" style="width: 100%; height: 100%; object-fit: cover;">
                   <source src="{{ (traje.foto or traje.foto_url) | media_url }}" type="video/mp4">
@@ -48,26 +48,26 @@
                   <input type="range" min="0" max="100" value="50" class="ba-range-input" aria-label="Deslizar para comparar">
                 </div>
               {% else %}
-                <img src="{{ (traje.foto or traje.foto_url) | media_url }}" alt="{{ traje.nombre or traje.comparsero }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                <img src="{{ (traje.foto or traje.foto_url) | media_url }}" alt="{{ traje.nombre or traje.comparsero }}" class="destaque-card-img" loading="lazy">
               {% endif %}
             </div>
 
-            <div class="destaque-info-body" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 1rem;">
-              <div>
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.6rem; flex-wrap: wrap;">
+            <div class="destaque-info-body">
+              <div class="destaque-info-top">
+                <div class="destaque-badges-row">
                   <span class="destaque-comparsa-badge">{{ traje.comparsa }}</span>
                   {% if traje.genero %}
                     <span class="destaque-genero-badge">{{ traje.genero }}</span>
                   {% endif %}
                 </div>
-                <h2 style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.35rem; color: var(--champan-hi, #f7ecd0); margin: 0 0 0.4rem 0;">
+                <h2 class="destaque-card-title">
                   {{ traje.nombre or traje.comparsero }}
                 </h2>
                 {% if traje.descripcion %}
-                  <p style="font-size: 0.88rem; color: var(--niebla, #aab2d4); line-height: 1.55;">{{ traje.descripcion }}</p>
+                  <p class="destaque-card-desc">{{ traje.descripcion }}</p>
                 {% endif %}
               </div>
-              <div style="margin-top: 1rem;">
+              <div class="destaque-card-action">
                 <a href="/traje/{{ traje.id }}" class="btn-hero-primary" style="padding: 0.55rem 1.1rem; font-size: 0.8rem;">
                   <span>✦</span> Ver Ficha Completa →
                 </a>
@@ -77,7 +77,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div style="text-align: center; padding: 4rem 1.5rem; color: var(--champan-hi, #f7ecd0);">
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--champan-hi, #f7ecd0);">
         <p style="font-size: 1.25rem; font-family: var(--f-display, 'Fraunces', serif); margin-bottom: 0.6rem;">✦ No hay obras destacadas registradas actualmente.</p>
         <p style="font-size: 0.92rem; color: var(--niebla, #aab2d4); max-width: 500px; margin: 0 auto 1.5rem;">Podés marcar cualquier traje como destaque desde el Panel de Administración para que figure en esta sección exclusiva.</p>
         <a href="/trajes" class="btn-hero-primary" style="padding: 0.65rem 1.4rem;">

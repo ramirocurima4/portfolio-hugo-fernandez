@@ -8,8 +8,8 @@
 <style>
   .coordinacion-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+    gap: clamp(1.2rem, 3vw, 2rem);
     width: 100%;
     margin: 2rem auto;
   }
@@ -18,14 +18,19 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
   }
   .badge-masterpiece {
     position: absolute;
-    top: 14px;
-    right: 14px;
+    top: 12px;
+    right: 12px;
+    max-width: calc(100% - 24px);
     z-index: 2;
-    font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif);
-    letter-spacing: .14em;
+    font: 600 .68rem/1.25 var(--f-label, 'Syne', sans-serif);
+    letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--champan-hi, #f7ecd0);
     background: rgba(4, 9, 17, 0.8);
@@ -35,7 +40,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
   .coordinacion-body {
-    padding: 1.5rem;
+    padding: clamp(1.1rem, 3vw, 1.5rem);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -49,6 +54,12 @@
     margin-bottom: 0.4rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 768px) {
+    .coordinacion-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 {% endblock %}

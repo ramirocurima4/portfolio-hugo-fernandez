@@ -8,10 +8,14 @@
 <style>
   .materiales-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+    gap: clamp(1.1rem, 3vw, 2rem);
     width: 100%;
     margin: 2rem auto;
+  }
+  @media (max-width: 768px) {
+    .materiales-grid { grid-template-columns: 1fr; }
+    .material-card { padding: 1.25rem; }
   }
   .material-card {
     background: linear-gradient(145deg, rgba(24, 34, 86, .42), rgba(8, 12, 34, .5)) !important;

@@ -32,26 +32,26 @@
   <!-- Grilla de Trajes Publicados de esta Comparsa -->
   <section class="comparseros-grid" aria-label="Trajes publicados de {{ nombre_comparsa }}" style="margin-top: 2rem;">
     {% if trajes %}
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; width: 100%;">
+      <div class="comparseros-cards-grid">
       {% for traje in trajes %}
-      <article class="comparsero-card glass-card" data-id="{{ traje.id }}" style="overflow: hidden; display: flex; flex-direction: column;">
-        <div class="comparsero-thumb" style="position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--ink-2, #0a0f26);">
-          <span style="position: absolute; top: 12px; left: 12px; z-index: 2; font: 600 .68rem/1 var(--f-label, 'Syne', sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--rio, #5ef2e0); background: rgba(4, 9, 17, 0.75); padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(94, 242, 224, 0.3);">
+      <article class="comparsero-card glass-card" data-id="{{ traje.id }}">
+        <div class="comparsero-thumb">
+          <span class="comparsero-thumb-badge">
             {{ traje.genero }} • {{ traje.comparsa }}{% if traje.es_obra_maestra %} • ★ Obra Maestra{% endif %}
           </span>
           <img src="{% if traje.foto_url and (traje.foto_url.startswith('http://') or traje.foto_url.startswith('https://') or traje.foto_url.startswith('/')) %}{{ traje.foto_url }}{% else %}{{ url_for('static', filename=traje.foto_url) }}{% endif %}" 
-               alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+               alt="{{ traje.comparsero }} - {{ traje.comparsa }}" loading="lazy" class="comparsero-thumb-img">
         </div>
-        <div class="comparsero-body" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 1rem;">
-          <div>
-            <h2 class="comparsero-title" style="font-family: var(--f-display, 'Fraunces', serif); font-size: 1.35rem; color: var(--champan-hi, #f7ecd0); margin: 0 0 0.4rem 0;">
+        <div class="comparsero-body">
+          <div class="comparsero-info">
+            <h2 class="comparsero-title">
               {{ traje.comparsero }}
             </h2>
-            <p style="font-size: 0.82rem; color: var(--niebla, #aab2d4);">
+            <p class="comparsero-meta">
               <span>🎭</span> {{ traje.comparsa }} • <span>⚙️</span> {{ traje.herreria_estructura if traje.herreria_estructura else traje.genero }}
             </p>
             {% if traje.descripcion %}
-            <p style="font-size: 0.88rem; color: var(--perla, #eef0ff); margin-top: 0.6rem; line-height: 1.5;">
+            <p class="comparsero-desc">
               {{ traje.descripcion[:150] }}{% if traje.descripcion|length > 150 %}...{% endif %}
             </p>
             {% endif %}
