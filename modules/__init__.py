@@ -2,7 +2,7 @@
 Sistema de Módulos Enchufables - Hugo Fernández Arte Creativo
 Permite registrar subsistemas y extensiones (como 'Atelier Horacio Gómez')
 de forma desacoplada y modular sin alterar el motor principal de Flask,
-la base de datos SQLite ni la integración con Google Drive.
+la base de datos SQLite ni la integración con Supabase Storage.
 """
 import os
 import logging

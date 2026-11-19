@@ -91,7 +91,8 @@ check("MAX_CONTENT_LENGTH = 120MB", app.config.get("MAX_CONTENT_LENGTH") == 120 
 src = open(os.path.join(ROOT, "app.py"), encoding="utf-8").read()
 check("tope 6 archivos presente", "len(archivos_lista) > 6" in src and "archivos_lista[:6]" in src)
 check("tope 20MB presente", "MAX_BYTES_POR_ARCHIVO = 20 * 1024 * 1024" in src)
-check("integración Google Drive presente", "subir_a_google_drive" in src and "MediaIoBaseUpload" in src)
+check("integración Supabase Storage presente", "subir_a_supabase_storage" in src and "eliminar_de_supabase_storage" in src and "requests.post" in src)
+check("sin dependencias Google Drive en app.py", "googleapiclient" not in src and "google.oauth2" not in src and "llave-google.json" not in src)
 
 print("\n== Cabeceras ==")
 r = c.get("/")

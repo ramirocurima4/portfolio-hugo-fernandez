@@ -5,24 +5,20 @@ FASE 14: Módulo Social (Comunidad & Moderación), Seed de Datos y Páginas Din�
 """
 
 import os
-import shutil
 import time
+import uuid
 import unicodedata
 import mimetypes
-import io
 import re
 import hashlib
 import json
 from datetime import timedelta
+from urllib.parse import quote, unquote
+import requests
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request, send_from_directory, render_template, url_for, session, redirect
 from database import get_db_connection, init_db
-
-# Google Drive API Client (google-api-python-client)
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
 
 # Cargar variables de entorno desde .env
 load_dotenv()
@@ -89,9 +85,18 @@ def request_entity_too_large(error):
         "error": "La carga supera el límite total permitido de 120MB (máximo 6 archivos de 20MB cada uno)."
     }), 413
 
-# Configuración Google Drive (llave-google.json y carpeta destino)
-GOOGLE_DRIVE_FOLDER_ID = os.getenv('GOOGLE_DRIVE_FOLDER_ID', '19-8plymUMId_UlTh3xRhWykWEkea15p8')
-LLAVE_GOOGLE_PATH = os.path.join(BASE_DIR, 'llave-google.json')
+# Configuración Supabase Storage (leída desde .env mediante python-dotenv)
+SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").strip().rstrip("/")
+SUPABASE_KEY = (os.getenv("SUPABASE_KEY") or "").strip()
+SUPABASE_BUCKET = (os.getenv("SUPABASE_BUCKET") or "").strip()
+
+
+def obtener_config_supabase():
+    """Obtiene la configuración vigente de Supabase Storage desde variables de entorno."""
+    url = (os.getenv("SUPABASE_URL") or SUPABASE_URL or "").strip().rstrip("/")
+    key = (os.getenv("SUPABASE_KEY") or SUPABASE_KEY or "").strip()
+    bucket = (os.getenv("SUPABASE_BUCKET") or SUPABASE_BUCKET or "").strip()
+    return url, key, bucket
 
 
 def registrar_error_bd(modulo, mensaje_error):
@@ -113,51 +118,42 @@ def registrar_error_bd(modulo, mensaje_error):
         print(f"[!] Falló registrar_error_bd: {e}")
 
 
-def get_drive_service():
+def subir_a_supabase_storage(file_obj, filename):
     """
-    Inicializa el cliente de Google Drive v3 usando la cuenta de servicio local (llave-google.json).
+    Sube un archivo (imágenes y videos .mp4) directamente a Supabase Storage mediante la API REST
+    (POST {SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/{nombre_unico}) usando únicamente `requests`.
+    Genera un nombre único combinando `uuid` y `secure_filename` para evitar colisiones y retorna
+    la URL pública directa para persistir en SQLite sin guardar multimedia en disco local.
     """
-    if not os.path.exists(LLAVE_GOOGLE_PATH):
-        msg = f"No se encontró el archivo de credenciales de Google: {LLAVE_GOOGLE_PATH}"
-        print(f"[!] {msg}")
-        registrar_error_bd("Google Drive", msg)
-        return None
-    try:
-        creds = service_account.Credentials.from_service_account_file(
-            LLAVE_GOOGLE_PATH,
-            scopes=["https://www.googleapis.com/auth/drive"]
-        )
-        return build("drive", "v3", credentials=creds)
-    except Exception as e:
-        err_msg = f"Error inicializando servicio Google Drive: {e}"
+    supabase_url, supabase_key, supabase_bucket = obtener_config_supabase()
+    if not supabase_url or not supabase_key or not supabase_bucket:
+        err_msg = f"Credenciales de Supabase Storage incompletas en .env al intentar subir '{filename}'."
         print(f"[!] {err_msg}")
-        registrar_error_bd("Google Drive", err_msg)
+        registrar_error_bd("Supabase Storage", err_msg)
         return None
 
+    safe_name = secure_filename(filename or "")
+    if not safe_name:
+        safe_name = "archivo.jpg"
 
-def subir_a_google_drive(file_obj, filename):
-    """
-    Sube un archivo (imágenes y videos .mp4) directamente a Google Drive usando google-api-python-client.
-    Credenciales: llave-google.json | Carpeta destino ID: 19-8plymUMId_UlTh3xRhWykWEkea15p8.
-    Otorga permisos públicos de lectura (role: 'reader', type: 'anyone') y retorna el webViewLink
-    para guardarlo ÚNICAMENTE en la base de datos SQLite sin almacenar archivos multimedia locales.
-    Gestión de Errores: Registra cualquier fallo en la tabla 'errores_log' sin romper la aplicación.
-    """
-    service = get_drive_service()
-    if not service:
-        err_msg = f"Servicio Google Drive no disponible para subir '{filename}'"
-        print(f"[!] {err_msg}")
-        registrar_error_bd("Google Drive", err_msg)
-        import hashlib
-        simulated_id = hashlib.sha256(f"{filename}_{time.time()}".encode()).hexdigest()[:28]
-        return f"https://drive.google.com/file/d/{simulated_id}/view?usp=drivesdk"
+    base_name, ext = os.path.splitext(safe_name)
+    if not ext:
+        content_type = getattr(file_obj, "content_type", "") or ""
+        ext = ".mp4" if "video" in content_type.lower() else ".jpg"
+        safe_name = f"{base_name}{ext}"
+
+    nombre_unico = f"{uuid.uuid4().hex}_{safe_name}"
 
     # Detección de tipo MIME
-    mime_type, _ = mimetypes.guess_type(filename)
+    mime_type, _ = mimetypes.guess_type(safe_name)
     if not mime_type:
-        mime_type = "video/mp4" if filename.lower().endswith(".mp4") else "image/jpeg"
+        ct = getattr(file_obj, "content_type", None)
+        if ct and ct != "application/octet-stream":
+            mime_type = ct
+        else:
+            mime_type = "video/mp4" if safe_name.lower().endswith(".mp4") else "image/jpeg"
 
-    # Preparación del flujo binario en memoria
+    # Lectura binaria en memoria
     if hasattr(file_obj, "read"):
         if hasattr(file_obj, "seek"):
             file_obj.seek(0)
@@ -167,71 +163,198 @@ def subir_a_google_drive(file_obj, filename):
     else:
         bytes_data = file_obj
 
-    media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype=mime_type, resumable=True)
-    body = {
-        "name": filename,
-        "parents": [GOOGLE_DRIVE_FOLDER_ID]
+    bucket_encoded = quote(supabase_bucket, safe="")
+    object_encoded = quote(nombre_unico, safe="/")
+    upload_url = f"{supabase_url}/storage/v1/object/{bucket_encoded}/{object_encoded}"
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}",
+        "Content-Type": mime_type,
+        "x-upsert": "true",
     }
 
     try:
-        drive_file = service.files().create(
-            body=body,
-            media_body=media,
-            fields="id, name, webViewLink, webContentLink",
-            supportsAllDrives=True
-        ).execute()
+        resp = requests.post(upload_url, headers=headers, data=bytes_data, timeout=30)
+        if resp.status_code in (200, 201):
+            public_url = f"{supabase_url}/storage/v1/object/public/{bucket_encoded}/{object_encoded}"
+            print(f"[+] Archivo subido con éxito a Supabase Storage: {nombre_unico} -> {public_url}")
+            return public_url
 
-        file_id = drive_file.get("id")
-
-        # Otorgar permisos públicos de lectura (role: 'reader', type: 'anyone')
-        try:
-            service.permissions().create(
-                fileId=file_id,
-                body={"type": "anyone", "role": "reader"},
-                supportsAllDrives=True
-            ).execute()
-        except Exception as pe:
-            print(f"[!] Permisos Drive advertencia: {pe}")
-            registrar_error_bd("Google Drive Permisos", f"Advertencia permisos {filename}: {pe}")
-
-        link = drive_file.get("webViewLink") or drive_file.get("webContentLink")
-        if not link and file_id:
-            link = f"https://drive.google.com/file/d/{file_id}/view?usp=drivesdk"
-
-        print(f"[+] Archivo subido con éxito a Google Drive: {filename} -> {link}")
-        return link
-    except Exception as err:
-        err_detail = f"Fallo al subir '{filename}' a Google Drive: {err}"
+        err_detail = (
+            f"Fallo al subir '{filename}' a Supabase Storage "
+            f"(HTTP {resp.status_code}): {resp.text[:300]}"
+        )
         print(f"[!] {err_detail}")
-        registrar_error_bd("Google Drive", err_detail)
-        # En caso de limitación de cuota de Service Account (storageQuotaExceeded) o fallo de red,
-        # generamos un enlace de Drive válido para persistir en SQLite sin tocar el servidor local:
-        import hashlib
-        simulated_id = hashlib.sha256(f"{filename}_{time.time()}".encode()).hexdigest()[:28]
-        return f"https://drive.google.com/file/d/{simulated_id}/view?usp=drivesdk"
+        registrar_error_bd("Supabase Storage", err_detail)
+        return None
+    except requests.RequestException as err:
+        err_detail = f"Error de conexión al subir '{filename}' a Supabase Storage: {err}"
+        print(f"[!] {err_detail}")
+        registrar_error_bd("Supabase Storage", err_detail)
+        return None
+
+
+def extraer_ruta_objeto_supabase(url):
+    """
+    Si la URL corresponde a un objeto público del bucket configurado en Supabase Storage,
+    retorna su ruta interna (nombre_unico). Para URLs externas (ej. Unsplash), retorna None.
+    """
+    if not url or not isinstance(url, str):
+        return None
+    supabase_url, _, supabase_bucket = obtener_config_supabase()
+    if not supabase_url or not supabase_bucket:
+        return None
+
+    clean_url = url.strip().split("?", 1)[0]
+    bucket_encoded = quote(supabase_bucket, safe="")
+    prefijos = (
+        f"{supabase_url}/storage/v1/object/public/{supabase_bucket}/",
+        f"{supabase_url}/storage/v1/object/public/{bucket_encoded}/",
+    )
+    for prefijo in prefijos:
+        if clean_url.startswith(prefijo):
+            obj_path = clean_url[len(prefijo):].lstrip("/")
+            return unquote(obj_path) if obj_path else None
+    return None
+
+
+def eliminar_de_supabase_storage(url):
+    """
+    Elimina un objeto del bucket de Supabase Storage mediante DELETE HTTP para evitar
+    archivos huérfanos. Ignora de forma segura URLs que no pertenecen al bucket configurado.
+    """
+    obj_path = extraer_ruta_objeto_supabase(url)
+    if not obj_path:
+        return False
+
+    supabase_url, supabase_key, supabase_bucket = obtener_config_supabase()
+    if not supabase_url or not supabase_key or not supabase_bucket:
+        registrar_error_bd("Supabase Storage", f"Credenciales incompletas al intentar eliminar '{obj_path}'.")
+        return False
+
+    bucket_encoded = quote(supabase_bucket, safe="")
+    object_encoded = quote(obj_path, safe="/")
+    delete_url = f"{supabase_url}/storage/v1/object/{bucket_encoded}/{object_encoded}"
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}",
+    }
+
+    try:
+        resp = requests.delete(delete_url, headers=headers, timeout=15)
+        if resp.status_code in (200, 204, 404):
+            print(f"[+] Archivo eliminado de Supabase Storage: {obj_path} (HTTP {resp.status_code})")
+            return True
+
+        err_detail = (
+            f"Fallo al eliminar '{obj_path}' de Supabase Storage "
+            f"(HTTP {resp.status_code}): {resp.text[:300]}"
+        )
+        print(f"[!] {err_detail}")
+        registrar_error_bd("Supabase Storage", err_detail)
+        return False
+    except requests.RequestException as err:
+        err_detail = f"Error de conexión al eliminar '{obj_path}' de Supabase Storage: {err}"
+        print(f"[!] {err_detail}")
+        registrar_error_bd("Supabase Storage", err_detail)
+        return False
+
+
+def eliminar_urls_supabase(urls):
+    """Elimina una colección deduplicada de URLs pertenecientes al bucket de Supabase Storage."""
+    vistas = set()
+    for url in urls or []:
+        u = (url or "").strip()
+        if not u or u in vistas:
+            continue
+        vistas.add(u)
+        eliminar_de_supabase_storage(u)
+
+
+def verificar_estado_supabase_storage():
+    """
+    Verifica la configuración en .env y la conectividad real con el bucket de Supabase Storage
+    (GET {SUPABASE_URL}/storage/v1/bucket/{SUPABASE_BUCKET}).
+    """
+    supabase_url, supabase_key, supabase_bucket = obtener_config_supabase()
+    if not supabase_url or not supabase_key or not supabase_bucket:
+        faltantes = []
+        if not supabase_url:
+            faltantes.append("SUPABASE_URL")
+        if not supabase_key:
+            faltantes.append("SUPABASE_KEY")
+        if not supabase_bucket:
+            faltantes.append("SUPABASE_BUCKET")
+        return {
+            "status": "error",
+            "texto": "Sin Credenciales",
+            "badge_class": "kpi-badge-error",
+            "detalle": f"Falta {', '.join(faltantes)} en .env",
+            "bucket": supabase_bucket or "Sin configurar",
+        }
+
+    bucket_encoded = quote(supabase_bucket, safe="")
+    bucket_url = f"{supabase_url}/storage/v1/bucket/{bucket_encoded}"
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}",
+    }
+
+    try:
+        resp = requests.get(bucket_url, headers=headers, timeout=4)
+        if resp.status_code == 200:
+            return {
+                "status": "ok",
+                "texto": "Storage OK",
+                "badge_class": "kpi-badge-ok",
+                "detalle": f"Supabase Storage ({supabase_bucket}) conectado",
+                "bucket": supabase_bucket,
+            }
+        if resp.status_code in (401, 403):
+            return {
+                "status": "error",
+                "texto": "Error de Auth",
+                "badge_class": "kpi-badge-error",
+                "detalle": "SUPABASE_KEY inválida o sin permisos",
+                "bucket": supabase_bucket,
+            }
+        if resp.status_code == 404:
+            return {
+                "status": "error",
+                "texto": "Bucket Inexistente",
+                "badge_class": "kpi-badge-error",
+                "detalle": f"Bucket '{supabase_bucket}' no encontrado",
+                "bucket": supabase_bucket,
+            }
+        return {
+            "status": "warn",
+            "texto": "Alerta Storage",
+            "badge_class": "kpi-badge-warn",
+            "detalle": f"Supabase Storage respondió HTTP {resp.status_code}",
+            "bucket": supabase_bucket,
+        }
+    except requests.RequestException:
+        return {
+            "status": "warn",
+            "texto": "Sin Conexión",
+            "badge_class": "kpi-badge-warn",
+            "detalle": f"Variables .env OK • Sin red hacia {supabase_bucket}",
+            "bucket": supabase_bucket,
+        }
 
 
 def resolver_multimedia_url(url):
     """
-    Helper y filtro Jinja para renderizar enlaces directos a imágenes y videos:
-    Convierte un webViewLink de Google Drive a URL directa de visualización o streaming.
+    Helper y filtro Jinja para renderizar enlaces directos a imágenes y videos
+    (URLs públicas directas de Supabase Storage, externas HTTPS o rutas estáticas locales).
     """
     if not url:
         return "/static/assets/img/traje-verde.jpg"
-    
-    # Extraer ID de Drive si es webViewLink
-    m = re.search(r'drive\.google\.com/file/d/([a-zA-Z0-9_-]+)', url)
-    if not m:
-        m = re.search(r'drive\.google\.com/open\?id=([a-zA-Z0-9_-]+)', url)
-    if not m:
-        m = re.search(r'id=([a-zA-Z0-9_-]+)', url)
-    if m:
-        file_id = m.group(1)
-        return f"https://lh3.googleusercontent.com/d/{file_id}"
 
-    if url.startswith("http://") or url.startswith("https://") or url.startswith("/"):
-        return url
-    return f"/{url}"
+    u = str(url).strip()
+    if u.startswith("http://") or u.startswith("https://") or u.startswith("/") or u.startswith("data:"):
+        return u
+    return f"/{u}"
 
 
 @app.template_filter("media_url")
@@ -241,7 +364,7 @@ def media_url_filter(url):
 
 def transformar_a_url_iframe(url):
     """
-    Convierte cualquier enlace audiovisual (YouTube, Instagram, Google Drive, Vimeo, MP4 local)
+    Convierte cualquier enlace audiovisual (YouTube, Instagram, Vimeo, MP4 remoto o local)
     en una URL directamente incrustable en un <iframe> responsivo.
     """
     if not url:
@@ -258,18 +381,13 @@ def transformar_a_url_iframe(url):
     if m_ig:
         return f"https://www.instagram.com/reel/{m_ig.group(1)}/embed/"
 
-    # 3. Google Drive (/view o /preview)
-    m_drive = re.search(r"drive\.google\.com/file/d/([a-zA-Z0-9_-]+)", u)
-    if m_drive:
-        return f"https://drive.google.com/file/d/{m_drive.group(1)}/preview"
-
-    # 4. Vimeo
+    # 3. Vimeo
     m_vimeo = re.search(r"vimeo\.com/(?:video/)?([0-9]+)", u)
     if m_vimeo:
         return f"https://player.vimeo.com/video/{m_vimeo.group(1)}"
 
-    # 5. Video directo (.mp4 o ruta interna)
-    if u.lower().endswith(".mp4") or "/video/" in u.lower() or "/videos/" in u.lower() or u.startswith("/assets/videos/"):
+    # 4. Video directo (.mp4, .webm o ruta interna)
+    if u.lower().endswith((".mp4", ".webm")) or "/video/" in u.lower() or "/videos/" in u.lower() or u.startswith("/assets/videos/"):
         media_src = resolver_multimedia_url(u)
         return f"/embed/player?src={media_src}"
 
@@ -674,14 +792,13 @@ def enriquecer_traje(cursor, row):
 
 def guardar_archivos_fisicos(files, titulos=None, principal_idx=None):
     """
-    BLINDAJE MULTIMEDIA & DRIVE API:
-    Guarda y procesa una lista de archivos FileStorage (imágenes y videos .mp4).
+    BLINDAJE MULTIMEDIA & SUPABASE STORAGE REST API:
+    Procesa una lista de archivos FileStorage (imágenes y videos .mp4).
     Aplica límites estrictos:
       1. Máximo 6 archivos en total por traje.
       2. Máximo 20MB por archivo individual.
-    Sube cada archivo directamente a Google Drive (carpeta 19-8plymUMId_UlTh3xRhWykWEkea15p8)
-    usando google-api-python-client y guarda ÚNICAMENTE los enlaces webViewLink en SQLite.
-    NO guarda archivos multimedia en el servidor local.
+    Sube cada archivo directamente a Supabase Storage usando `requests` y retorna
+    ÚNICAMENTE las URLs públicas directas para persistir en SQLite sin tocar disco local.
     """
     if not files:
         return []
@@ -718,16 +835,14 @@ def guardar_archivos_fisicos(files, titulos=None, principal_idx=None):
 
         base_name, ext = os.path.splitext(raw_filename)
         if not ext:
-            content_type = getattr(file, "content_type", "")
-            ext = ".mp4" if "video" in content_type else ".jpg"
+            content_type = getattr(file, "content_type", "") or ""
+            ext = ".mp4" if "video" in content_type.lower() else ".jpg"
             raw_filename = f"{base_name}{ext}"
 
-        # Subida directa a Google Drive en memoria (sin tocar disco local)
-        drive_link = subir_a_google_drive(file, raw_filename)
-        if not drive_link:
-            import hashlib
-            simulated_id = hashlib.sha256(f"{raw_filename}_{time.time()}_{idx}".encode()).hexdigest()[:28]
-            drive_link = f"https://drive.google.com/file/d/{simulated_id}/view?usp=drivesdk"
+        # Subida directa a Supabase Storage en memoria (sin tocar disco local)
+        storage_url = subir_a_supabase_storage(file, raw_filename)
+        if not storage_url:
+            continue
 
         titulo = (
             titulos[idx].strip()
@@ -737,7 +852,7 @@ def guardar_archivos_fisicos(files, titulos=None, principal_idx=None):
         es_principal = 1 if (principal_idx is not None and idx == principal_idx) else (1 if idx == 0 and principal_idx is None else 0)
 
         fotos_guardadas.append({
-            "ruta_imagen": drive_link,
+            "ruta_imagen": storage_url,
             "titulo": titulo,
             "es_principal": es_principal
         })
@@ -765,14 +880,17 @@ def parsear_checkbox_obra_maestra(form_or_json):
 
 def subir_boceto_si_existe(request_files, request_form=None, default_link=""):
     """
-    Procesa la subida opcional de una foto de boceto a Google Drive (llave-google.json)
+    Procesa la subida opcional de una foto de boceto a Supabase Storage
     o conserva el enlace existente en SQLite.
+    Si reemplaza un boceto previo alojado en Supabase Storage, elimina el anterior.
     """
     boceto_file = request_files.get("boceto") or request_files.get("foto_boceto")
     if boceto_file and getattr(boceto_file, "filename", ""):
         raw_name = secure_filename(boceto_file.filename) or f"boceto_{int(time.time())}.jpg"
-        link = subir_a_google_drive(boceto_file, f"boceto_{raw_name}")
+        link = subir_a_supabase_storage(boceto_file, f"boceto_{raw_name}")
         if link:
+            if default_link and default_link != link:
+                eliminar_de_supabase_storage(default_link)
             return link
     if request_form and "enlace_boceto" in request_form:
         val = (request_form.get("enlace_boceto") or "").strip()
@@ -1153,32 +1271,21 @@ def obtener_metricas_dashboard(conn, cursor):
     cursor.execute("SELECT COUNT(*) FROM trajes WHERE estado = 'publicado' AND (es_destaque = 1 OR es_obra_maestra = 1)")
     destaques_total = cursor.fetchone()[0]
 
-    # 4. Estado del Sistema (Drive OK / Fallos recientes)
-    cursor.execute("SELECT COUNT(*) FROM errores_log WHERE modulo LIKE '%Drive%' AND fecha >= datetime('now', '-24 hours')")
-    fallos_drive_recientes = cursor.fetchone()[0]
+    # 4. Estado del Sistema (Supabase Storage OK / Fallos recientes)
+    cursor.execute("SELECT COUNT(*) FROM errores_log WHERE modulo LIKE '%Supabase%' AND fecha >= datetime('now', '-24 hours')")
+    fallos_storage_recientes = cursor.fetchone()[0]
 
-    drive_creds_ok = os.path.exists(LLAVE_GOOGLE_PATH)
-    if not drive_creds_ok:
-        estado_sistema = {
-            "status": "error",
-            "texto": "Sin Credenciales",
-            "badge_class": "kpi-badge-error",
-            "detalle": "llave-google.json no encontrada"
-        }
-    elif fallos_drive_recientes > 0:
+    estado_supabase = verificar_estado_supabase_storage()
+    if estado_supabase["status"] == "ok" and fallos_storage_recientes > 0:
         estado_sistema = {
             "status": "warn",
             "texto": "Fallos recientes",
             "badge_class": "kpi-badge-warn",
-            "detalle": f"{fallos_drive_recientes} fallo(s) en 24h"
+            "detalle": f"{fallos_storage_recientes} fallo(s) en Supabase Storage (24h)",
+            "bucket": estado_supabase["bucket"],
         }
     else:
-        estado_sistema = {
-            "status": "ok",
-            "texto": "Drive OK",
-            "badge_class": "kpi-badge-ok",
-            "detalle": "Conexión Google Cloud activa"
-        }
+        estado_sistema = estado_supabase
 
     # 5. Distribución por comparsa para Chart.js Doughnut
     cursor.execute("""
@@ -1407,29 +1514,54 @@ def aprobar_traje_moderacion(id):
     return redirect(url_for("admin_panel") + "#bandeja-moderacion")
 
 
+def recolectar_urls_traje(cursor, traje_row):
+    """Recopila todas las URLs multimedia asociadas a un traje (foto_url, enlace_boceto, fotos_json, fotos_traje)."""
+    urls = []
+    if traje_row:
+        t = dict(traje_row)
+        if t.get("foto_url"):
+            urls.append(t["foto_url"])
+        if t.get("enlace_boceto"):
+            urls.append(t["enlace_boceto"])
+        if t.get("fotos_json"):
+            try:
+                parsed = json.loads(t["fotos_json"])
+                if isinstance(parsed, list):
+                    urls.extend([u for u in parsed if isinstance(u, str)])
+            except (ValueError, TypeError):
+                pass
+        cursor.execute("SELECT ruta_imagen FROM fotos_traje WHERE traje_id = ?", (t["id"],))
+        urls.extend([r["ruta_imagen"] for r in cursor.fetchall() if r["ruta_imagen"]])
+    return urls
+
+
 @app.route("/admin/rechazar/<int:id>", methods=["POST", "DELETE"])
 @app.route("/api/trajes/rechazar/<int:id>", methods=["POST", "DELETE"])
 def rechazar_traje_moderacion(id):
     """
     FASE 14 (Módulo 1): Rechaza un traje pendiente en la Bandeja de Moderación,
-    eliminando el registro y sus fotografías asociadas de la base de datos.
+    eliminando el registro, sus fotografías asociadas en SQLite y los objetos en Supabase Storage.
     """
     if not session.get("admin_logged_in"):
         return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, comparsero FROM trajes WHERE id = ?", (id,))
+    cursor.execute("SELECT * FROM trajes WHERE id = ?", (id,))
     row = cursor.fetchone()
     if row is None:
         conn.close()
         return jsonify({"error": "Traje no encontrado"}), 404
+
+    urls_a_eliminar = recolectar_urls_traje(cursor, row)
 
     cursor.execute("DELETE FROM fotos_traje WHERE traje_id = ?", (id,))
     cursor.execute("DELETE FROM comentarios WHERE traje_id = ?", (id,))
     cursor.execute("DELETE FROM trajes WHERE id = ?", (id,))
     conn.commit()
     conn.close()
+
+    eliminar_urls_supabase(urls_a_eliminar)
 
     wants_json = (
         request.path.startswith("/api/")
@@ -1532,7 +1664,7 @@ def post_traje():
     """
     POST /api/trajes (Creación directa por Administrador).
     Recibe los campos de texto, el booleano es_destaque (desde checkbox)
-    y opcionalmente la foto del boceto, guardando todo en SQLite y Google Drive.
+    y opcionalmente la foto del boceto, guardando todo en SQLite y Supabase Storage.
     """
     if not session.get("admin_logged_in"):
         return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
@@ -1572,7 +1704,7 @@ def post_traje():
 
     fotos_guardadas = guardar_archivos_fisicos(files, titulos, principal_idx)
     if not fotos_guardadas:
-        return jsonify({"error": "No se pudieron procesar las fotografías enviadas."}), 400
+        return jsonify({"error": "No se pudieron subir las fotografías a Supabase Storage. Revisá el registro de errores."}), 502
 
     if not any(f["es_principal"] == 1 for f in fotos_guardadas):
         fotos_guardadas[0]["es_principal"] = 1
@@ -1656,7 +1788,7 @@ def editar_traje(id):
         conn.close()
         return jsonify({"error": "Los campos 'comparsero' y 'comparsa' son obligatorios."}), 400
 
-    # 1. Eliminar fotos marcadas para eliminación
+    # 1. Eliminar fotos marcadas para eliminación (tanto en SQLite como en Supabase Storage)
     fotos_eliminar_ids = []
     if request.form:
         fotos_eliminar_ids.extend(request.form.getlist("fotos_eliminar"))
@@ -1664,10 +1796,15 @@ def editar_traje(id):
     elif isinstance(data_source.get("fotos_eliminar"), list):
         fotos_eliminar_ids.extend(data_source.get("fotos_eliminar"))
 
+    urls_fotos_eliminadas = []
     for raw_fid in fotos_eliminar_ids:
         for fid_part in str(raw_fid).split(","):
             fid_str = fid_part.strip()
             if fid_str.isdigit():
+                cursor.execute("SELECT ruta_imagen FROM fotos_traje WHERE id = ? AND traje_id = ?", (int(fid_str), id))
+                foto_row = cursor.fetchone()
+                if foto_row and foto_row["ruta_imagen"]:
+                    urls_fotos_eliminadas.append(foto_row["ruta_imagen"])
                 cursor.execute("DELETE FROM fotos_traje WHERE id = ? AND traje_id = ?", (int(fid_str), id))
 
     # 2. Actualizar títulos de fotos existentes que permanecen
@@ -1691,6 +1828,9 @@ def editar_traje(id):
 
     titulos_nuevas = request.form.getlist("titulos_fotos") if request.form else []
     nuevas_fotos_guardadas = guardar_archivos_fisicos(files, titulos_nuevas, principal_idx=None)
+    if files and not nuevas_fotos_guardadas:
+        conn.close()
+        return jsonify({"error": "No se pudieron subir las nuevas fotografías a Supabase Storage. Revisá el registro de errores."}), 502
 
     nuevas_fotos_db_ids = []
     for nf in nuevas_fotos_guardadas:
@@ -1779,6 +1919,9 @@ def editar_traje(id):
     traje_final = enriquecer_traje(cursor, cursor.fetchone())
     conn.close()
 
+    if urls_fotos_eliminadas:
+        eliminar_urls_supabase(urls_fotos_eliminadas)
+
     return jsonify({
         "mensaje": "Traje actualizado con éxito",
         "traje": traje_final
@@ -1789,7 +1932,8 @@ def editar_traje(id):
 @app.route("/api/trajes/eliminar/<int:id>", methods=["DELETE", "POST"])
 def eliminar_traje(id):
     """
-    Elimina un traje del catálogo junto con sus fotos asociadas y comentarios.
+    Elimina un traje del catálogo junto con sus fotos asociadas, comentarios
+    y archivos correspondientes en Supabase Storage.
     Protegido por sesión de administrador.
     """
     if not session.get("admin_logged_in"):
@@ -1797,17 +1941,21 @@ def eliminar_traje(id):
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, comparsero FROM trajes WHERE id = ?", (id,))
+    cursor.execute("SELECT * FROM trajes WHERE id = ?", (id,))
     row = cursor.fetchone()
     if row is None:
         conn.close()
         return jsonify({"error": "Traje no encontrado"}), 404
+
+    urls_a_eliminar = recolectar_urls_traje(cursor, row)
 
     cursor.execute("DELETE FROM fotos_traje WHERE traje_id = ?", (id,))
     cursor.execute("DELETE FROM comentarios WHERE traje_id = ?", (id,))
     cursor.execute("DELETE FROM trajes WHERE id = ?", (id,))
     conn.commit()
     conn.close()
+
+    eliminar_urls_supabase(urls_a_eliminar)
 
     return jsonify({
         "mensaje": "Traje eliminado con éxito del catálogo",
@@ -2076,12 +2224,31 @@ def api_get_atelier():
     return jsonify(rows), 200
 
 
+def recolectar_urls_obra_atelier(obra_dict):
+    """Recopila todas las URLs multimedia de una obra del Atelier Horacio Gómez."""
+    urls = []
+    if not obra_dict:
+        return urls
+    if obra_dict.get("foto_url"):
+        urls.append(obra_dict["foto_url"])
+    if obra_dict.get("drive_url"):
+        urls.append(obra_dict["drive_url"])
+    if obra_dict.get("fotos_json"):
+        try:
+            parsed = json.loads(obra_dict["fotos_json"])
+            if isinstance(parsed, list):
+                urls.extend([u for u in parsed if isinstance(u, str)])
+        except (ValueError, TypeError):
+            pass
+    return urls
+
+
 @app.route("/api/atelier", methods=["POST"])
 @app.route("/admin/atelier/subir", methods=["POST"])
 def api_post_atelier():
     """
     Crea una nueva obra en Atelier Horacio Gómez (protegido por sesión de administrador).
-    Aplica el límite estricto de máximo 6 archivos y 20MB por archivo, con enlace a Google Drive.
+    Aplica el límite estricto de máximo 6 archivos y 20MB por archivo hacia Supabase Storage.
     """
     if not session.get("admin_logged_in"):
         return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
@@ -2089,7 +2256,7 @@ def api_post_atelier():
     data = request.form if request.form else (request.get_json(silent=True) or {})
     titulo = (data.get("titulo") or "").strip()
     descripcion = (data.get("descripcion") or "").strip()
-    drive_url = (data.get("drive_url") or data.get("enlace_drive") or "").strip()
+    drive_url = (data.get("drive_url") or data.get("enlace_drive") or data.get("storage_url") or "").strip()
 
     if not titulo:
         return jsonify({"error": "El título de la obra es obligatorio"}), 400
@@ -2101,6 +2268,8 @@ def api_post_atelier():
     fotos_guardadas = []
     if archivos_validos:
         fotos_guardadas = guardar_archivos_fisicos(archivos_validos)
+        if not fotos_guardadas:
+            return jsonify({"error": "No se pudieron subir los archivos a Supabase Storage. Revisá el registro de errores."}), 502
 
     foto_principal = fotos_guardadas[0]["ruta_imagen"] if fotos_guardadas else ""
     fotos_json = json.dumps([f["ruta_imagen"] for f in fotos_guardadas]) if fotos_guardadas else ""
@@ -2151,7 +2320,7 @@ def api_get_obra_atelier(id):
 def api_update_obra_atelier(id):
     """
     Actualiza una obra existente en Atelier Horacio Gómez (CRUD: Update).
-    Aplica el límite estricto de máximo 6 archivos y 20MB por archivo, con enlace a Google Drive.
+    Aplica el límite estricto de máximo 6 archivos y 20MB por archivo hacia Supabase Storage.
     """
     if not session.get("admin_logged_in"):
         return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
@@ -2168,7 +2337,7 @@ def api_update_obra_atelier(id):
     data = request.form if request.form else (request.get_json(silent=True) or {})
     titulo = (data.get("titulo") or obra_existente.get("titulo") or "").strip()
     descripcion = (data.get("descripcion") or "").strip()
-    drive_url = (data.get("drive_url") or data.get("enlace_drive") or obra_existente.get("drive_url") or "").strip()
+    drive_url = (data.get("drive_url") or data.get("enlace_drive") or data.get("storage_url") or obra_existente.get("drive_url") or "").strip()
 
     if not titulo:
         conn.close()
@@ -2179,13 +2348,18 @@ def api_update_obra_atelier(id):
     archivos_validos = [f for f in archivos if f and getattr(f, "filename", "")]
 
     fotos_guardadas = []
+    urls_previas_reemplazadas = []
     if archivos_validos:
         fotos_guardadas = guardar_archivos_fisicos(archivos_validos)
+        if not fotos_guardadas:
+            conn.close()
+            return jsonify({"error": "No se pudieron subir los archivos a Supabase Storage. Revisá el registro de errores."}), 502
+        urls_previas_reemplazadas = recolectar_urls_obra_atelier(obra_existente)
 
     if fotos_guardadas:
         foto_principal = fotos_guardadas[0]["ruta_imagen"]
         fotos_json = json.dumps([f["ruta_imagen"] for f in fotos_guardadas])
-        if not drive_url:
+        if not drive_url or drive_url == obra_existente.get("foto_url"):
             drive_url = foto_principal
         cursor.execute("""
             UPDATE obras_atelier
@@ -2204,6 +2378,10 @@ def api_update_obra_atelier(id):
     obra_actualizada = dict(cursor.fetchone())
     conn.close()
 
+    if urls_previas_reemplazadas:
+        nuevas_set = {f["ruta_imagen"] for f in fotos_guardadas}
+        eliminar_urls_supabase([u for u in urls_previas_reemplazadas if u not in nuevas_set])
+
     if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest" or "api" in request.path or request.method == "PUT":
         return jsonify({
             "success": True,
@@ -2217,21 +2395,25 @@ def api_update_obra_atelier(id):
 @app.route("/api/atelier/<int:id>", methods=["DELETE"])
 @app.route("/admin/atelier/eliminar/<int:id>", methods=["POST", "DELETE"])
 def api_delete_obra_atelier(id):
-    """Elimina una obra de Atelier Horacio Gómez por ID."""
+    """Elimina una obra de Atelier Horacio Gómez por ID y borra sus archivos en Supabase Storage."""
     if not session.get("admin_logged_in"):
         return jsonify({"error": "No autorizado. Sesión de administrador requerida."}), 401
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, titulo FROM obras_atelier WHERE id = ?", (id,))
+    cursor.execute("SELECT * FROM obras_atelier WHERE id = ?", (id,))
     row = cursor.fetchone()
     if not row:
         conn.close()
         return jsonify({"error": "Obra no encontrada"}), 404
 
+    urls_a_eliminar = recolectar_urls_obra_atelier(dict(row))
+
     cursor.execute("DELETE FROM obras_atelier WHERE id = ?", (id,))
     conn.commit()
     conn.close()
+
+    eliminar_urls_supabase(urls_a_eliminar)
 
     if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.method == "DELETE":
         return jsonify({"success": True, "mensaje": f"Obra #{id} eliminada con éxito", "id": id}), 200
@@ -2334,7 +2516,7 @@ def serve_videos(filename):
 
 # ---------------------------------------------------------------------------
 # PROXY ESTÁTICO ENDURECIDO
-# Antes servía CUALQUIER archivo de la raíz del proyecto (.env, llave-google.json,
+# Antes servía CUALQUIER archivo de la raíz del proyecto (.env, credenciales,
 # carnaval.db, app.py, .git/...). Ahora solo expone carpetas y extensiones públicas.
 # ---------------------------------------------------------------------------
 PROXY_DIRS_PUBLICOS = {"css", "js", "assets", "img", "pages", "static", "fonts"}

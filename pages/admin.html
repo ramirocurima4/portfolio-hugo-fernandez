@@ -2037,10 +2037,10 @@
               </div>
               <div class="kpi-main-val">
                 <span class="status-indicator-badge {{ metricas.estado_sistema.badge_class if metricas else 'kpi-badge-ok' }}" style="font-size: 1.02rem; padding: 0.25rem 0.75rem;">
-                  {{ metricas.estado_sistema.texto if metricas else 'Drive OK' }}
+                  {{ metricas.estado_sistema.texto if metricas else 'Storage OK' }}
                 </span>
               </div>
-              <div class="kpi-footer-note">{{ metricas.estado_sistema.detalle if metricas else 'Google Drive conectado' }}</div>
+              <div class="kpi-footer-note">{{ metricas.estado_sistema.detalle if metricas else 'Supabase Storage conectado' }}</div>
             </div>
 
           </div>
@@ -2065,13 +2065,13 @@
               <div class="panel-header-clean">
                 <div>
                   <h3 class="panel-title-champagne">Resumen del Taller</h3>
-                  <p class="panel-sub-muted">Métricas clave & Cloud Drive</p>
+                  <p class="panel-sub-muted">Métricas clave & Supabase Storage</p>
                 </div>
               </div>
               <div class="quick-stats-list">
                 <div class="quick-stat-row">
                   <span class="qs-label">Almacenamiento Cloud:</span>
-                  <span class="qs-val">ID: 19-8ply...</span>
+                  <span class="qs-val">Supabase Storage ({{ metricas.estado_sistema.bucket if metricas and metricas.estado_sistema and metricas.estado_sistema.bucket else 'Bucket activo' }})</span>
                 </div>
                 <div class="quick-stat-row" style="cursor: pointer;" data-nav="seccion-moderacion" title="Ir a la Bandeja de Moderación">
                   <span class="qs-label">Bandeja de Moderación:</span>
@@ -2165,7 +2165,7 @@
               <div class="panel-header-clean">
                 <div>
                   <h3 class="panel-title-champagne">Últimos 3 Errores Registrados</h3>
-                  <p class="panel-sub-muted">Monitoreo de incidencias en subidas y Google Drive</p>
+                  <p class="panel-sub-muted">Monitoreo de incidencias en subidas y Supabase Storage</p>
                 </div>
                 <button type="button" class="link-champagne-btn" data-nav="seccion-errores">Ver historial →</button>
               </div>
@@ -2195,7 +2195,7 @@
                   <div class="clean-empty-status">
                     <span class="empty-status-check">✓</span>
                     <h4 style="color: #ffffff; margin-bottom: 0.35rem;">Sin errores registrados</h4>
-                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">Todos los servicios de Google Drive y base de datos operan con normalidad.</p>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">Todos los servicios de Supabase Storage y base de datos operan con normalidad.</p>
                   </div>
                 {% endif %}
               </div>
@@ -2215,7 +2215,7 @@
                 {% if traje_editar %}Editar Traje #{{ traje_editar.id }}{% else %}Cargar Nuevo Traje al Catálogo{% endif %}
               </h1>
               <p style="color: var(--text-muted); font-size: 0.88rem;">
-                Subida directa de imágenes y videos a Google Drive y persistencia en base de datos SQLite.
+                Subida directa de imágenes y videos a Supabase Storage y persistencia en base de datos SQLite.
               </p>
             </div>
             {% if traje_editar %}
@@ -2382,7 +2382,7 @@
                 {% if traje_editar and traje_editar.enlace_boceto %}
                 <div class="boceto-preview-admin" style="margin-top: 0.6rem; display: flex; align-items: center; gap: 0.85rem; background: rgba(255, 255, 255, 0.05); padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
                   <img src="{{ traje_editar.enlace_boceto | media_url }}" alt="Boceto actual" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--dorado-border);">
-                  <span style="font-size: 0.82rem; color: #cbd5e1;">Boceto actual guardado en Google Drive. Seleccioná otro archivo si querés reemplazarlo.</span>
+                  <span style="font-size: 0.82rem; color: #cbd5e1;">Boceto actual guardado en Supabase Storage. Seleccioná otro archivo si querés reemplazarlo.</span>
                   <input type="hidden" name="enlace_boceto" value="{{ traje_editar.enlace_boceto }}">
                 </div>
                 {% endif %}
@@ -2465,7 +2465,7 @@
                          style="width: 100%; max-width: 520px; margin: 0 auto; cursor: pointer;"
                          {% if not traje_editar %}required{% endif %}>
                   <p style="margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
-                    Podés elegir hasta 6 archivos a la vez manteniendo presionada la tecla <strong>Ctrl</strong> o <strong>Shift</strong> (máximo 20MB por archivo). Los archivos se sincronizarán directamente con Google Drive.
+                    Podés elegir hasta 6 archivos a la vez manteniendo presionada la tecla <strong>Ctrl</strong> o <strong>Shift</strong> (máximo 20MB por archivo). Los archivos se sincronizarán directamente con Supabase Storage.
                   </p>
                 </div>
 
@@ -2509,7 +2509,7 @@
             Gestión de Catálogo de Trajes
           </h1>
           <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Administración completa de vestuarios publicados, edición modal interactiva y sincronización con Google Drive.
+            Administración completa de vestuarios publicados, edición modal interactiva y sincronización con Supabase Storage.
           </p>
         </div>
         <button type="button" class="btn-admin-nav" data-nav="seccion-subir" style="border-color: var(--champagne); color: var(--champagne); cursor: pointer;">
@@ -3032,7 +3032,7 @@
     <!-- FIN PESTAÑA 5: GESTOR DE ENTREVISTAS -->
 
     <!-- ======================================================================
-         PESTAÑA ATELIER HORACIO GÓMEZ (CRUD & DRIVE)
+         PESTAÑA ATELIER HORACIO GÓMEZ (CRUD & SUPABASE STORAGE)
          ====================================================================== -->
     <section id="seccion-atelier" class="saas-tab-pane" aria-label="Gestionar Atelier Horacio Gómez">
       
@@ -3042,7 +3042,7 @@
             Gestor del Atelier Horacio Gómez
           </h1>
           <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Administración de obras de arte, bocetos monumentales, esculturas y herrería artística con sincronización a Google Drive.
+            Administración de obras de arte, bocetos monumentales, esculturas y herrería artística con sincronización a Supabase Storage.
           </p>
         </div>
         <a href="/atelier" class="btn-admin-nav" target="_blank" style="border-color: var(--champagne); color: var(--champagne);">
@@ -3081,11 +3081,11 @@
 
                 <div class="form-group full-width">
                   <label for="atelier-drive-url" class="form-label">
-                    <span>📁</span> Enlace a Carpeta o Archivo de Google Drive (Opcional)
+                    <span>🔗</span> Enlace Externo o Galería de Obra (Opcional)
                   </label>
-                  <input type="url" id="atelier-drive-url" name="drive_url" class="form-control" placeholder="https://drive.google.com/drive/folders/... o https://drive.google.com/file/d/...">
+                  <input type="url" id="atelier-drive-url" name="drive_url" class="form-control" placeholder="https://...">
                   <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">
-                    * Podés ingresar directamente un link a Google Drive o subir archivos multimedia debajo para subirlos automáticamente.
+                    * Podés ingresar opcionalmente un enlace externo o subir archivos multimedia debajo para alojarlos automáticamente en Supabase Storage.
                   </span>
                 </div>
 
@@ -3132,7 +3132,7 @@
                     <th style="width: 50px;">ID</th>
                     <th>Título de la Obra</th>
                     <th>Descripción</th>
-                    <th style="width: 150px;">Google Drive</th>
+                    <th style="width: 150px;">Enlace / Storage</th>
                     <th style="width: 120px;">Fecha</th>
                     <th style="width: 110px; text-align: center;">Acción</th>
                   </tr>
@@ -3154,7 +3154,7 @@
                       <td>
                         {% if o.drive_url %}
                           <a href="{{ o.drive_url }}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">
-                            Abrir Drive ↗
+                            Abrir Enlace ↗
                           </a>
                         {% else %}
                           <span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>
@@ -3205,7 +3205,7 @@
             Registro de Errores & Auditoría
           </h1>
           <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Historial de capturas try-except para Google Drive y consultas SQLite.
+            Historial de capturas try-except para Supabase Storage y consultas SQLite.
           </p>
         </div>
         <button type="button" id="btn-limpiar-errores" class="btn-admin-nav" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171; cursor: pointer;">
@@ -3253,7 +3253,7 @@
             <div class="clean-empty-status">
               <span class="empty-status-check">✓</span>
               <h4 style="color: #ffffff; margin-bottom: 0.35rem;">Sin errores en el sistema</h4>
-              <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Google Drive, subida de archivos y consultas a base de datos operan sin incidencias.</p>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Supabase Storage, subida de archivos y consultas a base de datos operan sin incidencias.</p>
             </div>
           {% endif %}
         </div>
@@ -3266,7 +3266,7 @@
 
   <!-- ======================================================================
        MODAL GLASSMORPHISM: EDITAR TRAJE COMPLETO (FASE CMS & CRUD)
-       Permite actualizar Nombre, Comparsa, Género, Archivo (Google Drive), Destaque
+       Permite actualizar Nombre, Comparsa, Género, Archivo (Supabase Storage), Destaque
        ====================================================================== -->
   <div class="admin-modal-backdrop" id="modal-editar-traje" aria-hidden="true">
     <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
@@ -3325,10 +3325,10 @@
               </label>
             </div>
 
-            <!-- Archivo Multimedia en Google Drive -->
+            <!-- Archivo Multimedia en Supabase Storage -->
             <div class="form-group full-width">
               <label class="form-label">
-                <span>📁</span> Archivo Multimedia (Google Drive)
+                <span>☁️</span> Archivo Multimedia (Supabase Storage)
               </label>
               
               <div style="display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.75rem; background: rgba(0,0,0,0.25); padding: 0.85rem; border-radius: 8px;">
@@ -3336,16 +3336,16 @@
                   <img id="edit-img-preview" src="" alt="Vista actual" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="flex: 1; min-width: 200px;">
-                  <span style="font-size: 0.84rem; color: #fff; font-weight: 600;">Cambiar imagen o video en Google Drive (Selección Múltiple permitida):</span>
+                  <span style="font-size: 0.84rem; color: #fff; font-weight: 600;">Cambiar imagen o video en Supabase Storage (Selección Múltiple permitida):</span>
                   <input type="file" id="edit-archivo" name="archivo" accept="image/*,video/mp4" multiple class="form-control" style="margin-top: 0.4rem; padding: 0.4rem;">
                   <span style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">
-                    * Máximo 6 archivos y 20MB por archivo. Si seleccionás nuevos archivos, se subirán directo a Google Drive y actualizarán la galería en SQLite.
+                    * Máximo 6 archivos y 20MB por archivo. Si seleccionás nuevos archivos, se subirán directo a Supabase Storage y actualizarán la galería en SQLite.
                   </span>
                 </div>
               </div>
 
               <!-- Enlace directo opcional -->
-              <input type="text" id="edit-foto-url" name="foto_url" class="form-control" placeholder="O pegá un enlace directo de Google Drive / imagen...">
+              <input type="text" id="edit-foto-url" name="foto_url" class="form-control" placeholder="O pegá un enlace directo de Supabase Storage / imagen...">
             </div>
 
             <!-- Créditos del Traje (Agrupados en Cuadrícula Compacta) -->
@@ -3446,9 +3446,9 @@
 
             <div class="form-group full-width">
               <label for="edit-atelier-drive-url" class="form-label">
-                <span>📁</span> Enlace a Google Drive
+                <span>🔗</span> Enlace Externo / Storage
               </label>
-              <input type="url" id="edit-atelier-drive-url" name="drive_url" class="form-control" placeholder="https://drive.google.com/...">
+              <input type="url" id="edit-atelier-drive-url" name="drive_url" class="form-control" placeholder="https://...">
             </div>
 
             <div class="form-group full-width">
@@ -3458,7 +3458,7 @@
               <div class="file-dropzone" style="border: 2px dashed rgba(230, 213, 184, 0.3); border-radius: 8px; padding: 1rem; text-align: center; background: rgba(255, 255, 255, 0.02);">
                 <input type="file" id="edit-atelier-fotos" name="fotos" multiple accept="image/*,video/mp4" class="form-control" style="cursor: pointer;">
                 <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">
-                  Límite estricto: máximo 6 archivos y 20MB por archivo hacia Google Drive.
+                  Límite estricto: máximo 6 archivos y 20MB por archivo hacia Supabase Storage.
                 </div>
               </div>
             </div>
@@ -4125,7 +4125,7 @@
     }
 
     /**
-     * MODAL CMS: Editar Traje en Vivo & Sincronización Google Drive / SQLite
+     * MODAL CMS: Editar Traje en Vivo & Sincronización Supabase Storage / SQLite
      */
     async function abrirModalEditarTraje(id) {
       const modal = document.getElementById('modal-editar-traje');
@@ -4237,7 +4237,7 @@
         const btnSave = document.getElementById('btn-modal-guardar-traje');
         const origText = btnSave.innerHTML;
         btnSave.disabled = true;
-        btnSave.innerHTML = '<span>⏳</span> Subiendo a Drive y guardando en SQLite...';
+        btnSave.innerHTML = '<span>⏳</span> Subiendo a Supabase Storage y guardando en SQLite...';
 
         try {
           const formData = new FormData(form);
@@ -4512,7 +4512,7 @@
 
         const origHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span>⏳</span> Subiendo a Atelier y Google Drive...';
+        btn.innerHTML = '<span>⏳</span> Subiendo a Atelier y Supabase Storage...';
 
         try {
           const formData = new FormData(form);
@@ -4536,7 +4536,7 @@
             tr.id = `fila-atelier-${o.id}`;
             const descTxt = o.descripcion ? escapeHTML(o.descripcion.slice(0, 120)) + (o.descripcion.length > 120 ? '...' : '') : 'Sin descripción';
             const mediaTxt = o.foto_url ? `<br><a href="${escapeHTML(o.foto_url)}" target="_blank" style="color: var(--rio, #5ef2e0); font-size: 0.78rem;">Ver Media ↗</a>` : '';
-            const driveTxt = o.drive_url ? `<a href="${escapeHTML(o.drive_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">Abrir Drive ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>';
+            const driveTxt = o.drive_url ? `<a href="${escapeHTML(o.drive_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">Abrir Enlace ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>';
             const fechaTxt = o.fecha_creacion ? escapeHTML(o.fecha_creacion.slice(0, 10)) : '-';
 
             tr.innerHTML = `
@@ -4606,7 +4606,7 @@
 
           const origHtml = btn.innerHTML;
           btn.disabled = true;
-          btn.innerHTML = '<span>⏳</span> Guardando en Google Drive...';
+          btn.innerHTML = '<span>⏳</span> Guardando en Supabase Storage...';
 
           try {
             const formData = new FormData(formEdit);
@@ -4625,7 +4625,7 @@
               const o = data.obra;
               const descTxt = o.descripcion ? escapeHTML(o.descripcion.slice(0, 120)) + (o.descripcion.length > 120 ? '...' : '') : 'Sin descripción';
               const mediaTxt = o.foto_url ? `<br><a href="${escapeHTML(o.foto_url)}" target="_blank" style="color: var(--rio, #5ef2e0); font-size: 0.78rem;">Ver Media ↗</a>` : '';
-              const driveTxt = o.drive_url ? `<a href="${escapeHTML(o.drive_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">Abrir Drive ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>';
+              const driveTxt = o.drive_url ? `<a href="${escapeHTML(o.drive_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--champagne); text-decoration: underline; font-size: 0.82rem;">Abrir Enlace ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin enlace</span>';
               const fechaTxt = o.fecha_creacion ? escapeHTML(o.fecha_creacion.slice(0, 10)) : '-';
 
               tr.innerHTML = `

@@ -1,8 +1,28 @@
 # Roadmap y Memoria de Proyecto - Hugo Fernández Arte Creativo
 
 ## Estado Actual del Proyecto
-- **Fecha de Actualización:** Octubre 2026
-- **Directiva Vigente:** Fase 14 - Módulo Social (Comunidad & Moderación), Seed de Datos del Carnaval Correntino y Mejoras Autónomas de UX.
+- **Fecha de Actualización:** Noviembre 2026
+- **Directiva Vigente:** Fase 15 - Migración Integral de Almacenamiento Multimedia a Supabase Storage (API REST liviana con `requests`).
+
+---
+
+### Fase 15: Migración Integral de Almacenamiento Multimedia a Supabase Storage
+**Estado:** COMPLETADA ✅
+**Hito Registrado:** Reemplazo completo de Google Drive API (`google-api-python-client` / `llave-google.json`) por Supabase Storage vía API REST liviana con `requests`, limpieza automática de objetos huérfanos (`DELETE`) y monitoreo de estado en tiempo real en el Dashboard CMS.
+
+#### Enfoque Arquitectural:
+1. **Backend Flask & Supabase Storage REST (`app.py`, `requirements.txt`):**
+   - Eliminación total de dependencias, importaciones y credenciales de Google (`google-api-python-client`, `google-auth`, `google-auth-httplib2`, `google-auth-oauthlib`, `llave-google.json`).
+   - Implementación liviana compatible con el plan gratuito de PythonAnywhere usando exclusivamente `requests` y `python-dotenv` (`SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`).
+   - **Subida (`subir_a_supabase_storage`):** Genera nombres únicos con `uuid.uuid4().hex` + `secure_filename`, envía `POST {SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/{nombre_unico}` con headers `apikey`, `Authorization: Bearer` y `Content-Type`, y persiste en SQLite la URL pública directa `{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{nombre_unico}`.
+   - **Limpieza de archivos huérfanos (`eliminar_de_supabase_storage` / `eliminar_urls_supabase`):** Al eliminar un traje, rechazar una postulación comunitaria, borrar fotos individuales en edición, reemplazar bocetos o eliminar/actualizar obras del Atelier, se ejecuta automáticamente el `DELETE {SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/{nombre_unico}` correspondiente (ignorando URLs externas como Unsplash).
+   - **Verificación de estado (`verificar_estado_supabase_storage`):** Valida las variables en `.env` y consulta `GET {SUPABASE_URL}/storage/v1/bucket/{SUPABASE_BUCKET}` para reportar el estado real del almacenamiento en la KPI Card del panel admin.
+   - **Renderizado directo (`resolver_multimedia_url`, `js/detalle.js`, `static/js/detalle.js`):** Eliminación completa de la lógica de parseo de IDs de Google Drive (`drive.google.com/file/d/...`, `lh3.googleusercontent.com/d/...`); todas las vistas públicas y administrativas renderizan directamente las URLs públicas de Supabase Storage.
+2. **Dashboard CMS y Vistas (`templates/admin.html`, `pages/admin.html`, `admin.html`, `templates/atelier/index.html`):**
+   - Actualización de la tarjeta de estado del sistema, Resumen del Taller (mostrando el bucket de Supabase Storage), Registro de Errores, formularios de carga/edición, modales y textos de progreso hacia **Supabase Storage**.
+3. **Limpieza & Pruebas (`carnaval.db`, `tools/smoke_test.py`):**
+   - Vaciado de los registros históricos de prueba de Google Drive en `errores_log` para dejar el panel listo para producción.
+   - Actualización de `tools/smoke_test.py` para validar la presencia de Supabase Storage y la ausencia de dependencias de Google Drive.
 
 ---
 

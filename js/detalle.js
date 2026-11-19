@@ -40,13 +40,6 @@ function obtenerTrajeIdActual() {
  */
 function resolverRuta(url) {
   if (!url) return '';
-  // Si es un enlace de Google Drive, resolver a URL directa de imagen
-  const match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
-                url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/) ||
-                url.match(/id=([a-zA-Z0-9_-]+)/);
-  if (match && match[1]) {
-    return `https://lh3.googleusercontent.com/d/${match[1]}`;
-  }
   if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('/')) {
     return url;
   }

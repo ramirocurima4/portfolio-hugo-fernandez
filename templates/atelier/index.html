@@ -22,7 +22,7 @@
     <article class="glass-card" style="padding: 1.8rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1.2rem; border-radius: var(--r-lg);">
       {% if obra.foto_url %}
       <div style="width: 100%; height: 220px; border-radius: var(--r-md); overflow: hidden; position: relative;">
-        <img src="{{ obra.foto_url }}" alt="{{ obra.titulo }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+        <img src="{{ obra.foto_url | media_url }}" alt="{{ obra.titulo }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
       </div>
       {% endif %}
       <div>
@@ -33,7 +33,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--linea); padding-top: 0.8rem; margin-top: auto;">
         {% if obra.drive_url %}
         <a href="{{ obra.drive_url }}" target="_blank" rel="noopener noreferrer" class="btn-hero-secondary" style="font-size: 0.72rem; padding: 0.6rem 1.1rem;">
-          <span>📁</span> Ver en Google Drive ↗
+          <span>🔗</span> Ver Archivo / Galería ↗
         </a>
         {% endif %}
         <span style="font-size: 0.75rem; color: var(--bruma); font-family: var(--f-label);">{{ obra.fecha_creacion[:10] if obra.fecha_creacion else '' }}</span>

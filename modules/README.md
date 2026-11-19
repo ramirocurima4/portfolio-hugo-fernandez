@@ -14,6 +14,6 @@ modules/
 ```
 
 ## Características
-1. **No invasivo:** No altera el core de `app.py`, ni `database.py`, ni los límites de subida de Google Drive ni SQLite.
+1. **No invasivo:** No altera el core de `app.py`, ni `database.py`, ni los límites de subida de Supabase Storage ni SQLite.
 2. **Feature Flags:** Controlable vía variables de entorno (`ENABLE_ATELIER=true|false`).
 3. **Plantillas y Assets Aislados:** Cada módulo puede tener sus propios subdirectorios en `templates/<modulo>` y `static/<modulo>`.

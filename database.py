@@ -162,7 +162,7 @@ def init_db():
         )
     """)
 
-    # 6. Creación de la tabla errores_log (Auditoría & Resiliencia Google Drive)
+    # 6. Creación de la tabla errores_log (Auditoría & Resiliencia Supabase Storage)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS errores_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
